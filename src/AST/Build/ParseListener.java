@@ -1,6 +1,7 @@
 package AST.Build;
 
 import AST.Basic.ExprNode;
+import AST.Basic.Listener;
 import AST.Basic.Node;
 import AST.Basic.StmtNode;
 import AST.Branch.BreakStmtNode;
@@ -18,21 +19,15 @@ import AST.Statement.VarDeclStmtNode;
 import Parser.MxBaseListener;
 import Parser.MxParser;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
-public class ParseListener extends MxBaseListener {
+import static AST.Build.Tree.*;
 
-    ProgNode prog;
-    ParseTreeProperty<Object> map = new ParseTreeProperty<>();
-
-    public void dump() {
-        prog.dump(0);
-    }
-
+public class ParseListener extends Listener {
     @Override
     public void exitProgram(MxParser.ProgramContext ctx) {
         prog = new ProgNode();
         ctx.declaration().forEach(declarationContext -> prog.addDecl((Node) map.get(declarationContext)));
+        errorAnalyze();
     }
 
     @Override
@@ -43,7 +38,7 @@ public class ParseListener extends MxBaseListener {
     @Override
     public void exitFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = new FuncDeclNode();
-        ctx.dataType().forEach(dataTypeContext -> funcDecl.addType(dataTypeContext.getText()));
+        ctx.dataType().forEach(dataTypeContext -> funcDecl.addTypeLit(dataTypeContext.getText()));
         ctx.Identifier().forEach(ident -> funcDecl.addName(ident.getText()));
         funcDecl.setBlockStmt((BlockStmtNode) map.get(ctx.blockStatement()));
         map.put(ctx, funcDecl);

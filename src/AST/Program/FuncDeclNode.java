@@ -6,20 +6,35 @@ import AST.Statement.BlockStmtNode;
 import java.util.ArrayList;
 
 public class FuncDeclNode extends Node {
-    ArrayList<String> type, name;
+    String retTypeLit, funcName;
+    ArrayList<String> typeLit, name;
     BlockStmtNode blockStmt;
 
     public FuncDeclNode() {
-        type = new ArrayList<>();
+        typeLit = new ArrayList<>();
         name = new ArrayList<>();
     }
 
-    public void addType(String t) {
-        type.add(t);
+    public String getRetTypeLit() {
+        return retTypeLit;
+    }
+
+    public ArrayList<String> getTypeLit() {
+        return typeLit;
+    }
+
+    public String getFuncName() {
+        return funcName;
+    }
+
+    public void addTypeLit(String t) {
+        if (retTypeLit.equals("")) retTypeLit = t;
+        else typeLit.add(t);
     }
 
     public void addName(String n) {
-        name.add(n);
+        if (funcName.equals("")) funcName = n;
+        else name.add(n);
     }
 
     public void setBlockStmt(BlockStmtNode bs) {
@@ -29,10 +44,10 @@ public class FuncDeclNode extends Node {
     @Override
     public void dump(int indent) {
         format(indent);
-        System.out.printf("%s %s(", type.get(0), name.get(0));
-        for (int i = 1; i < type.size(); ++i) {
-            System.out.printf("%s %s", type.get(i), name.get(i));
-            if (i + 1 < type.size()) {
+        System.out.printf("%s %s(", retTypeLit, funcName);
+        for (int i = 0; i < typeLit.size(); ++i) {
+            System.out.printf("%s %s", typeLit.get(i), name.get(i));
+            if (i + 1 < typeLit.size()) {
                 System.out.printf(", ");
             }
         }

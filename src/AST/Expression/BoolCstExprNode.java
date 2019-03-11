@@ -1,14 +1,14 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
-import AST.Basic.ExprType;
+import AST.Type.BoolType;
 
 public class BoolCstExprNode extends ExprNode {
     boolean val;
 
     public BoolCstExprNode(boolean v) {
         val = v;
-        type = new ExprType("bool");
+        type = BoolType.getInstance();
     }
 
     @Override

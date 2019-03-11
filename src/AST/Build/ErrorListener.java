@@ -17,4 +17,8 @@ public class ErrorListener extends BaseErrorListener {
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
         msgs.add("line " + line + ":" + charPositionInLine + " " + msg);
     }
+
+    public void addCompilerError(String m) {
+        msgs.add(m);
+    }
 }

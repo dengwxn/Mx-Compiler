@@ -1,11 +1,11 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
-import AST.Basic.ExprType;
+import AST.Type.NullType;
 
 public class NullCstExprNode extends ExprNode {
 
     public NullCstExprNode() {
-        type = new ExprType("null");
+        type = NullType.getInstance();
     }
 }

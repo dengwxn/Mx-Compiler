@@ -1,5 +1,6 @@
+import AST.Build.ClassListener;
+import AST.Build.FuncListener;
 import AST.Build.ParseListener;
-import AST.Build.Tree;
 import Parser.MxLexer;
 import Parser.MxParser;
 import org.antlr.v4.runtime.CharStream;
@@ -12,8 +13,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Main {
+import static AST.Build.Tree.errorListener;
 
+public class Main {
     public static void main(String[] args) {
         buildAST();
     }
@@ -25,21 +27,14 @@ public class Main {
             MxLexer lexer = new MxLexer(input);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             MxParser parser = new MxParser(tokens);
-
             parser.removeErrorListeners();
-            Tree.init();
-            parser.addErrorListener(Tree.errorListener);
+            parser.addErrorListener(errorListener);
 
             ParseTree tree = parser.program();
             ParseTreeWalker walker = new ParseTreeWalker();
-            ParseListener parseListener = new ParseListener();
-            walker.walk(parseListener, tree);
-            is.close();
-
-            Tree.errorAnalyze();
-            parseListener.dump();
-            Tree AST = new Tree(parseListener);
-            AST.check();
+            walker.walk(new ParseListener(), tree);
+            walker.walk(new ClassListener(), tree);
+            walker.walk(new FuncListener(), tree);
         } catch (IOException e) {
             System.exit(1);
         }

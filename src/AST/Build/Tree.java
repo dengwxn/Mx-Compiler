@@ -1,29 +1,28 @@
 package AST.Build;
 
+import AST.Basic.Listener;
 import AST.Program.ProgNode;
+import AST.SymbolTable.SymbolTable;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 public class Tree {
-    public static ErrorListener errorListener;
-    ProgNode prog;
+    static public ErrorListener errorListener = new ErrorListener();
+    static ProgNode prog;
+    static ParseTreeProperty<Object> map = new ParseTreeProperty<>();
+    static SymbolTable localSymbolTable = new SymbolTable(null);
 
-    public static void init() {
-        errorListener = new ErrorListener();
+    static void enterNewScope() {
+        localSymbolTable = new SymbolTable(localSymbolTable);
     }
 
-    public Tree(ParseListener p) {
-        prog = p.prog;
+    static void exitScope() {
+        localSymbolTable = localSymbolTable.getLastScope();
     }
 
-    public static void errorAnalyze() {
+    static public void errorAnalyze() {
         if (Tree.errorListener.msgs.size() > 0) {
             Tree.errorListener.msgs.forEach(System.out::println);
             System.exit(1);
         }
-    }
-
-    public void check() {
-        prog.declarationVisit();
-        prog.typeCheckVisit();
-        errorAnalyze();
     }
 }

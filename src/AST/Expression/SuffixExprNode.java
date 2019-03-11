@@ -1,7 +1,6 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
-import AST.Basic.ExprType;
 
 public class SuffixExprNode extends ExprNode {
     String op;
