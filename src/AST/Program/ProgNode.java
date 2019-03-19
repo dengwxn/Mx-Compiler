@@ -5,23 +5,19 @@ import AST.Basic.Node;
 import java.util.ArrayList;
 
 public class ProgNode extends Node {
-    ArrayList<Node> decls;
+    ArrayList<Node> decl;
 
     public ProgNode() {
-        decls = new ArrayList<>();
+        decl = new ArrayList<>();
     }
 
     public void addDecl(Node d) {
-        decls.add(d);
-    }
-
-    public void typeCheck() {
-
+        decl.add(d);
     }
 
     @Override
     public void dump(int indent) {
         System.out.println("program:");
-        decls.forEach(decl -> decl.dump(indent + 4));
+        decl.forEach(decl -> decl.dump(indent + 4));
     }
 }

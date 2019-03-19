@@ -6,35 +6,40 @@ import AST.Statement.BlockStmtNode;
 import java.util.ArrayList;
 
 public class FuncDeclNode extends Node {
-    String retTypeLit, funcName;
-    ArrayList<String> typeLit, name;
+    String retType, funcName;
+    ArrayList<String> paramType, paramName;
     BlockStmtNode blockStmt;
 
     public FuncDeclNode() {
-        typeLit = new ArrayList<>();
-        name = new ArrayList<>();
+        paramType = new ArrayList<>();
+        paramName = new ArrayList<>();
     }
 
-    public String getRetTypeLit() {
-        return retTypeLit;
+    public String getRetType() {
+        return retType;
     }
 
-    public ArrayList<String> getTypeLit() {
-        return typeLit;
+    public ArrayList<String> getParamType() {
+        return paramType;
+    }
+
+    public ArrayList<String> getParamName() {
+        return paramName;
     }
 
     public String getFuncName() {
         return funcName;
     }
 
-    public void addTypeLit(String t) {
-        if (retTypeLit.equals("")) retTypeLit = t;
-        else typeLit.add(t);
+    public void setFuncName(String f) { funcName = f; }
+
+    public void addType(String t) {
+        if (retType == null) retType = t;
+        else paramType.add(t);
     }
 
     public void addName(String n) {
-        if (funcName.equals("")) funcName = n;
-        else name.add(n);
+        paramName.add(n);
     }
 
     public void setBlockStmt(BlockStmtNode bs) {
@@ -44,10 +49,10 @@ public class FuncDeclNode extends Node {
     @Override
     public void dump(int indent) {
         format(indent);
-        System.out.printf("%s %s(", retTypeLit, funcName);
-        for (int i = 0; i < typeLit.size(); ++i) {
-            System.out.printf("%s %s", typeLit.get(i), name.get(i));
-            if (i + 1 < typeLit.size()) {
+        System.out.printf("%s %s(", retType, funcName);
+        for (int i = 0; i < paramType.size(); ++i) {
+            System.out.printf("%s %s", paramType.get(i), paramName.get(i));
+            if (i + 1 < paramType.size()) {
                 System.out.printf(", ");
             }
         }

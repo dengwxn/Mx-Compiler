@@ -5,7 +5,5 @@ import AST.Type.NullType;
 
 public class NullCstExprNode extends ExprNode {
 
-    public NullCstExprNode() {
-        type = NullType.getInstance();
-    }
+    public NullCstExprNode() {}
 }

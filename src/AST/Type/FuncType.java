@@ -6,13 +6,17 @@ import java.util.ArrayList;
 
 public class FuncType extends Type {
     Type retType;
-    ArrayList<Type> type;
+    ArrayList<Type> paramType;
 
     public FuncType(Type r, ArrayList<Type> t) {
         retType = r;
-        type = t;
+        paramType = t;
     }
 
+    public Type getRetType() { return retType; }
+    
+    public ArrayList<Type> getParamType() { return paramType; }
+
     @Override
-    public boolean canOperateWith(Type t) { return t == retType; }
+    public String getTypeName() { return retType.getTypeName(); }
 }

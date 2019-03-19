@@ -5,22 +5,36 @@ import AST.Basic.ExprNode;
 import java.util.ArrayList;
 
 public class FuncCallExprNode extends ExprNode {
-    String func;
-    ArrayList<ExprNode> params;
+    ExprNode func;
+    ArrayList<ExprNode> param;
 
-    public void addParam(ExprNode p) {
-        params.add(p);
+    public void addExpr(ExprNode e) {
+        if (func == null)
+            func = e;
+        else
+            param.add(e);
     }
 
-    public FuncCallExprNode(String f) {
-        func = f;
-        params = new ArrayList<>();
+    public FuncCallExprNode() {
+        param = new ArrayList<>();
+    }
+
+    public ArrayList<ExprNode> getParam() { return param; }
+
+    public String getFuncName() {
+        if (func instanceof IdentExprNode) {
+            return ((IdentExprNode) func).getIdent();
+        } else if (func instanceof MemberExprNode) {
+            return ((MemberExprNode) func).getClsName() + "." + ((MemberExprNode) func).getIdent();
+        }
+        return null;
     }
 
     @Override
     public void dump(int indent) {
-        format(indent);
-        System.out.printf("%s():\n", func);
-        params.forEach(p -> p.dump(indent + 4));
+        func.dump(indent);
+        format(indent + 8);
+        System.out.printf("%s():\n", getFuncName());
+        param.forEach(p -> p.dump(indent + 8));
     }
 }

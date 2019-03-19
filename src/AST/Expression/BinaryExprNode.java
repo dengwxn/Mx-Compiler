@@ -1,6 +1,7 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
+import AST.Basic.Type;
 
 public class BinaryExprNode extends ExprNode {
     String op;
@@ -10,6 +11,14 @@ public class BinaryExprNode extends ExprNode {
         op = o;
         lhs = l;
         rhs = r;
+    }
+
+    public Type getLhsType() {
+        return lhs == null ? null : lhs.getType();
+    }
+
+    public Type getRhsType() {
+        return rhs == null ? null : rhs.getType();
     }
 
     @Override

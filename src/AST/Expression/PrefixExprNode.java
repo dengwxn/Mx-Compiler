@@ -1,6 +1,7 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
+import AST.Basic.Type;
 
 public class PrefixExprNode extends ExprNode {
     String op;
@@ -10,6 +11,10 @@ public class PrefixExprNode extends ExprNode {
         op = o;
         expr = e;
     }
+
+    public Type getExprType() { return expr == null ? null : expr.getType(); }
+
+    public String getOp() { return op; }
 
     @Override
     public void dump(int indent) {

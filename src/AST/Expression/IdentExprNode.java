@@ -9,9 +9,14 @@ public class IdentExprNode extends ExprNode {
         ident = i;
     }
 
+    public String getIdent() { return ident; }
+
+    @Override
+    public boolean isLeftValue() { return true; }
+
     @Override
     public void dump(int indent) {
         format(indent);
-        System.out.printf("%s\n", ident);
+        System.out.println(ident);
     }
 }

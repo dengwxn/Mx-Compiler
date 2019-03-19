@@ -10,13 +10,13 @@ import AST.Branch.ReturnStmtNode;
 import AST.Expression.*;
 import AST.Loop.ForStmtNode;
 import AST.Loop.WhileStmtNode;
+import AST.Program.ClassDeclNode;
 import AST.Program.FuncDeclNode;
 import AST.Program.ProgNode;
 import AST.Statement.BlockStmtNode;
 import AST.Statement.ExprStmtNode;
 import AST.Statement.IfStmtNode;
 import AST.Statement.VarDeclStmtNode;
-import Parser.MxBaseListener;
 import Parser.MxParser;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -36,10 +36,24 @@ public class ParseListener extends Listener {
     }
 
     @Override
+    public void exitClassDeclaration(MxParser.ClassDeclarationContext ctx) {
+        ClassDeclNode classDecl = new ClassDeclNode(ctx.Identifier().getText());
+        ctx.variableDeclaration().forEach(varDecl -> classDecl.addVarDecl((VarDeclStmtNode) map.get(varDecl)));
+        ctx.functionDeclaration().forEach(funcDecl -> classDecl.addFuncDecl((FuncDeclNode) map.get(funcDecl)));
+        map.put(ctx, classDecl);
+    }
+
+    @Override
     public void exitFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = new FuncDeclNode();
-        ctx.dataType().forEach(dataTypeContext -> funcDecl.addTypeLit(dataTypeContext.getText()));
-        ctx.Identifier().forEach(ident -> funcDecl.addName(ident.getText()));
+        ctx.dataType().forEach(dataTypeContext -> funcDecl.addType(dataTypeContext.getText()));
+        if (ctx.dataType().size() == ctx.Identifier().size()) {
+            funcDecl.setFuncName(ctx.Identifier(0).getText());
+            for (int i = 1; i < ctx.Identifier().size(); ++i)
+                funcDecl.addName(ctx.Identifier(i).getText());
+        } else {
+            ctx.Identifier().forEach(ident -> funcDecl.addName(ident.getText()));
+        }
         funcDecl.setBlockStmt((BlockStmtNode) map.get(ctx.blockStatement()));
         map.put(ctx, funcDecl);
     }
@@ -112,9 +126,16 @@ public class ParseListener extends Listener {
     }
 
     @Override
+    public void exitMember(MxParser.MemberContext ctx) {
+        ExprNode cls = (ExprNode) map.get(ctx.expression());
+        String ident = ctx.Identifier().getText();
+        map.put(ctx, new MemberExprNode(cls, ident));
+    }
+
+    @Override
     public void exitFunctionCall(MxParser.FunctionCallContext ctx) {
-        FuncCallExprNode funcCall = new FuncCallExprNode(ctx.Identifier().getText());
-        ctx.expression().forEach(expr -> funcCall.addParam((ExprNode) map.get(expr)));
+        FuncCallExprNode funcCall = new FuncCallExprNode();
+        ctx.expression().forEach(expr -> funcCall.addExpr((ExprNode) map.get(expr)));
         map.put(ctx, funcCall);
     }
 
@@ -212,8 +233,12 @@ public class ParseListener extends Listener {
 
     @Override
     public void exitAssign(MxParser.AssignContext ctx) {
-        ExprNode expr = (ExprNode) map.get(ctx.expression());
-        map.put(ctx, new AssignExprNode(ctx.Identifier().getText(), expr));
+        ExprNode lhs = (ExprNode) map.get(ctx.expression(0));
+        ExprNode rhs = (ExprNode) map.get(ctx.expression(1));
+        if (lhs.isLeftValue())
+            map.put(ctx, new AssignExprNode(lhs, rhs));
+        else
+            addCompileError("the left hand side is not l-value.");
     }
 
     @Override

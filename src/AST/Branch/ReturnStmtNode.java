@@ -2,12 +2,17 @@ package AST.Branch;
 
 import AST.Basic.ExprNode;
 import AST.Basic.StmtNode;
+import AST.Basic.Type;
 
 public class ReturnStmtNode extends StmtNode {
     ExprNode expr;
 
     public ReturnStmtNode(ExprNode e) {
         expr = e;
+    }
+
+    public Type getExprType() {
+        return expr == null ? null : expr.getType();
     }
 
     @Override

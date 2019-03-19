@@ -1,6 +1,4 @@
-import AST.Build.ClassListener;
-import AST.Build.FuncListener;
-import AST.Build.ParseListener;
+import AST.Build.*;
 import Parser.MxLexer;
 import Parser.MxParser;
 import org.antlr.v4.runtime.CharStream;
@@ -34,7 +32,9 @@ public class Main {
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(new ParseListener(), tree);
             walker.walk(new ClassListener(), tree);
-            walker.walk(new FuncListener(), tree);
+            walker.walk(new DeclarationListener(), tree);
+            walker.walk(new TypeCheckListener(), tree);
+            Tree.dump();
         } catch (IOException e) {
             System.exit(1);
         }

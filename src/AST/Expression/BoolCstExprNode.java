@@ -8,7 +8,6 @@ public class BoolCstExprNode extends ExprNode {
 
     public BoolCstExprNode(boolean v) {
         val = v;
-        type = BoolType.getInstance();
     }
 
     @Override

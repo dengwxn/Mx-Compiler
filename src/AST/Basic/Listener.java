@@ -21,6 +21,6 @@ public class Listener extends MxBaseListener {
     }
 
     static public void addCompileError(String msg) {
-        errorListener.addCompilerError("line " + Listener.row + ":" + Listener.col + " " + msg);
+        errorListener.addCompilerError(String.format("line %d:%d %s", Listener.row, Listener.col, msg));
     }
 }

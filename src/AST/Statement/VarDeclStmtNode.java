@@ -2,6 +2,7 @@ package AST.Statement;
 
 import AST.Basic.ExprNode;
 import AST.Basic.StmtNode;
+import AST.Basic.Type;
 
 public class VarDeclStmtNode extends StmtNode {
     String type, name;
@@ -12,6 +13,14 @@ public class VarDeclStmtNode extends StmtNode {
         name = n;
         expr = e;
     }
+
+    public String getType() { return type; }
+
+    public String getName() { return name; }
+
+    public ExprNode getExpr() { return expr; }
+
+    public Type getExprType() { return expr == null ? null : expr.getType(); }
 
     @Override
     public void dump(int indent) {

@@ -1,20 +1,25 @@
 package AST.Build;
 
 import AST.Basic.Listener;
-import AST.Type.BoolType;
-import AST.Type.IntType;
-import AST.Type.NullType;
-import AST.Type.VoidType;
+import AST.Program.ClassDeclNode;
+import AST.Type.*;
 import Parser.MxParser;
 
-import static AST.Build.Tree.localSymbolTable;
+import static AST.Build.Tree.map;
+import static AST.Build.Tree.symbolTable;
 
 public class ClassListener extends Listener {
     @Override
     public void enterProgram(MxParser.ProgramContext ctx) {
-        localSymbolTable.put("int", IntType.getInstance());
-        localSymbolTable.put("bool", BoolType.getInstance());
-        localSymbolTable.put("void", VoidType.getInstance());
-        localSymbolTable.put("null", NullType.getInstance());
+        symbolTable.put("int", new IntType());
+        symbolTable.put("bool", new BoolType());
+        symbolTable.put("void", new VoidType());
+        symbolTable.put("null", new NullType());
+    }
+
+    @Override
+    public void enterClassDeclaration(MxParser.ClassDeclarationContext ctx) {
+        ClassDeclNode classDecl = (ClassDeclNode) map.get(ctx);
+        symbolTable.put(classDecl.getName(), new ClassType(classDecl.getName()));
     }
 }

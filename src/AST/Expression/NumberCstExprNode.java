@@ -8,7 +8,6 @@ public class NumberCstExprNode extends ExprNode {
 
     public NumberCstExprNode(int v) {
         val = v;
-        type = IntType.getInstance();
     }
 
     @Override

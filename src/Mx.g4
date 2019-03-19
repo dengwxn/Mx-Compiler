@@ -8,16 +8,21 @@ program
 declaration
     : functionDeclaration
     | variableDeclaration
+    | classDeclaration
     ;
 
 functionDeclaration
-    : dataType 
-      Identifier '(' (dataType Identifier (',' dataType Identifier)*)? ')' 
+    : dataType Identifier?
+      '(' (dataType Identifier (',' dataType Identifier)*)? ')'
       blockStatement
     ;
 
 variableDeclaration
     : dataType Identifier ('=' expression)? ';'
+    ;
+
+classDeclaration
+    : CLASS Identifier '{' (variableDeclaration | functionDeclaration)* '}'
     ;
 
 blockStatement
@@ -39,8 +44,11 @@ expressionStatement
 
 expression
     : constant                                                # ConstantLiteral
-    | Identifier '(' (expression (',' expression)*)? ')'      # FunctionCall
+    | NEW dataType ('[' expression? ']')+                     # NewArray
+    | expression ('[' expression ']')+                        # Array
     | Identifier                                              # Identifier
+    | expression '(' (expression (',' expression)*)? ')'      # FunctionCall
+    | expression '.' Identifier                               # Member
     | '(' expression ')'                                      # SubExpr
     | expression op=('++'|'--')                               # Suffix
     | <assoc=right> op=('+'|'-'|'~'|'!'|'++'|'--') expression # Prefix
@@ -54,7 +62,7 @@ expression
     | expression op='|' expression                            # Or
     | expression op='&&' expression                           # LogicAnd
     | expression op='||' expression                           # LogicOr
-    | Identifier op='=' expression                            # Assign
+    | expression op='=' expression                            # Assign
     ;
 
 ifStatement
@@ -73,9 +81,11 @@ branchStatement
     ;
 
 dataType
-    : INT  # IntType
-    | BOOL # BoolType
-    | VOID # VoidType
+    : INT              # IntType
+    | BOOL             # BoolType
+    | VOID             # VoidType
+    | dataType '[' ']' # ArrayType
+    | Identifier       # ClassType
     ;
 
 constant

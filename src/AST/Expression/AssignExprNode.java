@@ -1,22 +1,29 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
+import AST.Basic.Type;
 
 public class AssignExprNode extends ExprNode {
-    String ident;
-    ExprNode expr;
+    ExprNode lhs, rhs;
 
-    public AssignExprNode(String i, ExprNode e) {
-        ident = i;
-        expr = e;
+    public AssignExprNode(ExprNode l, ExprNode r) {
+        lhs = l;
+        rhs = r;
+    }
+
+    public Type getLhsType() {
+        return lhs == null ? null : lhs.getType();
+    }
+
+    public Type getRhsType() {
+        return rhs == null ? null : rhs.getType();
     }
 
     @Override
     public void dump(int indent) {
         format(indent);
         System.out.println("=:");
-        format(indent + 4);
-        System.out.println(ident);
-        expr.dump(indent + 4);
+        lhs.dump(indent + 4);
+        rhs.dump(indent + 4);
     }
 }
