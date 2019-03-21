@@ -11,10 +11,10 @@ import static AST.Build.Tree.symbolTable;
 public class ClassListener extends Listener {
     @Override
     public void enterProgram(MxParser.ProgramContext ctx) {
-        symbolTable.put("int", new IntType());
-        symbolTable.put("bool", new BoolType());
-        symbolTable.put("void", new VoidType());
-        symbolTable.put("null", new NullType());
+        symbolTable.put("int", IntType.getInstance());
+        symbolTable.put("bool", BoolType.getInstance());
+        symbolTable.put("void", VoidType.getInstance());
+        symbolTable.put("null", NullType.getInstance());
     }
 
     @Override

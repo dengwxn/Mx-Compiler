@@ -24,6 +24,11 @@ import static AST.Build.Tree.*;
 
 public class ParseListener extends Listener {
     @Override
+    public void enterProgram(MxParser.ProgramContext ctx) {
+        errorAnalyze();
+    }
+
+    @Override
     public void exitProgram(MxParser.ProgramContext ctx) {
         prog = new ProgNode();
         ctx.declaration().forEach(declarationContext -> prog.addDecl((Node) map.get(declarationContext)));
@@ -123,6 +128,37 @@ public class ParseListener extends Listener {
     public void exitExpressionStatement(MxParser.ExpressionStatementContext ctx) {
         ExprNode expr = (ExprNode) map.get(ctx.expression());
         map.put(ctx, new ExprStmtNode(expr));
+    }
+
+    boolean isLegalNewArray(String s) {
+        boolean emptyParam = false;
+        for (int i = 0; i < s.length(); ++i) {
+            if (s.charAt(i) == '[') {
+                if (s.charAt(i + 1) == ']')
+                    emptyParam = true;
+                else if (emptyParam && s.charAt(i + 1) != ']')
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void exitNewArray(MxParser.NewArrayContext ctx) {
+        NewArrayExprNode newArrayExpr = new NewArrayExprNode(ctx.dataType().getText(), ctx.LEFTBRACKET().size());
+        if (!isLegalNewArray(ctx.getText()))
+            addCompileError("expected a valid order to new an array.");
+        else {
+            ctx.expression().forEach(param -> newArrayExpr.addParam((ExprNode) map.get(param)));
+            map.put(ctx, newArrayExpr);
+        }
+    }
+
+    @Override
+    public void exitArray(MxParser.ArrayContext ctx) {
+        ArrayExprNode arrayExpr = new ArrayExprNode(ctx.LEFTBRACKET().size());
+        ctx.expression().forEach(expr -> arrayExpr.addExpr((ExprNode) map.get(expr)));
+        map.put(ctx, arrayExpr);
     }
 
     @Override

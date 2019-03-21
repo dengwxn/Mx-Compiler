@@ -1,21 +1,26 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
+import AST.Type.ArrayType;
 
 public class MemberExprNode extends ExprNode {
-    ExprNode cls;
+    ExprNode root;
     String ident;
 
     public MemberExprNode(ExprNode c, String i) {
-        cls = c;
+        root = c;
         ident = i;
     }
 
     public String getIdent() { return ident; }
 
-    public String getClsName() {
-        if (cls.getType() != null)
-            return cls.getType().getTypeName();
+    public String getClassName() {
+        if (root.getType() != null) {
+            if (root.getType() instanceof ArrayType)
+                return "";
+            else
+                return root.getType().getTypeName();
+        }
         else
             return null;
     }
@@ -25,8 +30,8 @@ public class MemberExprNode extends ExprNode {
 
     @Override
     public void dump(int indent) {
-        if (cls != null) {
-            cls.dump(indent);
+        if (root != null) {
+            root.dump(indent);
             format(indent + 4);
             System.out.printf(".%s\n", ident);
         } else {

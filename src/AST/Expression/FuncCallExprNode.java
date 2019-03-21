@@ -1,6 +1,7 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
+import AST.Basic.Type;
 
 import java.util.ArrayList;
 
@@ -21,11 +22,13 @@ public class FuncCallExprNode extends ExprNode {
 
     public ArrayList<ExprNode> getParam() { return param; }
 
+    public Type getFuncType() { return func == null ? null : func.getType(); }
+
     public String getFuncName() {
         if (func instanceof IdentExprNode) {
             return ((IdentExprNode) func).getIdent();
         } else if (func instanceof MemberExprNode) {
-            return ((MemberExprNode) func).getClsName() + "." + ((MemberExprNode) func).getIdent();
+            return ((MemberExprNode) func).getClassName() + "." + ((MemberExprNode) func).getIdent();
         }
         return null;
     }

@@ -10,6 +10,9 @@ public class ClassType extends Type {
     }
 
     @Override
+    public boolean canOperateWith(Type t) { return false; }
+
+    @Override
     public String getTypeName() {
         return name;
     }

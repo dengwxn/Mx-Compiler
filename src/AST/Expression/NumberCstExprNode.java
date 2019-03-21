@@ -1,7 +1,6 @@
 package AST.Expression;
 
 import AST.Basic.ExprNode;
-import AST.Type.IntType;
 
 public class NumberCstExprNode extends ExprNode {
     int val;
