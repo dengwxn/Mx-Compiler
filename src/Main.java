@@ -20,7 +20,8 @@ public class Main {
 
     private static void buildAST() {
         try {
-            InputStream is = new FileInputStream("./testcase/naive.c");
+            // InputStream is = new FileInputStream("./testcase/naive.c");
+            InputStream is = System.in;
             CharStream input = CharStreams.fromStream(is);
             MxLexer lexer = new MxLexer(input);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
