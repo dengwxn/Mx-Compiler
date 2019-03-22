@@ -24,13 +24,15 @@ public class TypeCheckListener extends Listener {
 
     @Override
     public void exitVariableDeclaration(MxParser.VariableDeclarationContext ctx) {
-        VarDeclStmtNode varDeclStmt = (VarDeclStmtNode) map.get(ctx);
-        Type defType = symbolTable.get(varDeclStmt.getType());
-        if (defType != null) {
-            symbolTable.put(varDeclStmt.getName(), defType);
-            Type exprType = varDeclStmt.getExprType();
-            if (exprType != null && !defType.canOperateWith(exprType))
-                addCompileError(String.format("expected a '%s' type expression.", defType.getTypeName()));
+        if (!symbolTable.inClassDeclScope()) {
+            VarDeclStmtNode varDeclStmt = (VarDeclStmtNode) map.get(ctx);
+            Type defType = symbolTable.get(varDeclStmt.getType());
+            if (defType != null) {
+                symbolTable.put(varDeclStmt.getName(), defType);
+                Type exprType = varDeclStmt.getExprType();
+                if (exprType != null && !defType.canOperateWith(exprType))
+                    addCompileError(String.format("expected a '%s' type expression.", defType.getTypeName()));
+            }
         }
     }
 
@@ -39,6 +41,16 @@ public class TypeCheckListener extends Listener {
         enterNewScope();
         ClassDeclNode classDecl = (ClassDeclNode) map.get(ctx);
         symbolTable.setClassName(classDecl.getName());
+
+        for (VarDeclStmtNode varDecl : classDecl.getVarDecl()) {
+            String varName = classDecl.getName() + "." + varDecl.getName();
+            symbolTable.put(varDecl.getName(), symbolTable.get(varName));
+        }
+
+        for (FuncDeclNode funcDecl : classDecl.getFuncDecl()) {
+            String funcName = classDecl.getName() + "." + funcDecl.getFuncName();
+            symbolTable.put(funcDecl.getFuncName(), symbolTable.get(funcName));
+        }
     }
 
     @Override
@@ -47,19 +59,12 @@ public class TypeCheckListener extends Listener {
         exitCurScope();
     }
 
-    String getFuncName(FuncDeclNode funcDecl) {
-        if (symbolTable.getClassName() == null)
-            return funcDecl.getFuncName();
-        else
-            return symbolTable.getClassName() + "." + funcDecl.getFuncName();
-    }
-
     @Override
     public void enterFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
-        FuncType funcType = (FuncType) symbolTable.get(getFuncName(funcDecl));
+        FuncType funcType = (FuncType) symbolTable.get(funcDecl.getFuncName());
         if (funcDecl.getFuncName() == null) {
-            if (symbolTable.getClassName() == null) {
+            if (!symbolTable.inClassDeclScope()) {
                 addCompileError("expected an identifier of the function name.");
             } else if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
                 addCompileError("an illegal function declaration without a function name.");
@@ -99,6 +104,12 @@ public class TypeCheckListener extends Listener {
     }
 
     @Override
+    public void exitNewType(MxParser.NewTypeContext ctx) {
+        NewTypeExprNode newTypeExpr = (NewTypeExprNode) map.get(ctx);
+        newTypeExpr.setType(symbolTable.get(newTypeExpr.getBase()));
+    }
+
+    @Override
     public void exitArray(MxParser.ArrayContext ctx) {
         ArrayExprNode arrayExpr = (ArrayExprNode) map.get(ctx);
         Type arrayType = arrayExpr.getNameType();
@@ -108,7 +119,7 @@ public class TypeCheckListener extends Listener {
             if (dim > 0)
                 arrayExpr.setType(new ArrayType(base, dim));
             else
-                arrayExpr.setType(symbolTable.get("int"));
+                arrayExpr.setType(base);
         } else
             addCompileError("expected an array type.");
     }
@@ -161,6 +172,15 @@ public class TypeCheckListener extends Listener {
         String name = memberExpr.getRootTypeName() + "." + memberExpr.getIdent();
         Type type = symbolTable.get(name);
         memberExpr.setType(type);
+    }
+
+    @Override
+    public void exitThis(MxParser.ThisContext ctx) {
+        ThisExprNode thisExpr = (ThisExprNode) map.get(ctx);
+        if (symbolTable.getClassName() != null)
+            thisExpr.setType(symbolTable.get(symbolTable.getClassName()));
+        else
+            addCompileError("expected a class scope to obtain 'this'.");
     }
 
     @Override
@@ -283,7 +303,7 @@ public class TypeCheckListener extends Listener {
         ReturnStmtNode returnStmt = (ReturnStmtNode) map.get(ctx);
         Type exprType = returnStmt.getExprType();
         Type retType = symbolTable.getRetType();
-        if (!exprType.canOperateWith(retType))
+        if (!retType.canOperateWith(exprType))
             addCompileError(String.format("expected a '%s' type expression.", retType.getTypeName()));
     }
 }

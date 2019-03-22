@@ -10,7 +10,13 @@ public class ClassType extends Type {
     }
 
     @Override
-    public boolean canOperateWith(Type t) { return false; }
+    public boolean canOperateWith(Type t) {
+        if (t instanceof NullType)
+            return true;
+        else if (t instanceof ClassType)
+            return t.getTypeName().equals(name);
+        return false;
+    }
 
     @Override
     public String getTypeName() {

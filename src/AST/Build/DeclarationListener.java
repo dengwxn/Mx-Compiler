@@ -6,6 +6,7 @@ import AST.Program.ClassDeclNode;
 import AST.Program.FuncDeclNode;
 import AST.Statement.VarDeclStmtNode;
 import AST.Type.FuncType;
+import AST.Type.IntType;
 import Parser.MxParser;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class DeclarationListener extends Listener {
     public void enterClassDeclaration(MxParser.ClassDeclarationContext ctx) {
         ClassDeclNode classDecl = (ClassDeclNode) map.get(ctx);
         symbolTable.setClassName(classDecl.getName());
-        for (VarDeclStmtNode varDecl : classDecl.getVarDecls()) {
+        for (VarDeclStmtNode varDecl : classDecl.getVarDecl()) {
             String varName = classDecl.getName() + "." + varDecl.getName();
             symbolTable.put(varName, symbolTable.get(varDecl.getType()));
         }
@@ -28,11 +29,11 @@ public class DeclarationListener extends Listener {
         symbolTable.setClassName(null);
     }
 
-    String getFuncName(FuncDeclNode funcDecl) {
-        if (symbolTable.getClassName() == null)
-            return funcDecl.getFuncName();
+    String getScopeName() {
+        if (!symbolTable.inClassDeclScope())
+            return "";
         else
-            return symbolTable.getClassName() + "." + funcDecl.getFuncName();
+            return symbolTable.getClassName() + ".";
     }
 
     @Override
@@ -41,7 +42,7 @@ public class DeclarationListener extends Listener {
         Type retType = symbolTable.get(funcDecl.getRetType());
         ArrayList<Type> paramType = new ArrayList<>();
         funcDecl.getParamType().forEach(t -> paramType.add(symbolTable.get(t)));
-        String funcName = getFuncName(funcDecl);
+        String funcName = getScopeName() + funcDecl.getFuncName();
         symbolTable.put(funcName, new FuncType(retType, paramType));
     }
 
@@ -116,8 +117,19 @@ public class DeclarationListener extends Listener {
         symbolTable.put(funcName, new FuncType(retType, paramType));
     }
 
+    boolean isMainValid() {
+        FuncType funcType = (FuncType) symbolTable.get("main");
+        if (funcType == null) return false;
+        if (!(funcType.getRetType() instanceof IntType)) return false;
+        if (funcType.getParamType().size() > 0) return false;
+        return true;
+    }
+
     @Override
     public void exitProgram(MxParser.ProgramContext ctx) {
+        if (!isMainValid())
+            addCompileError("expected a 'int main()' function.");
+
         arraySize();
         stringLength();
         stringSubstring();

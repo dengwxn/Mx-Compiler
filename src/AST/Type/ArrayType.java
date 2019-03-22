@@ -17,7 +17,7 @@ public class ArrayType extends Type {
 
     @Override
     public boolean canOperateWith(Type t) {
-        if (t == NullType.getInstance())
+        if (t instanceof NullType)
             return true;
         if (t instanceof ArrayType)
             return ((ArrayType) t).base.canOperateWith(base) && ((ArrayType) t).dim == dim;

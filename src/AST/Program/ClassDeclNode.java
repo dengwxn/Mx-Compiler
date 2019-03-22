@@ -21,9 +21,9 @@ public class ClassDeclNode extends Node {
         return name;
     }
 
-    public ArrayList<VarDeclStmtNode> getVarDecls() { return varDecl; }
+    public ArrayList<VarDeclStmtNode> getVarDecl() { return varDecl; }
 
-    public ArrayList<FuncDeclNode> getFuncDecls() { return funcDecl; }
+    public ArrayList<FuncDeclNode> getFuncDecl() { return funcDecl; }
 
     public void addVarDecl(VarDeclStmtNode v) { varDecl.add(v); }
 

@@ -8,7 +8,7 @@ public class VoidType extends Type {
     private VoidType() {}
 
     @Override
-    public boolean canOperateWith(Type t) { return t == instance; }
+    public boolean canOperateWith(Type t) { return t == instance || t == null; }
 
     static public Type getInstance() { return instance; }
 

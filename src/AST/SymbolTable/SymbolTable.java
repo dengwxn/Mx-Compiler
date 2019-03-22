@@ -26,7 +26,15 @@ public class SymbolTable {
     }
 
     public String getClassName() {
-        return className;
+        if (className != null)
+            return className;
+        else if (lastScope != null)
+            return lastScope.getClassName();
+        return null;
+    }
+
+    public boolean inClassDeclScope() {
+        return className != null;
     }
 
     public void setClassName(String c) {
@@ -54,6 +62,7 @@ public class SymbolTable {
     }
 
     boolean isArray(String name) {
+        if (name == null) return false;
         return name.indexOf('[') != -1;
     }
 

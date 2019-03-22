@@ -45,9 +45,11 @@ expressionStatement
 expression
     : constant                                                # ConstantLiteral
     | NEW dataType ('[' expression? ']')+                     # NewArray
+    | NEW dataType ('(' ')')?                                 # NewType
     | expression ('[' expression ']')+                        # Array
     | Identifier                                              # Identifier
     | expression '(' (expression (',' expression)*)? ')'      # FunctionCall
+    | THIS                                                    # This
     | expression '.' Identifier                               # Member
     | '(' expression ')'                                      # SubExpr
     | expression op=('++'|'--')                               # Suffix
@@ -140,6 +142,7 @@ RIGHTBRACE: '}';
 
 WHITESPACE: [ \r\n\t]+ -> skip;
 LINECOMMENT: '//' (~[\n\r])* -> skip;
+BLOCKCOMMENT : '/*' .*? '*/' -> skip;
 
 BOOL: 'bool';
 INT: 'int';

@@ -155,6 +155,11 @@ public class ParseListener extends Listener {
     }
 
     @Override
+    public void exitNewType(MxParser.NewTypeContext ctx) {
+        map.put(ctx, new NewTypeExprNode(ctx.dataType().getText()));
+    }
+
+    @Override
     public void exitArray(MxParser.ArrayContext ctx) {
         ArrayExprNode arrayExpr = new ArrayExprNode(ctx.LEFTBRACKET().size());
         ctx.expression().forEach(expr -> arrayExpr.addExpr((ExprNode) map.get(expr)));
@@ -190,6 +195,11 @@ public class ParseListener extends Listener {
     @Override
     public void exitIdentifier(MxParser.IdentifierContext ctx) {
         map.put(ctx, new IdentExprNode(ctx.Identifier().getText()));
+    }
+
+    @Override
+    public void exitThis(MxParser.ThisContext ctx) {
+        map.put(ctx, new ThisExprNode());
     }
 
     @Override
