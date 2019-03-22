@@ -283,6 +283,12 @@ public class ParseListener extends Listener {
     }
 
     @Override
+    public void exitString(MxParser.StringContext ctx) {
+        String str = ctx.StringLiteral().getText();
+        map.put(ctx, new StringCstExprNode(str));
+    }
+
+    @Override
     public void exitBool(MxParser.BoolContext ctx) {
         boolean val = ctx.getText().equals("true");
         map.put(ctx, new BoolCstExprNode(val));

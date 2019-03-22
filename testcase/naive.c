@@ -1,12 +1,19 @@
-class Apple {
-    int [][][] x;
+void hello(int a, int b) {
+    int c = a + b;
+}
 
-    void hello(int [] x) {}
+class Apple {
+    void hello(int a) {}
+}
+
+class Banana {
+    Apple a;
 }
 
 int main() {
     Apple a;
-    a.x = new int [2][5][];
-    int b = a.x.size();
-    a.hello(new int [10]);
+    a.hello(getInt());
+    Banana b;
+    b.a.hello(getInt());
+    return 0;
 }

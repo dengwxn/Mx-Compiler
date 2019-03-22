@@ -15,6 +15,7 @@ public class ClassListener extends Listener {
         symbolTable.put("bool", BoolType.getInstance());
         symbolTable.put("void", VoidType.getInstance());
         symbolTable.put("null", NullType.getInstance());
+        symbolTable.put("string", StringType.getInstance());
     }
 
     @Override

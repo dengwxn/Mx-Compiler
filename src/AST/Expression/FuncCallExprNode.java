@@ -28,7 +28,7 @@ public class FuncCallExprNode extends ExprNode {
         if (func instanceof IdentExprNode) {
             return ((IdentExprNode) func).getIdent();
         } else if (func instanceof MemberExprNode) {
-            return ((MemberExprNode) func).getClassName() + "." + ((MemberExprNode) func).getIdent();
+            return ((MemberExprNode) func).getRootTypeName() + "." + ((MemberExprNode) func).getIdent();
         }
         return null;
     }

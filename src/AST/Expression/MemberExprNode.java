@@ -14,7 +14,7 @@ public class MemberExprNode extends ExprNode {
 
     public String getIdent() { return ident; }
 
-    public String getClassName() {
+    public String getRootTypeName() {
         if (root.getType() != null) {
             if (root.getType() instanceof ArrayType)
                 return "";

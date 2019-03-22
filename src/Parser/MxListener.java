@@ -434,6 +434,18 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitBoolType(MxParser.BoolTypeContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code StringType}
+	 * labeled alternative in {@link MxParser#dataType}.
+	 * @param ctx the parse tree
+	 */
+	void enterStringType(MxParser.StringTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code StringType}
+	 * labeled alternative in {@link MxParser#dataType}.
+	 * @param ctx the parse tree
+	 */
+	void exitStringType(MxParser.StringTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code ClassType}
 	 * labeled alternative in {@link MxParser#dataType}.
 	 * @param ctx the parse tree
@@ -493,4 +505,16 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNumber(MxParser.NumberContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code String}
+	 * labeled alternative in {@link MxParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void enterString(MxParser.StringContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code String}
+	 * labeled alternative in {@link MxParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void exitString(MxParser.StringContext ctx);
 }

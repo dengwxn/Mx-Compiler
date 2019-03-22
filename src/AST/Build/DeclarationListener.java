@@ -5,14 +5,12 @@ import AST.Basic.Type;
 import AST.Program.ClassDeclNode;
 import AST.Program.FuncDeclNode;
 import AST.Statement.VarDeclStmtNode;
-import AST.Type.ClassType;
 import AST.Type.FuncType;
 import Parser.MxParser;
 
 import java.util.ArrayList;
 
-import static AST.Build.Tree.map;
-import static AST.Build.Tree.symbolTable;
+import static AST.Build.Tree.*;
 
 public class DeclarationListener extends Listener {
     @Override
@@ -29,7 +27,7 @@ public class DeclarationListener extends Listener {
     public void exitClassDeclaration(MxParser.ClassDeclarationContext ctx) {
         symbolTable.setClassName(null);
     }
-    
+
     String getFuncName(FuncDeclNode funcDecl) {
         if (symbolTable.getClassName() == null)
             return funcDecl.getFuncName();
@@ -45,5 +43,91 @@ public class DeclarationListener extends Listener {
         funcDecl.getParamType().forEach(t -> paramType.add(symbolTable.get(t)));
         String funcName = getFuncName(funcDecl);
         symbolTable.put(funcName, new FuncType(retType, paramType));
+    }
+
+    void mainPrint() {
+        Type retType = symbolTable.get("void");
+        ArrayList<Type> paramType = new ArrayList<>();
+        paramType.add(symbolTable.get("string"));
+        String funcName = "print";
+        symbolTable.put(funcName, new FuncType(retType, paramType));
+    }
+
+    void mainPrintln() {
+        Type retType = symbolTable.get("void");
+        ArrayList<Type> paramType = new ArrayList<>();
+        paramType.add(symbolTable.get("string"));
+        String funcName = "println";
+        symbolTable.put(funcName, new FuncType(retType, paramType));
+    }
+
+    void mainGetString() {
+        Type retType = symbolTable.get("string");
+        String funcName = "getString";
+        symbolTable.put(funcName, new FuncType(retType));
+    }
+
+    void mainGetInt() {
+        Type retType = symbolTable.get("int");
+        String funcName = "getInt";
+        symbolTable.put(funcName, new FuncType(retType));
+    }
+
+    void mainToString() {
+        Type retType = symbolTable.get("string");
+        ArrayList<Type> paramType = new ArrayList<>();
+        paramType.add(symbolTable.get("int"));
+        String funcName = "toString";
+        symbolTable.put(funcName, new FuncType(retType, paramType));
+    }
+
+    void arraySize() {
+        Type retType = symbolTable.get("int");
+        String funcName = ".size";
+        symbolTable.put(funcName, new FuncType(retType));
+    }
+
+    void stringLength() {
+        Type retType = symbolTable.get("int");
+        String funcName = "string.length";
+        symbolTable.put(funcName, new FuncType(retType));
+    }
+
+    void stringSubstring() {
+        Type retType = symbolTable.get("string");
+        String funcName = "string.substring";
+        ArrayList<Type> paramType = new ArrayList<>();
+        paramType.add(symbolTable.get("int"));
+        paramType.add(symbolTable.get("int"));
+        symbolTable.put(funcName, new FuncType(retType, paramType));
+    }
+
+    void stringParseInt() {
+        Type retType = symbolTable.get("int");
+        String funcName = "string.parseInt";
+        symbolTable.put(funcName, new FuncType(retType));
+    }
+
+    void stringOrd() {
+        Type retType = symbolTable.get("int");
+        String funcName = "string.ord";
+        ArrayList<Type> paramType = new ArrayList<>();
+        paramType.add(symbolTable.get("int"));
+        symbolTable.put(funcName, new FuncType(retType, paramType));
+    }
+
+    @Override
+    public void exitProgram(MxParser.ProgramContext ctx) {
+        arraySize();
+        stringLength();
+        stringSubstring();
+        stringParseInt();
+        stringOrd();
+
+        mainPrint();
+        mainPrintln();
+        mainGetString();
+        mainGetInt();
+        mainToString();
     }
 }

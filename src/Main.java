@@ -34,7 +34,6 @@ public class Main {
             walker.walk(new ParseListener(), tree);
             walker.walk(new ClassListener(), tree);
             walker.walk(new DeclarationListener(), tree);
-            walker.walk(new BuiltInListener(), tree);
             walker.walk(new TypeCheckListener(), tree);
             Tree.dump();
         } catch (IOException e) {

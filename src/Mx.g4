@@ -86,15 +86,18 @@ dataType
     | VOID             # VoidType
     | dataType '[' ']' # ArrayType
     | Identifier       # ClassType
+    | STRING           # StringType
     ;
 
 constant
     : NULL           # Null
     | (TRUE | FALSE) # Bool
     | (Number)       # Number
+    | StringLiteral  # String
     ;
 
 // Tokens
+StringLiteral: '"' ('\\' [btnr"\\] | .)*? '"';
 MUL: '*';
 DIV: '/';
 ADD: '+';
