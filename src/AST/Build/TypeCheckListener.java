@@ -79,7 +79,8 @@ public class TypeCheckListener extends Listener {
             }
         }
         enterScope();
-        symbolTable.setRetType(funcType.getRetType());
+        if (funcDecl.getFuncName() != null)
+            symbolTable.setRetType(funcType.getRetType());
         ArrayList<String> paramType = funcDecl.getParamType();
         ArrayList<String> paramName = funcDecl.getParamName();
         for (int i = 0; i < paramName.size(); ++i)
@@ -244,6 +245,8 @@ public class TypeCheckListener extends Listener {
         suffixExpr.setType(suffixExpr.getExprType());
         if (!symbolTable.get("int").canOperateWith(suffixExpr.getExprType()))
             addCompileError("expect a 'int' type expression.");
+        else if (!suffixExpr.getExpr().isLeftValue())
+            addCompileError("expect a l-value expression.");
     }
 
     @Override
@@ -425,6 +428,7 @@ public class TypeCheckListener extends Listener {
         if (retType != null) {
             if (!retType.canOperateWith(exprType))
                 addCompileError(String.format("expect a '%s' type expression.", retType.getTypeName()));
-        }
+        } else if (exprType != null)
+            addCompileError("expected no value returned in a class constructor.");
     }
 }

@@ -12,6 +12,8 @@ public class SuffixExprNode extends ExprNode {
         expr = e;
     }
 
+    public ExprNode getExpr() { return expr; }
+
     public Type getExprType() { return expr == null ? null : expr.getType(); }
 
     @Override

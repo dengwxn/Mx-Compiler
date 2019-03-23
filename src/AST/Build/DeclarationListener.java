@@ -39,7 +39,7 @@ public class DeclarationListener extends Listener {
     @Override
     public void enterFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
-        Type retType = symbolTable.get(funcDecl.getRetType());
+        Type retType = typeTable.get(funcDecl.getRetType());
         ArrayList<Type> paramType = new ArrayList<>();
         funcDecl.getParamType().forEach(t -> paramType.add(typeTable.get(t)));
         String funcName = getScopeName() + funcDecl.getFuncName();

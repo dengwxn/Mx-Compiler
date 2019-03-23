@@ -36,8 +36,8 @@ public class FuncCallExprNode extends ExprNode {
     @Override
     public void dump(int indent) {
         func.dump(indent);
-        format(indent + 8);
+        format(indent + 4);
         System.out.printf("%s():\n", getFuncName());
-        param.forEach(p -> p.dump(indent + 8));
+        param.forEach(p -> p.dump(indent + 4));
     }
 }
