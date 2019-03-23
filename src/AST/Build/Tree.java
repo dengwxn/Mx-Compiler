@@ -1,7 +1,7 @@
 package AST.Build;
 
 import AST.Program.ProgNode;
-import AST.SymbolTable.SymbolTable;
+import AST.Table.*;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 public class Tree {
@@ -9,12 +9,20 @@ public class Tree {
     static ProgNode prog;
     static ParseTreeProperty<Object> map = new ParseTreeProperty<>();
     static SymbolTable symbolTable = new SymbolTable(null);
+    static TypeTable typeTable = new TypeTable();
+    static int loopCount;
 
-    static void enterNewScope() {
+    static public void enterLoop() { ++loopCount; }
+
+    static public void exitLoop() { --loopCount; }
+
+    static public int getLoopCount() { return loopCount; }
+
+    static void enterScope() {
         symbolTable = new SymbolTable(symbolTable);
     }
 
-    static void exitCurScope() {
+    static void exitScope() {
         symbolTable = symbolTable.getLastScope();
     }
 

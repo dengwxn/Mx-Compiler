@@ -16,6 +16,11 @@ public class PrefixExprNode extends ExprNode {
 
     public String getOp() { return op; }
 
+    public ExprNode getExpr() { return expr; }
+
+    @Override
+    public boolean isLeftValue() { return op.equals("++") || op.equals("--"); }
+
     @Override
     public void dump(int indent) {
         format(indent);

@@ -1,4 +1,4 @@
-package AST.SymbolTable;
+package AST.Table;
 
 import AST.Basic.Type;
 import AST.Type.ArrayType;

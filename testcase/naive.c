@@ -1,133 +1,66 @@
-bool check(int a, int N) {
-    return ((a < N) && (a >= 0));
+string miracle = "\"orange________\"";
+
+class moment_ring
+{
+	string[] singers;
+	string lryics;
+	void init()
+	{
+		this.singers = new string[9];
+		lryics = "kii te yo ima no kimochi wa\nsouda na souda na katari kirenai\n...";
+	}
 }
 
-int main() {
-    int N;
-    int head;
-	int startx;
-	int starty;
-    int targetx;
-	int targety;
-	int tail;
-	int ok;
-	int now;
-    int x;
-	int y;
-    int[] xlist;
-	int[] ylist;
-    int[][] step;
-    int i;
-	int j;
+int depth;
 
-    N = getInt();
-    head = 0;tail = 0;startx = 0;starty = 0;
-    targetx = 0;targety  = N - 1;
-    x = 0;y = 0;
-    now = 0;ok = 0;
-    xlist = new int[N * N];
-    for (i = 0; i < N * N; i = i ++ )
-        xlist[i] = 0;
-    ylist = new int[N * N];
-    for (i = 0; i < N * N; i = i ++ )
-        ylist[i] = 0;
-    step = new int[N][];
-    for (i = 0; i < N; i =  i ++ ) {
-		step[i] = new int[N];
-        for (j = 0; j < N; j = j ++ )
-        step[i][j] = -1;
-    }
-    xlist[0] = startx;
-    ylist[0] = starty;
-    step[startx][starty] == 0;
-    while (head <= tail)
-    {
-        now = step[xlist[head]][ylist[head]];
-        x = xlist[head] - 1;
-        y = ylist[head] - 2;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] - 1;
-        y = ylist[head] + 2;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] + 1;
-        y = ylist[head] - 2;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] + 1;
-        y = ylist[head] + 2;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] - 2;
-        y = ylist[head] - 1;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] - 2;
-        y = ylist[head] + 1;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] + 2;
-        y = ylist[head] - 1;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] + 2;
-        y = ylist[head] + 1;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        if (ok == 1) break;
-        head = head + 1;
-    }
-    if (ok == 1) println(toString(step[targetx][targety]));
-    else print("no solution!\n");
-    return 0;
+void another_fun()
+{
+	moment_ring song;
+	song.init();
+	depth--;
+	if(depth > 0)
+		another_fun();
+	else
+		//fun();
+		fun(2017);
 }
 
+class test
+{
+	string txt;
+	test init()
+	{
+		txt = "you should pass this one";
+		return this;
+	}
+	test init2(test t)
+	{
+		t.txt = "TAT";
+		this.txt = t.txt;
+		return t;
+	}
+}
+
+int main()
+{
+	int a;
+	{
+		int a = 0;
+		println(toString(a));
+	}
+	a = 1;
+	test nico;
+	println(nico.init().txt);
+	println(toString(nico.init().txt.ord(0)));
+	depth = 3;
+	another_fun();
+	;
+	return toString(fun(10).ord(0)).ord(0);
+}
+
+string fun(int pos)
+{
+	if(pos < 0)
+		return "";
+	return fun(pos - 1) + toString(miracle.ord(pos));
+}

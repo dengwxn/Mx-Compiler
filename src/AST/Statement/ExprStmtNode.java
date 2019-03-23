@@ -12,6 +12,7 @@ public class ExprStmtNode extends StmtNode {
 
     @Override
     public void dump(int indent) {
-        expr.dump(indent);
+        if (expr != null)
+            expr.dump(indent);
     }
 }
