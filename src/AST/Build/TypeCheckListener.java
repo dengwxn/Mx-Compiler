@@ -102,11 +102,17 @@ public class TypeCheckListener extends Listener {
     }
 
     @Override
+    public void enterIfStatement(MxParser.IfStatementContext ctx) {
+        enterScope();
+    }
+
+    @Override
     public void exitIfStatement(MxParser.IfStatementContext ctx) {
         IfStmtNode ifStmt = (IfStmtNode) map.get(ctx);
         ExprNode condExpr = ifStmt.getCondExpr();
         if (!(condExpr.getType() instanceof BoolType))
             addCompileError("expect a 'bool' type expression in the if-condition.");
+        exitScope();
     }
 
     @Override
