@@ -4,34 +4,36 @@ import AST.Basic.ExprNode;
 import AST.Basic.StmtNode;
 
 public class ForStmtNode extends StmtNode {
-    ExprNode init, cond, incr;
+    ExprNode initExpr, condExpr, incrExpr;
     StmtNode thenStmt;
 
     public ForStmtNode(ExprNode it, ExprNode cn, ExprNode ic, StmtNode t) {
-        init = it;
-        cond = cn;
-        incr = ic;
+        initExpr = it;
+        condExpr = cn;
+        incrExpr = ic;
         thenStmt = t;
     }
+
+    public ExprNode getCondExpr() { return condExpr; }
 
     @Override
     public void dump(int indent) {
         format(indent);
         System.out.println("for:");
-        if (init != null) {
+        if (initExpr != null) {
             format(indent + 4);
             System.out.println("init:");
-            init.dump(indent + 8);
+            initExpr.dump(indent + 8);
         }
-        if (cond != null) {
+        if (condExpr != null) {
             format(indent + 4);
             System.out.println("cond:");
-            cond.dump(indent + 8);
+            condExpr.dump(indent + 8);
         }
-        if (incr != null) {
+        if (incrExpr != null) {
             format(indent + 4);
             System.out.println("incr:");
-            incr.dump(indent + 8);
+            incrExpr.dump(indent + 8);
         }
         format(indent + 4);
         System.out.println("then:");

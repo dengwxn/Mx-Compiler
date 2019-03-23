@@ -77,10 +77,10 @@ public class ParseListener extends Listener {
 
     @Override
     public void exitIfStatement(MxParser.IfStatementContext ctx) {
-        ExprNode ifExpr = (ExprNode) map.get(ctx.expression());
+        ExprNode condExpr = (ExprNode) map.get(ctx.expression());
         StmtNode thenStmt = (StmtNode) map.get(ctx.statement(0));
         StmtNode elseStmt = (StmtNode) map.get(ctx.statement(1));
-        map.put(ctx, new IfStmtNode(ifExpr, thenStmt, elseStmt));
+        map.put(ctx, new IfStmtNode(condExpr, thenStmt, elseStmt));
     }
 
     @Override
@@ -147,7 +147,7 @@ public class ParseListener extends Listener {
     public void exitNewArray(MxParser.NewArrayContext ctx) {
         NewArrayExprNode newArrayExpr = new NewArrayExprNode(ctx.dataType().getText(), ctx.LEFTBRACKET().size());
         if (!isLegalNewArray(ctx.getText()))
-            addCompileError("expected a valid order to new an array.");
+            addCompileError("expect a valid order to new an array.");
         else {
             ctx.expression().forEach(param -> newArrayExpr.addParam((ExprNode) map.get(param)));
             map.put(ctx, newArrayExpr);

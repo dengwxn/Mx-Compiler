@@ -128,7 +128,7 @@ public class DeclarationListener extends Listener {
     @Override
     public void exitProgram(MxParser.ProgramContext ctx) {
         if (!isMainValid())
-            addCompileError("expected a 'int main()' function.");
+            addCompileError("expect a 'int main()' function.");
 
         arraySize();
         stringLength();

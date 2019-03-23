@@ -5,11 +5,16 @@ import AST.Basic.Listener;
 import AST.Basic.Type;
 import AST.Branch.ReturnStmtNode;
 import AST.Expression.*;
+import AST.Loop.ForStmtNode;
+import AST.Loop.WhileStmtNode;
 import AST.Program.ClassDeclNode;
 import AST.Program.FuncDeclNode;
+import AST.Statement.IfStmtNode;
 import AST.Statement.VarDeclStmtNode;
 import AST.Type.ArrayType;
+import AST.Type.BoolType;
 import AST.Type.FuncType;
+import AST.Type.VoidType;
 import Parser.MxParser;
 
 import java.util.ArrayList;
@@ -31,7 +36,7 @@ public class TypeCheckListener extends Listener {
                 symbolTable.put(varDeclStmt.getName(), defType);
                 Type exprType = varDeclStmt.getExprType();
                 if (exprType != null && !defType.canOperateWith(exprType))
-                    addCompileError(String.format("expected a '%s' type expression.", defType.getTypeName()));
+                    addCompileError(String.format("expect a '%s' type expression.", defType.getTypeName()));
             }
         }
     }
@@ -65,7 +70,7 @@ public class TypeCheckListener extends Listener {
         FuncType funcType = (FuncType) symbolTable.get(funcDecl.getFuncName());
         if (funcDecl.getFuncName() == null) {
             if (!symbolTable.inClassDeclScope()) {
-                addCompileError("expected an identifier of the function name.");
+                addCompileError("expect an identifier of the function name.");
             } else if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
                 addCompileError("an illegal function declaration without a function name.");
             }
@@ -94,13 +99,37 @@ public class TypeCheckListener extends Listener {
     }
 
     @Override
+    public void exitIfStatement(MxParser.IfStatementContext ctx) {
+        IfStmtNode ifStmt = (IfStmtNode) map.get(ctx);
+        ExprNode condExpr = ifStmt.getCondExpr();
+        if (!(condExpr.getType() instanceof BoolType))
+            addCompileError("expected a 'bool' type expression in the if-condition.");
+    }
+
+    @Override
+    public void exitFor(MxParser.ForContext ctx) {
+        ForStmtNode forStmt = (ForStmtNode) map.get(ctx);
+        ExprNode condExpr = forStmt.getCondExpr();
+        if (!(condExpr.getType() instanceof BoolType))
+            addCompileError("expected a 'bool' type expression in the for-condition.");
+    }
+
+    @Override
+    public void exitWhile(MxParser.WhileContext ctx) {
+        WhileStmtNode whileStmt = (WhileStmtNode) map.get(ctx);
+        ExprNode condExpr = whileStmt.getCondExpr();
+        if (!(condExpr.getType() instanceof BoolType))
+            addCompileError("expected a 'bool' type expression in the while-condition.");
+    }
+
+    @Override
     public void exitNewArray(MxParser.NewArrayContext ctx) {
         NewArrayExprNode newArrayExpr = (NewArrayExprNode) map.get(ctx);
         Type baseType = symbolTable.get(newArrayExpr.getBase());
         if (!(baseType instanceof ArrayType))
             newArrayExpr.setType(new ArrayType(baseType, newArrayExpr.getDim()));
         else
-            addCompileError("expected a valid type to new an array.");
+            addCompileError("expect a valid type to new an array.");
     }
 
     @Override
@@ -121,7 +150,7 @@ public class TypeCheckListener extends Listener {
             else
                 arrayExpr.setType(base);
         } else
-            addCompileError("expected an array type.");
+            addCompileError("expect an array type.");
     }
 
     @Override
@@ -134,14 +163,16 @@ public class TypeCheckListener extends Listener {
                 ArrayList<ExprNode> param = funcCallExpr.getParam();
                 ArrayList<Type> paramType = funcType.getParamType();
                 if (param.size() != paramType.size()) {
-                    addCompileError(String.format("expected %d parameter(s).", paramType.size()));
+                    addCompileError(String.format("expect %d parameter(s).", paramType.size()));
                     return;
                 }
                 for (int i = 0; i < param.size(); ++i) {
                     if (!paramType.get(i).canOperateWith(param.get(i).getType()))
-                        addCompileError(String.format("expected a '%s' type parameter.", paramType.get(i).getTypeName()));
+                        addCompileError(String.format("expect a '%s' type parameter.", paramType.get(i).getTypeName()));
                 }
             }
+        } else if (funcCallExpr.getFuncType() != null) {
+            addCompileError(String.format("Identifier '%s' not defined to be a function call.", funcCallExpr.getFuncName()));
         }
     }
 
@@ -151,10 +182,10 @@ public class TypeCheckListener extends Listener {
         prefixExpr.setType(prefixExpr.getExprType());
         if (prefixExpr.getOp().equals("!")) {
             if (!symbolTable.get("bool").canOperateWith(prefixExpr.getExprType()))
-                addCompileError("expected a 'bool' type expression.");
+                addCompileError("expect a 'bool' type expression.");
         } else {
             if (!symbolTable.get("int").canOperateWith(prefixExpr.getExprType()))
-                addCompileError("expected a 'int' type expression.");
+                addCompileError("expect a 'int' type expression.");
         }
     }
 
@@ -163,7 +194,7 @@ public class TypeCheckListener extends Listener {
         SuffixExprNode suffixExpr = (SuffixExprNode) map.get(ctx);
         suffixExpr.setType(suffixExpr.getExprType());
         if (!symbolTable.get("int").canOperateWith(suffixExpr.getExprType()))
-            addCompileError("expected a 'int' type expression.");
+            addCompileError("expect a 'int' type expression.");
     }
 
     @Override
@@ -180,7 +211,7 @@ public class TypeCheckListener extends Listener {
         if (symbolTable.getClassName() != null)
             thisExpr.setType(symbolTable.get(symbolTable.getClassName()));
         else
-            addCompileError("expected a class scope to obtain 'this'.");
+            addCompileError("expect a class scope to obtain 'this'.");
     }
 
     @Override
@@ -194,20 +225,25 @@ public class TypeCheckListener extends Listener {
         Type lhsExprType = binaryExpr.getLhsType();
         Type rhsExprType = binaryExpr.getRhsType();
         if (!lhsExprType.canOperateWith(rhsExprType)) {
-            addCompileError("expected two expressions of same type.");
+            addCompileError("expect two expressions of same type.");
         } else if (op.equals("==") || op.equals("!=")) {
             binaryExpr.setType(symbolTable.get("bool"));
+        } else if  (op.equals("<") || op.equals("<=") || op.equals(">") || op.equals(">=")) {
+            binaryExpr.setType(symbolTable.get("bool"));
+            if (!symbolTable.get("int").canOperateWith(lhsExprType)
+                    && !symbolTable.get("string").canOperateWith(lhsExprType))
+                addCompileError("expect two expressions of 'int' or 'string' type.");
         } else if (op.equals("&&") || op.equals("||")) {
             binaryExpr.setType(symbolTable.get("bool"));
             if (!symbolTable.get("bool").canOperateWith(lhsExprType))
-                addCompileError("expected a 'bool' type expression.");
+                addCompileError("expect a 'bool' type expression.");
         } else {
             if (symbolTable.get("int").canOperateWith(lhsExprType))
                 binaryExpr.setType(symbolTable.get("int"));
             else if (symbolTable.get("string").canOperateWith(lhsExprType))
                 binaryExpr.setType(symbolTable.get("string"));
             else
-                addCompileError("expected two expressions of int type or string type.");
+                addCompileError("expect two expressions of int type or string type.");
         }
     }
 
@@ -267,10 +303,13 @@ public class TypeCheckListener extends Listener {
         if (assignExpr == null) return;
         Type lhsType = assignExpr.getLhsType();
         Type rhsType = assignExpr.getRhsType();
-        if (lhsType != null) {
-            assignExpr.setType(rhsType);
+        if (!(lhsType instanceof VoidType)) {
             if (!lhsType.canOperateWith(rhsType))
-                addCompileError(String.format("expected a '%s' type expression on the right.", lhsType.getTypeName()));
+                addCompileError(String.format("expect a '%s' type expression on the right.", lhsType.getTypeName()));
+            else
+                assignExpr.setType(lhsType);
+        } else {
+            addCompileError("the left hand side must not be 'void' type.");
         }
     }
 
@@ -304,6 +343,6 @@ public class TypeCheckListener extends Listener {
         Type exprType = returnStmt.getExprType();
         Type retType = symbolTable.getRetType();
         if (!retType.canOperateWith(exprType))
-            addCompileError(String.format("expected a '%s' type expression.", retType.getTypeName()));
+            addCompileError(String.format("expect a '%s' type expression.", retType.getTypeName()));
     }
 }
