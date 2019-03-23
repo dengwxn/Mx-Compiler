@@ -20,7 +20,7 @@ public class DeclarationListener extends Listener {
         symbolTable.setClassName(classDecl.getName());
         for (VarDeclStmtNode varDecl : classDecl.getVarDecl()) {
             String varName = classDecl.getName() + "." + varDecl.getName();
-            symbolTable.put(varName, symbolTable.get(varDecl.getType()));
+            symbolTable.put(varName, typeTable.get(varDecl.getType()));
         }
     }
 
@@ -41,7 +41,7 @@ public class DeclarationListener extends Listener {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
         Type retType = symbolTable.get(funcDecl.getRetType());
         ArrayList<Type> paramType = new ArrayList<>();
-        funcDecl.getParamType().forEach(t -> paramType.add(symbolTable.get(t)));
+        funcDecl.getParamType().forEach(t -> paramType.add(typeTable.get(t)));
         String funcName = getScopeName() + funcDecl.getFuncName();
         symbolTable.put(funcName, new FuncType(retType, paramType));
     }

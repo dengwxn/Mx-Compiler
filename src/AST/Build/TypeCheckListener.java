@@ -204,8 +204,10 @@ public class TypeCheckListener extends Listener {
                     return;
                 }
                 for (int i = 0; i < param.size(); ++i) {
-                    if (!paramType.get(i).canOperateWith(param.get(i).getType()))
-                        addCompileError(String.format("expect a '%s' type parameter.", paramType.get(i).getTypeName()));
+                    if (paramType.get(i) != null) {
+                        if (!paramType.get(i).canOperateWith(param.get(i).getType()))
+                            addCompileError(String.format("expect a '%s' type parameter.", paramType.get(i).getTypeName()));
+                    }
                 }
             }
         } else if (funcCallExpr.getFuncType() != null) {

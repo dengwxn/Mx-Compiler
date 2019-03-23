@@ -1,132 +1,108 @@
-bool check(int a, int N) {
-    return ((a < N) && (a >= 0));
+class vector{
+	int[] data;
+	void init(int[] vec){
+		// init the vector from an array
+		if (vec == null) return;
+		data = new int[vec.size()];
+		int i;
+		for (i = 0; i < vec.size(); ++i)
+		{
+			data[i] = vec[i];
+		}
+	}
+
+	int getDim(){
+		if (data == null) return 0;
+		return data.size();
+	}
+
+	int dot(vector rhs){
+		int i = 0;
+		int result = 0;
+		while(i < getDim()){
+			//result = data[i] * rhs[i];
+			result = data[i] * rhs.data[i];
+			++i;
+		}
+		return result;
+	}
+
+	vector scalarInPlaceMultiply(int c){
+		if (data == null) return null;
+		int i;
+		for (i = 0; i < getDim(); ++i) {
+			this.data[i] = c * this.data[i];
+		}
+		return this;
+	}
+
+	vector add(vector rhs){
+		if (getDim() != rhs.getDim() || getDim() == 0)
+			return null;
+		//int[] temp = new int[getDim()];
+		vector temp = new vector;
+		int i;
+		for (i = 0; i < getDim(); ++i){
+			temp.data[i] = data[i] + rhs.data[i];
+		}
+		return temp;
+	}
+
+	bool set(int idx, int value){
+		if (getDim() < idx) return false;
+		data[idx] = value;
+		return true;
+	}
+
+	string toString(){
+		string temp = "( ";
+		if (getDim() > 0) {
+			temp = temp + toString();
+		}
+		int i;
+		for (i = 1; i < getDim(); ++i) {
+			temp = temp + ", " + toString();
+		}
+		temp = temp + " )";
+		return temp;
+	}
+
+	bool copy(vector rhs){
+		if (rhs == null) return false;
+		if (rhs.getDim() == 0) {
+			data = null;
+		} else {
+			data = new int[rhs.getDim()];
+			int i;
+			for (i = 0; i < getDim(); ++i) {
+				data[i] = rhs.data[i];
+			}
+		}
+		return true;
+	}
 }
 
-int main() {
-    int N;
-    int head;
-	int startx;
-	int starty;
-    int targetx;
-	int targety;
-	int tail;
-	int ok;
-	int now;
-    int x;
-	int y;
-    int[] xlist;
-	int[] ylist;
-    int[][] step;
-    int i;
-	int j;
-
-    N = getInt();
-    head = 0;tail = 0;startx = 0;starty = 0;
-    targetx = 0;targety  = N - 1;
-    x = 0;y = 0;
-    now = 0;ok = 0;
-    xlist = new int[N * N];
-    for (i = 0; i < N * N; i = i ++ )
-        xlist[i] = 0;
-    ylist = new int[N * N];
-    for (i = 0; i < N * N; i = i ++ )
-        ylist[i] = 0;
-    step = new int[N][];
-    for (i = 0; i < N; i =  i ++ ) {
-		step[i] = new int[N];
-        for (j = 0; j < N; j = j ++ )
-        step[i][j] = -1;
-    }
-    xlist[0] = startx;
-    ylist[0] = starty;
-    step[startx][starty] == 0;
-    while (head <= tail)
-    {
-        now = step[xlist[head]][ylist[head]];
-        x = xlist[head] - 1;
-        y = ylist[head] - 2;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] - 1;
-        y = ylist[head] + 2;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] + 1;
-        y = ylist[head] - 2;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] + 1;
-        y = ylist[head] + 2;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] - 2;
-        y = ylist[head] - 1;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] - 2;
-        y = ylist[head] + 1;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] + 2;
-        y = ylist[head] - 1;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        x = xlist[head] + 2;
-        y = ylist[head] + 1;
-        if (check(x, N) && check(y, N) && step[x][y] == -1)
-        {
-            tail = tail + 1;
-            xlist[tail] = x;
-            ylist[tail] = y;
-            step[x][y] = now + 1;
-            if (x == targetx && y == targety) ok = 1;
-        }
-        if (ok == 1) break;
-        head = head + 1;
-    }
-    if (ok == 1) println(toString(step[targetx][targety]));
-    else print("no solution!\n");
-    return 0;
+int main(){
+	vector x = new vector;
+	int[] a = new int[10];
+	int i;
+	for (i = 0; i < 10; ++i){
+		a[i] = 9 - i;
+	}
+	x.init(a);
+	print("vector x: ");
+	println(x.toString());
+	vector y = new vector;
+	y.copy(x);
+	if (y.set(3, 817)){
+		println("excited!");
+	}
+	print("vector y: ");
+	println(y.toString());
+	print("x + y: ");
+	println((x.add(y)).toString());
+	print("x * y: ");
+	println(toString(x.dot(y)));
+	print("(1 << 3) * y: ");
+	println(x.scalarInPlaceMultiply(1 << 3).toString());
 }

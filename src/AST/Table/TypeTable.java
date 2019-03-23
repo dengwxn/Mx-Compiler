@@ -11,12 +11,10 @@ public class TypeTable {
     HashMap<String, Type> hashMap = new HashMap<>();
 
     public void put(String name, Type type) {
-        if (hashMap.containsKey(name)) {
-            Type t = get(name);
+        if (hashMap.containsKey(name))
             addCompileError(String.format("ambiguous redefinition on type '%s'.", name));
-        } else {
+        else
             hashMap.put(name, type);
-        }
     }
 
     boolean isArray(String name) {
