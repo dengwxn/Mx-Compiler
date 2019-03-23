@@ -61,31 +61,12 @@ public class SymbolTable {
         }
     }
 
-    boolean isArray(String name) {
-        if (name == null) return false;
-        return name.indexOf('[') != -1;
-    }
-
-    String arrayBase(String name) {
-        return name.substring(0, name.indexOf('['));
-    }
-
-    int arrayDim(String name) {
-        return (name.length() - name.indexOf('[')) / 2;
-    }
-
     public Type get(String name) {
-        if (isArray(name)) {
-            Type base = get(arrayBase(name));
-            int dim = arrayDim(name);
-            return new ArrayType(base, dim);
-        } else {
-            if (hashMap.containsKey(name))
-                return hashMap.get(name);
-            else if (lastScope != null)
-                return lastScope.get(name);
-            addCompileError(String.format("identifier '%s' not defined.", name));
-            return null;
-        }
+        if (hashMap.containsKey(name))
+            return hashMap.get(name);
+        else if (lastScope != null)
+            return lastScope.get(name);
+        addCompileError(String.format("identifier '%s' not defined.", name));
+        return null;
     }
 }

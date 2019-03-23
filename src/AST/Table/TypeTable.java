@@ -1,6 +1,7 @@
 package AST.Table;
 
 import AST.Basic.Type;
+import AST.Type.ArrayType;
 
 import java.util.HashMap;
 
@@ -18,10 +19,29 @@ public class TypeTable {
         }
     }
 
+    boolean isArray(String name) {
+        if (name == null) return false;
+        return name.indexOf('[') != -1;
+    }
+
+    String arrayBase(String name) {
+        return name.substring(0, name.indexOf('['));
+    }
+
+    int arrayDim(String name) {
+        return (name.length() - name.indexOf('[')) / 2;
+    }
+
     public Type get(String name) {
-        if (hashMap.containsKey(name))
-            return hashMap.get(name);
-        addCompileError(String.format("type '%s' not defined.", name));
-        return null;
+        if (isArray(name)) {
+            Type base = get(arrayBase(name));
+            int dim = arrayDim(name);
+            return new ArrayType(base, dim);
+        } else {
+            if (hashMap.containsKey(name))
+                return hashMap.get(name);
+            addCompileError(String.format("identifier '%s' not defined.", name));
+            return null;
+        }
     }
 }

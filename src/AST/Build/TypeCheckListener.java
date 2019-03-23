@@ -264,12 +264,14 @@ public class TypeCheckListener extends Listener {
     void exitBinaryExpression(BinaryExprNode binaryExpr, Type base) {
         Type lhsExprType = binaryExpr.getLhsType();
         Type rhsExprType = binaryExpr.getRhsType();
-        if (!lhsExprType.canOperateWith(rhsExprType))
-            addCompileError("expect two expressions of same type.");
-        else if (base.canOperateWith(lhsExprType))
-            binaryExpr.setType(base);
-        else
-            addCompileError(String.format("expect two expressions of '%s' type.", base.getTypeName()));
+        if (lhsExprType != null) {
+            if (!lhsExprType.canOperateWith(rhsExprType))
+                addCompileError("expect two expressions of same type.");
+            else if (base.canOperateWith(lhsExprType))
+                binaryExpr.setType(base);
+            else
+                addCompileError(String.format("expect two expressions of '%s' type.", base.getTypeName()));
+        }
     }
 
     @Override
@@ -282,19 +284,21 @@ public class TypeCheckListener extends Listener {
         BinaryExprNode binaryExpr = (BinaryExprNode) map.get(ctx);
         Type lhsExprType = binaryExpr.getLhsType();
         Type rhsExprType = binaryExpr.getRhsType();
-        if (!lhsExprType.canOperateWith(rhsExprType)) {
-            addCompileError("expect two expressions of same type.");
-        } else {
-            if (symbolTable.get("string").canOperateWith(lhsExprType)) {
-                if (ctx.op.getText().equals("+")) {
-                    binaryExpr.setType(symbolTable.get("string"));
-                } else {
-                    addCompileError("two string expressions can not take the '-' operation.");
-                }
-            } else if (symbolTable.get("int").canOperateWith(lhsExprType)) {
-                binaryExpr.setType(symbolTable.get("int"));
+        if (lhsExprType != null) {
+            if (!lhsExprType.canOperateWith(rhsExprType)) {
+                addCompileError("expect two expressions of same type.");
             } else {
-                addCompileError("expect two expressions of int type.");
+                if (symbolTable.get("string").canOperateWith(lhsExprType)) {
+                    if (ctx.op.getText().equals("+")) {
+                        binaryExpr.setType(symbolTable.get("string"));
+                    } else {
+                        addCompileError("two string expressions can not take the '-' operation.");
+                    }
+                } else if (symbolTable.get("int").canOperateWith(lhsExprType)) {
+                    binaryExpr.setType(symbolTable.get("int"));
+                } else {
+                    addCompileError("expect two expressions of int type.");
+                }
             }
         }
     }
@@ -309,15 +313,17 @@ public class TypeCheckListener extends Listener {
         BinaryExprNode binaryExpr = (BinaryExprNode) map.get(ctx);
         Type lhsExprType = binaryExpr.getLhsType();
         Type rhsExprType = binaryExpr.getRhsType();
-        if (!lhsExprType.canOperateWith(rhsExprType)) {
-            addCompileError("expect two expressions of same type.");
-        } else {
-            if (symbolTable.get("string").canOperateWith(lhsExprType)) {
-                binaryExpr.setType(symbolTable.get("bool"));
-            } else if (symbolTable.get("int").canOperateWith(lhsExprType)) {
-                binaryExpr.setType(symbolTable.get("bool"));
+        if (lhsExprType != null) {
+            if (!lhsExprType.canOperateWith(rhsExprType)) {
+                addCompileError("expect two expressions of same type.");
             } else {
-                addCompileError("expect two expressions of int type or string type.");
+                if (symbolTable.get("string").canOperateWith(lhsExprType)) {
+                    binaryExpr.setType(symbolTable.get("bool"));
+                } else if (symbolTable.get("int").canOperateWith(lhsExprType)) {
+                    binaryExpr.setType(symbolTable.get("bool"));
+                } else {
+                    addCompileError("expect two expressions of int type or string type.");
+                }
             }
         }
     }
@@ -327,10 +333,12 @@ public class TypeCheckListener extends Listener {
         BinaryExprNode binaryExpr = (BinaryExprNode) map.get(ctx);
         Type lhsExprType = binaryExpr.getLhsType();
         Type rhsExprType = binaryExpr.getRhsType();
-        if (!lhsExprType.canOperateWith(rhsExprType)) {
-            addCompileError("expect two expressions of same type.");
-        } else {
-            binaryExpr.setType(symbolTable.get("bool"));
+        if (lhsExprType != null) {
+            if (!lhsExprType.canOperateWith(rhsExprType)) {
+                addCompileError("expect two expressions of same type.");
+            } else {
+                binaryExpr.setType(symbolTable.get("bool"));
+            }
         }
     }
 
