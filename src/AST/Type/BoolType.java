@@ -8,7 +8,7 @@ public class BoolType extends Type {
     private BoolType() {}
 
     @Override
-    public boolean canOperateWith(Type t) { return t == instance; }
+    public boolean canOperateWith(Type t) { return t instanceof BoolType; }
 
     static public Type getInstance() { return instance; }
 

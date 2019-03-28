@@ -8,7 +8,7 @@ public class IntType extends Type {
     private IntType() {}
 
     @Override
-    public boolean canOperateWith(Type t) { return t == instance; }
+    public boolean canOperateWith(Type t) { return t instanceof IntType; }
 
     static public Type getInstance() { return instance; }
 

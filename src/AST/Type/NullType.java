@@ -8,7 +8,9 @@ public class NullType extends Type {
     private NullType() {}
 
     @Override
-    public boolean canOperateWith(Type t) { return t == instance; }
+    public boolean canOperateWith(Type t) {
+        return t instanceof NullType || t instanceof ClassType || t instanceof ArrayType;
+    }
 
     static public Type getInstance() { return instance; }
 

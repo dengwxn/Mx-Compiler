@@ -8,7 +8,7 @@ public class StringType extends Type {
     private StringType() {}
 
     @Override
-    public boolean canOperateWith(Type t) { return t == instance; }
+    public boolean canOperateWith(Type t) { return t instanceof StringType; }
 
     static public Type getInstance() { return instance; }
 
