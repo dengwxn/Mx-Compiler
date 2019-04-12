@@ -1,16 +1,20 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-
 public class NewTypeExprNode extends ExprNode {
     String base;
 
-    public NewTypeExprNode(String b) { base = b; }
+    public NewTypeExprNode(String base) {
+        this.base = base;
+    }
 
-    public String getBase() { return base; }
+    public String getBase() {
+        return base;
+    }
 
     @Override
-    public boolean isLeftValue() { return false; }
+    public boolean isLeftValue() {
+        return false;
+    }
 
     @Override
     public void dump(int indent) {

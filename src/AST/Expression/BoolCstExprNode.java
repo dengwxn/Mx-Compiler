@@ -1,13 +1,10 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-import AST.Type.BoolType;
-
 public class BoolCstExprNode extends ExprNode {
     boolean val;
 
-    public BoolCstExprNode(boolean v) {
-        val = v;
+    public BoolCstExprNode(boolean val) {
+        this.val = val;
     }
 
     @Override

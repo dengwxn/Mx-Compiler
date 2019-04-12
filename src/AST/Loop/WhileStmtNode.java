@@ -1,18 +1,20 @@
 package AST.Loop;
 
-import AST.Basic.ExprNode;
-import AST.Basic.StmtNode;
+import AST.Expression.ExprNode;
+import AST.Statement.StmtNode;
 
 public class WhileStmtNode extends StmtNode {
     ExprNode condExpr;
     StmtNode thenStmt;
 
-    public WhileStmtNode(ExprNode c, StmtNode t) {
-        condExpr = c;
-        thenStmt = t;
+    public WhileStmtNode(ExprNode condExpr, StmtNode thenStmt) {
+        this.condExpr = condExpr;
+        this.thenStmt = thenStmt;
     }
 
-    public ExprNode getCondExpr() { return condExpr; }
+    public ExprNode getCondExpr() {
+        return condExpr;
+    }
 
     @Override
     public void dump(int indent) {

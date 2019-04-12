@@ -1,6 +1,5 @@
 package AST.Build;
 
-import AST.Basic.Listener;
 import AST.Program.ClassDeclNode;
 import AST.Type.*;
 import Parser.MxParser;
@@ -8,27 +7,25 @@ import Parser.MxParser;
 import static AST.Build.Tree.*;
 
 public class ClassListener extends Listener {
-
-
     @Override
     public void enterProgram(MxParser.ProgramContext ctx) {
-        symbolTable.put("int", IntType.getInstance());
-        symbolTable.put("bool", BoolType.getInstance());
-        symbolTable.put("void", VoidType.getInstance());
-        symbolTable.put("null", NullType.getInstance());
-        symbolTable.put("string", StringType.getInstance());
+        symbolTable.putType("int", IntType.getInstance());
+        symbolTable.putType("bool", BoolType.getInstance());
+        symbolTable.putType("void", VoidType.getInstance());
+        symbolTable.putType("null", NullType.getInstance());
+        symbolTable.putType("string", StringType.getInstance());
 
-        typeTable.put("int", IntType.getInstance());
-        typeTable.put("bool", BoolType.getInstance());
-        typeTable.put("void", VoidType.getInstance());
-        typeTable.put("null", NullType.getInstance());
-        typeTable.put("string", StringType.getInstance());
+        typeTable.putType("int", IntType.getInstance());
+        typeTable.putType("bool", BoolType.getInstance());
+        typeTable.putType("void", VoidType.getInstance());
+        typeTable.putType("null", NullType.getInstance());
+        typeTable.putType("string", StringType.getInstance());
     }
 
     @Override
     public void enterClassDeclaration(MxParser.ClassDeclarationContext ctx) {
         ClassDeclNode classDecl = (ClassDeclNode) map.get(ctx);
-        symbolTable.put(classDecl.getName(), new ClassType(classDecl.getName()));
-        typeTable.put(classDecl.getName(), new ClassType(classDecl.getName()));
+        symbolTable.putType(classDecl.getName(), new ClassType(classDecl.getName()));
+        typeTable.putType(classDecl.getName(), new ClassType(classDecl.getName()));
     }
 }

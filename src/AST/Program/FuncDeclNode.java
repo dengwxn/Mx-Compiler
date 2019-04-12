@@ -1,18 +1,24 @@
 package AST.Program;
 
-import AST.Basic.Node;
+import AST.Build.Node;
 import AST.Statement.BlockStmtNode;
+import IR.Build.Block;
 
 import java.util.ArrayList;
 
 public class FuncDeclNode extends Node {
-    String retType, funcName;
-    ArrayList<String> paramType, paramName;
-    BlockStmtNode blockStmt;
+    private String retType, funcName;
+    private ArrayList<String> paramType, paramName;
+    private BlockStmtNode blockStmt;
 
     public FuncDeclNode() {
         paramType = new ArrayList<>();
         paramName = new ArrayList<>();
+    }
+
+    @Override
+    public void generateIR(ArrayList<Block> block) {
+        blockStmt.generateIR(block);
     }
 
     public String getRetType() {
@@ -31,7 +37,9 @@ public class FuncDeclNode extends Node {
         return funcName;
     }
 
-    public void setFuncName(String f) { funcName = f; }
+    public void setFuncName(String f) {
+        funcName = f;
+    }
 
     public void addType(String t) {
         if (retType == null) retType = t;
@@ -53,10 +61,10 @@ public class FuncDeclNode extends Node {
         for (int i = 0; i < paramType.size(); ++i) {
             System.out.printf("%s %s", paramType.get(i), paramName.get(i));
             if (i + 1 < paramType.size()) {
-                System.out.printf(", ");
+                System.out.print(", ");
             }
         }
-        System.out.printf("):\n");
+        System.out.print("):\n");
         if (blockStmt != null)
             blockStmt.dump(indent + 4);
     }

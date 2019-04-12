@@ -1,13 +1,16 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-import AST.Basic.Type;
+import AST.Type.Type;
 
 import java.util.ArrayList;
 
 public class FuncCallExprNode extends ExprNode {
     ExprNode func;
     ArrayList<ExprNode> param;
+
+    public FuncCallExprNode() {
+        param = new ArrayList<>();
+    }
 
     public void addExpr(ExprNode e) {
         if (func == null)
@@ -16,13 +19,13 @@ public class FuncCallExprNode extends ExprNode {
             param.add(e);
     }
 
-    public FuncCallExprNode() {
-        param = new ArrayList<>();
+    public ArrayList<ExprNode> getParam() {
+        return param;
     }
 
-    public ArrayList<ExprNode> getParam() { return param; }
-
-    public Type getFuncType() { return func == null ? null : func.getType(); }
+    public Type getFuncType() {
+        return func == null ? null : func.getType();
+    }
 
     public String getFuncName() {
         if (func instanceof IdentExprNode) {

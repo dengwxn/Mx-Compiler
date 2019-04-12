@@ -1,20 +1,20 @@
 package AST.Table;
 
-import AST.Basic.Type;
-import AST.Type.ArrayType;
+import AST.Type.Type;
 
 import java.util.HashMap;
 
-import static AST.Basic.Listener.addCompileError;
+import static AST.Build.Listener.addCompileError;
 
 public class SymbolTable {
-    SymbolTable lastScope;
-    HashMap<String, Type> hashMap = new HashMap<>();
-    Type retType;
-    String className;
+    private SymbolTable lastScope;
+    private HashMap<String, Type> typeHashMap = new HashMap<>();
+    private HashMap<String, Symbol> symbolHashMap = new HashMap<>();
+    private Type retType;
+    private String className;
 
-    public SymbolTable(SymbolTable l) {
-        lastScope = l;
+    public SymbolTable(SymbolTable lastScope) {
+        this.lastScope = lastScope;
     }
 
     public Type getRetType() {
@@ -25,6 +25,10 @@ public class SymbolTable {
         return null;
     }
 
+    public void setRetType(Type t) {
+        retType = t;
+    }
+
     public String getClassName() {
         if (className != null)
             return className;
@@ -33,40 +37,49 @@ public class SymbolTable {
         return null;
     }
 
-    public boolean inClassDeclScope() {
-        return className != null;
-    }
-
     public void setClassName(String c) {
         className = c;
     }
 
-    public void setRetType(Type t) {
-        retType = t;
+    public boolean inClassDeclScope() {
+        return className != null;
     }
 
     public SymbolTable getLastScope() {
         return lastScope;
     }
 
-    public void put(String name, Type type) {
-        if (hashMap.containsKey(name)) {
-            Type t = get(name);
+    public void putType(String name, Type type) {
+        if (typeHashMap.containsKey(name)) {
+            Type t = getType(name);
             if (name.equals(t.getTypeName()))
                 addCompileError(String.format("found type '%s', illegal to be a identifier name.", name));
             else
                 addCompileError(String.format("ambiguous redefinition on '%s'.", name));
         } else {
-            hashMap.put(name, type);
+            typeHashMap.put(name, type);
         }
     }
 
-    public Type get(String name) {
-        if (hashMap.containsKey(name))
-            return hashMap.get(name);
+    public Type getType(String name) {
+        if (typeHashMap.containsKey(name))
+            return typeHashMap.get(name);
         else if (lastScope != null)
-            return lastScope.get(name);
+            return lastScope.getType(name);
         addCompileError(String.format("identifier '%s' not defined.", name));
+        return null;
+    }
+
+
+    public void putSymbol(String name) {
+        symbolHashMap.put(name, new Symbol(name));
+    }
+
+    public Symbol getSymbol(String name) {
+        if (symbolHashMap.containsKey(name))
+            return symbolHashMap.get(name);
+        else if (lastScope != null)
+            return lastScope.getSymbol(name);
         return null;
     }
 }

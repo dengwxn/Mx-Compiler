@@ -1,6 +1,6 @@
 package AST.Branch;
 
-import AST.Basic.StmtNode;
+import AST.Statement.StmtNode;
 
 public class BreakStmtNode extends StmtNode {
     @Override

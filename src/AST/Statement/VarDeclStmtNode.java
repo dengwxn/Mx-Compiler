@@ -1,26 +1,51 @@
 package AST.Statement;
 
-import AST.Basic.ExprNode;
-import AST.Basic.StmtNode;
-import AST.Basic.Type;
+import AST.Expression.ExprNode;
+import AST.Table.Symbol;
+import AST.Type.Type;
+import IR.Build.Block;
+import IR.Instruction.Instruction;
+import IR.Instruction.MoveInstruction;
+import IR.Operand.Operand;
+
+import java.util.ArrayList;
+
+import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class VarDeclStmtNode extends StmtNode {
-    String type, name;
-    ExprNode expr;
+    private String type, name;
+    private ExprNode expr;
+    private Symbol symbol;
 
-    public VarDeclStmtNode(String t, String n, ExprNode e) {
-        type = t;
-        name = n;
-        expr = e;
+    public VarDeclStmtNode(String type, String name, ExprNode expr) {
+        this.type = type;
+        this.name = name;
+        this.expr = expr;
     }
 
-    public String getType() { return type; }
+    @Override
+    public void generateIR(ArrayList<Block> block) {
+        expr.generateIR(block);
+        Operand dst = getVirtualRegister(symbol);
+        Instruction instr = new MoveInstruction(dst, expr.getOperand());
+        block.get(block.size() - 1).add(instr);
+    }
 
-    public String getName() { return name; }
+    public void setSymbol(Symbol symbol) {
+        this.symbol = symbol;
+    }
 
-    public ExprNode getExpr() { return expr; }
+    public String getType() {
+        return type;
+    }
 
-    public Type getExprType() { return expr == null ? null : expr.getType(); }
+    public String getName() {
+        return name;
+    }
+
+    public Type getExprType() {
+        return expr == null ? null : expr.getType();
+    }
 
     @Override
     public void dump(int indent) {

@@ -1,25 +1,32 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-import AST.Basic.Type;
+import AST.Type.Type;
 
 public class PrefixExprNode extends ExprNode {
     String op;
     ExprNode expr;
 
-    public PrefixExprNode(String o, ExprNode e) {
-        op = o;
-        expr = e;
+    public PrefixExprNode(String op, ExprNode expr) {
+        this.op = op;
+        this.expr = expr;
     }
 
-    public Type getExprType() { return expr == null ? null : expr.getType(); }
+    public Type getExprType() {
+        return expr == null ? null : expr.getType();
+    }
 
-    public String getOp() { return op; }
+    public String getOp() {
+        return op;
+    }
 
-    public ExprNode getExpr() { return expr; }
+    public ExprNode getExpr() {
+        return expr;
+    }
 
     @Override
-    public boolean isLeftValue() { return op.equals("++") || op.equals("--"); }
+    public boolean isLeftValue() {
+        return op.equals("++") || op.equals("--");
+    }
 
     @Override
     public void dump(int indent) {

@@ -1,14 +1,26 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-import AST.Basic.Type;
+import AST.Type.Type;
+import IR.Build.Block;
+import IR.Instruction.Instruction;
+import IR.Instruction.MoveInstruction;
+
+import java.util.ArrayList;
 
 public class AssignExprNode extends ExprNode {
-    ExprNode lhs, rhs;
+    private ExprNode lhs, rhs;
 
-    public AssignExprNode(ExprNode l, ExprNode r) {
-        lhs = l;
-        rhs = r;
+    public AssignExprNode(ExprNode lhs, ExprNode rhs) {
+        this.lhs = lhs;
+        this.rhs = rhs;
+    }
+
+    @Override
+    public void generateIR(ArrayList<Block> block) {
+        lhs.generateIR(block);
+        rhs.generateIR(block);
+        Instruction instr = new MoveInstruction(lhs.getOperand(), rhs.getOperand());
+        block.get(block.size() - 1).add(instr);
     }
 
     public Type getLhsType() {

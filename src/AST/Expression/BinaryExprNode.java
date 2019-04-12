@@ -1,16 +1,15 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-import AST.Basic.Type;
+import AST.Type.Type;
 
 public class BinaryExprNode extends ExprNode {
     String op;
     ExprNode lhs, rhs;
 
-    public BinaryExprNode(String o, ExprNode l, ExprNode r) {
-        op = o;
-        lhs = l;
-        rhs = r;
+    public BinaryExprNode(String op, ExprNode lhs, ExprNode rhs) {
+        this.op = op;
+        this.lhs = lhs;
+        this.rhs = rhs;
     }
 
     public Type getLhsType() {

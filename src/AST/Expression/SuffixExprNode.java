@@ -1,20 +1,23 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-import AST.Basic.Type;
+import AST.Type.Type;
 
 public class SuffixExprNode extends ExprNode {
     String op;
     ExprNode expr;
 
-    public SuffixExprNode(String o, ExprNode e) {
-        op = o;
-        expr = e;
+    public SuffixExprNode(String op, ExprNode expr) {
+        this.op = op;
+        this.expr = expr;
     }
 
-    public ExprNode getExpr() { return expr; }
+    public ExprNode getExpr() {
+        return expr;
+    }
 
-    public Type getExprType() { return expr == null ? null : expr.getType(); }
+    public Type getExprType() {
+        return expr == null ? null : expr.getType();
+    }
 
     @Override
     public void dump(int indent) {

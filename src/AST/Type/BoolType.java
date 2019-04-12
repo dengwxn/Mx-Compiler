@@ -1,17 +1,22 @@
 package AST.Type;
 
-import AST.Basic.Type;
-
 public class BoolType extends Type {
-    public static BoolType instance = new BoolType();
+    private static BoolType instance = new BoolType();
 
-    private BoolType() {}
+    private BoolType() {
+    }
+
+    static public Type getInstance() {
+        return instance;
+    }
 
     @Override
-    public boolean canOperateWith(Type t) { return t instanceof BoolType; }
-
-    static public Type getInstance() { return instance; }
+    public boolean canOperateWith(Type t) {
+        return t instanceof BoolType;
+    }
 
     @Override
-    public String getTypeName() { return "bool"; }
+    public String getTypeName() {
+        return "bool";
+    }
 }

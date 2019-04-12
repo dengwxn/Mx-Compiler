@@ -1,20 +1,22 @@
 package AST.Loop;
 
-import AST.Basic.ExprNode;
-import AST.Basic.StmtNode;
+import AST.Expression.ExprNode;
+import AST.Statement.StmtNode;
 
 public class ForStmtNode extends StmtNode {
     ExprNode initExpr, condExpr, incrExpr;
     StmtNode thenStmt;
 
-    public ForStmtNode(ExprNode it, ExprNode cn, ExprNode ic, StmtNode t) {
-        initExpr = it;
-        condExpr = cn;
-        incrExpr = ic;
-        thenStmt = t;
+    public ForStmtNode(ExprNode initExpr, ExprNode condExpr, ExprNode incrExpr, StmtNode thenStmt) {
+        this.initExpr = initExpr;
+        this.condExpr = condExpr;
+        this.incrExpr = incrExpr;
+        this.thenStmt = thenStmt;
     }
 
-    public ExprNode getCondExpr() { return condExpr; }
+    public ExprNode getCondExpr() {
+        return condExpr;
+    }
 
     @Override
     public void dump(int indent) {

@@ -1,12 +1,10 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-
 public class StringCstExprNode extends ExprNode {
     String str;
 
-    public StringCstExprNode(String s) {
-        str = s;
+    public StringCstExprNode(String str) {
+        this.str = str;
     }
 
     @Override

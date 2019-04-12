@@ -1,7 +1,5 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-
 import java.util.ArrayList;
 
 public class NewArrayExprNode extends ExprNode {
@@ -9,19 +7,23 @@ public class NewArrayExprNode extends ExprNode {
     int dim;
     ArrayList<ExprNode> param;
 
-    public int getDim() { return dim; }
+    public NewArrayExprNode(String base, int dim) {
+        this.base = base;
+        this.dim = dim;
+        this.param = new ArrayList<>();
+    }
 
-    public NewArrayExprNode(String b, int d) {
-        base = b;
-        dim = d;
-        param = new ArrayList<>();
+    public int getDim() {
+        return dim;
     }
 
     public void addParam(ExprNode p) {
         param.add(p);
     }
 
-    public String getBase() { return base; }
+    public String getBase() {
+        return base;
+    }
 
     @Override
     public boolean isLeftValue() {

@@ -1,17 +1,22 @@
 package AST.Type;
 
-import AST.Basic.Type;
-
 public class StringType extends Type {
-    public static StringType instance = new StringType();
+    private static StringType instance = new StringType();
 
-    private StringType() {}
+    private StringType() {
+    }
+
+    static public Type getInstance() {
+        return instance;
+    }
 
     @Override
-    public boolean canOperateWith(Type t) { return t instanceof StringType; }
-
-    static public Type getInstance() { return instance; }
+    public boolean canOperateWith(Type t) {
+        return t instanceof StringType;
+    }
 
     @Override
-    public String getTypeName() { return "string"; }
+    public String getTypeName() {
+        return "string";
+    }
 }

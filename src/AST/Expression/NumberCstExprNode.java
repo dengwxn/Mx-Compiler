@@ -1,12 +1,20 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
+import IR.Build.Block;
+import IR.Operand.Immediate;
+
+import java.util.ArrayList;
 
 public class NumberCstExprNode extends ExprNode {
-    int val;
+    private int val;
 
-    public NumberCstExprNode(int v) {
-        val = v;
+    public NumberCstExprNode(int val) {
+        this.val = val;
+    }
+
+    @Override
+    public void generateIR(ArrayList<Block> block) {
+        operand = new Immediate(val);
     }
 
     @Override

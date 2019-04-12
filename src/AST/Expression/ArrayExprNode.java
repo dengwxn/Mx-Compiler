@@ -1,7 +1,6 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
-import AST.Basic.Type;
+import AST.Type.Type;
 
 import java.util.ArrayList;
 
@@ -10,14 +9,18 @@ public class ArrayExprNode extends ExprNode {
     int dim;
     ArrayList<ExprNode> param;
 
-    public ArrayExprNode(int d) {
-        dim = d;
-        param = new ArrayList<>();
+    public ArrayExprNode(int dim) {
+        this.dim = dim;
+        this.param = new ArrayList<>();
     }
 
-    public int getDim() { return dim; }
+    public int getDim() {
+        return dim;
+    }
 
-    public Type getNameType() { return name.getType(); }
+    public Type getNameType() {
+        return name.getType();
+    }
 
     public void addExpr(ExprNode e) {
         if (name == null)

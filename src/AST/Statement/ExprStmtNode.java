@@ -1,13 +1,20 @@
 package AST.Statement;
 
-import AST.Basic.ExprNode;
-import AST.Basic.StmtNode;
+import AST.Expression.ExprNode;
+import IR.Build.Block;
+
+import java.util.ArrayList;
 
 public class ExprStmtNode extends StmtNode {
-    ExprNode expr;
+    private ExprNode expr;
 
-    public ExprStmtNode(ExprNode e) {
-        expr = e;
+    public ExprStmtNode(ExprNode expr) {
+        this.expr = expr;
+    }
+
+    @Override
+    public void generateIR(ArrayList<Block> block) {
+        expr.generateIR(block);
     }
 
     @Override

@@ -1,14 +1,18 @@
 package AST.Program;
 
-import AST.Basic.Node;
+import AST.Build.Node;
 
 import java.util.ArrayList;
 
 public class ProgNode extends Node {
-    ArrayList<Node> decl;
+    private ArrayList<Node> decl;
 
     public ProgNode() {
         decl = new ArrayList<>();
+    }
+
+    public ArrayList<Node> getDecl() {
+        return decl;
     }
 
     public void addDecl(Node d) {

@@ -1,22 +1,29 @@
 package AST.Build;
 
 import AST.Program.ProgNode;
-import AST.Table.*;
+import AST.Table.SymbolTable;
+import AST.Table.TypeTable;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 public class Tree {
     static public ErrorListener errorListener = new ErrorListener();
-    static ProgNode prog;
+    static public ProgNode prog;
     static ParseTreeProperty<Object> map = new ParseTreeProperty<>();
     static SymbolTable symbolTable = new SymbolTable(null);
     static TypeTable typeTable = new TypeTable();
-    static int loopCount;
+    static private int loopCount;
 
-    static public void enterLoop() { ++loopCount; }
+    static void enterLoop() {
+        ++loopCount;
+    }
 
-    static public void exitLoop() { --loopCount; }
+    static void exitLoop() {
+        --loopCount;
+    }
 
-    static public int getLoopCount() { return loopCount; }
+    static int getLoopCount() {
+        return loopCount;
+    }
 
     static void enterScope() {
         symbolTable = new SymbolTable(symbolTable);

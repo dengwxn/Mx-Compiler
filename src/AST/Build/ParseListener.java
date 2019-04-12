@@ -1,9 +1,5 @@
 package AST.Build;
 
-import AST.Basic.ExprNode;
-import AST.Basic.Listener;
-import AST.Basic.Node;
-import AST.Basic.StmtNode;
 import AST.Branch.BreakStmtNode;
 import AST.Branch.ContinueStmtNode;
 import AST.Branch.ReturnStmtNode;
@@ -13,10 +9,7 @@ import AST.Loop.WhileStmtNode;
 import AST.Program.ClassDeclNode;
 import AST.Program.FuncDeclNode;
 import AST.Program.ProgNode;
-import AST.Statement.BlockStmtNode;
-import AST.Statement.ExprStmtNode;
-import AST.Statement.IfStmtNode;
-import AST.Statement.VarDeclStmtNode;
+import AST.Statement.*;
 import Parser.MxParser;
 import org.antlr.v4.runtime.tree.ParseTree;
 

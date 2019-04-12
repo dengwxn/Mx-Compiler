@@ -1,17 +1,22 @@
 package AST.Type;
 
-import AST.Basic.Type;
-
 public class IntType extends Type {
-    public static IntType instance = new IntType();
+    private static IntType instance = new IntType();
 
-    private IntType() {}
+    private IntType() {
+    }
+
+    static public Type getInstance() {
+        return instance;
+    }
 
     @Override
-    public boolean canOperateWith(Type t) { return t instanceof IntType; }
-
-    static public Type getInstance() { return instance; }
+    public boolean canOperateWith(Type t) {
+        return t instanceof IntType;
+    }
 
     @Override
-    public String getTypeName() { return "int"; }
+    public String getTypeName() {
+        return "int";
+    }
 }

@@ -1,14 +1,14 @@
 package AST.Branch;
 
-import AST.Basic.ExprNode;
-import AST.Basic.StmtNode;
-import AST.Basic.Type;
+import AST.Expression.ExprNode;
+import AST.Statement.StmtNode;
+import AST.Type.Type;
 
 public class ReturnStmtNode extends StmtNode {
     ExprNode expr;
 
-    public ReturnStmtNode(ExprNode e) {
-        expr = e;
+    public ReturnStmtNode(ExprNode expr) {
+        this.expr = expr;
     }
 
     public Type getExprType() {
@@ -21,8 +21,7 @@ public class ReturnStmtNode extends StmtNode {
         System.out.print("return");
         if (expr == null) {
             System.out.println();
-        }
-        else {
+        } else {
             System.out.println(":");
             expr.dump(indent + 4);
         }

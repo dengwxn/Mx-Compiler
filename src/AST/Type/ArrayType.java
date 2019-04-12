@@ -1,19 +1,21 @@
 package AST.Type;
 
-import AST.Basic.Type;
-
 public class ArrayType extends Type {
     Type base;
     int dim;
 
-    public ArrayType(Type b, int d) {
-        base = b;
-        dim = d;
+    public ArrayType(Type base, int dim) {
+        this.base = base;
+        this.dim = dim;
     }
 
-    public Type getBase() { return base; }
+    public Type getBase() {
+        return base;
+    }
 
-    public int getDim() { return dim; }
+    public int getDim() {
+        return dim;
+    }
 
     @Override
     public boolean canOperateWith(Type t) {
@@ -32,5 +34,7 @@ public class ArrayType extends Type {
     }
 
     @Override
-    public String getTypeName() { return base.getTypeName() + repeat("[]", dim); }
+    public String getTypeName() {
+        return base.getTypeName() + repeat("[]", dim);
+    }
 }

@@ -1,19 +1,27 @@
 package AST.Statement;
 
-import AST.Basic.ExprNode;
-import AST.Basic.StmtNode;
+import AST.Expression.ExprNode;
+import IR.Build.Block;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class IfStmtNode extends StmtNode {
-    ExprNode condExpr;
-    StmtNode thenStmt, elseStmt;
+    private ExprNode condExpr;
+    private StmtNode thenStmt, elseStmt;
 
-    public IfStmtNode(ExprNode c, StmtNode t, StmtNode e) {
-        condExpr = c;
-        thenStmt = t;
-        elseStmt = e;
+    public IfStmtNode(ExprNode condExpr, StmtNode thenStmt, StmtNode elseStmt) {
+        this.condExpr = condExpr;
+        this.thenStmt = thenStmt;
+        this.elseStmt = elseStmt;
     }
 
-    public ExprNode getCondExpr() { return condExpr; }
+    @Override
+    public void generateIR(ArrayList<Block> block) {}
+
+    public ExprNode getCondExpr() {
+        return condExpr;
+    }
 
     @Override
     public void dump(int indent) {

@@ -1,17 +1,22 @@
 package AST.Type;
 
-import AST.Basic.Type;
-
 public class VoidType extends Type {
-    public static VoidType instance = new VoidType();
+    private static VoidType instance = new VoidType();
 
-    private VoidType() {}
+    private VoidType() {
+    }
+
+    static public Type getInstance() {
+        return instance;
+    }
 
     @Override
-    public boolean canOperateWith(Type t) { return t instanceof VoidType || t == null; }
-
-    static public Type getInstance() { return instance; }
+    public boolean canOperateWith(Type t) {
+        return t instanceof VoidType || t == null;
+    }
 
     @Override
-    public String getTypeName() { return "void"; }
+    public String getTypeName() {
+        return "void";
+    }
 }

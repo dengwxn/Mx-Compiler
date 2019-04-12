@@ -1,38 +1,38 @@
 package AST.Table;
 
-import AST.Basic.Type;
 import AST.Type.ArrayType;
+import AST.Type.Type;
 
 import java.util.HashMap;
 
-import static AST.Basic.Listener.addCompileError;
+import static AST.Build.Listener.addCompileError;
 
 public class TypeTable {
-    HashMap<String, Type> hashMap = new HashMap<>();
+    private HashMap<String, Type> hashMap = new HashMap<>();
 
-    public void put(String name, Type type) {
+    public void putType(String name, Type type) {
         if (hashMap.containsKey(name))
             addCompileError(String.format("ambiguous redefinition on type '%s'.", name));
         else
             hashMap.put(name, type);
     }
 
-    boolean isArray(String name) {
+    private boolean isArray(String name) {
         if (name == null) return false;
         return name.indexOf('[') != -1;
     }
 
-    String arrayBase(String name) {
+    private String arrayBase(String name) {
         return name.substring(0, name.indexOf('['));
     }
 
-    int arrayDim(String name) {
+    private int arrayDim(String name) {
         return (name.length() - name.indexOf('[')) / 2;
     }
 
-    public Type get(String name) {
+    public Type getType(String name) {
         if (isArray(name)) {
-            Type base = get(arrayBase(name));
+            Type base = getType(arrayBase(name));
             int dim = arrayDim(name);
             return new ArrayType(base, dim);
         } else {

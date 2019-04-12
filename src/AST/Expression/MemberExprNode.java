@@ -1,18 +1,19 @@
 package AST.Expression;
 
-import AST.Basic.ExprNode;
 import AST.Type.ArrayType;
 
 public class MemberExprNode extends ExprNode {
     ExprNode root;
     String ident;
 
-    public MemberExprNode(ExprNode c, String i) {
-        root = c;
-        ident = i;
+    public MemberExprNode(ExprNode root, String ident) {
+        this.root = root;
+        this.ident = ident;
     }
 
-    public String getIdent() { return ident; }
+    public String getIdent() {
+        return ident;
+    }
 
     public String getRootTypeName() {
         if (root.getType() != null) {
@@ -20,13 +21,14 @@ public class MemberExprNode extends ExprNode {
                 return "";
             else
                 return root.getType().getTypeName();
-        }
-        else
+        } else
             return null;
     }
 
     @Override
-    public boolean isLeftValue() { return true; }
+    public boolean isLeftValue() {
+        return true;
+    }
 
     @Override
     public void dump(int indent) {

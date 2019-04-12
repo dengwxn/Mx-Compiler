@@ -1,22 +1,28 @@
 package AST.Statement;
 
-import AST.Basic.StmtNode;
+import IR.Build.Block;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BlockStmtNode extends StmtNode {
-    ArrayList<StmtNode> stmts;
+    private ArrayList<StmtNode> stmt;
 
     public BlockStmtNode() {
-        stmts = new ArrayList<>();
+        stmt = new ArrayList<>();
+    }
+
+    @Override
+    public void generateIR(ArrayList<Block> block) {
+        stmt.forEach(s -> s.generateIR(block));
     }
 
     public void addStmt(StmtNode s) {
-        stmts.add(s);
+        stmt.add(s);
     }
 
     @Override
     public void dump(int indent) {
-        stmts.forEach(s -> s.dump(indent));
+        stmt.forEach(s -> s.dump(indent));
     }
 }
