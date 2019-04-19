@@ -16,7 +16,7 @@ import static AST.Build.Tree.errorListener;
 public class Main {
     static public void main(String[] args) throws Exception {
         buildAST();
-        // Tree.dump();
+        Tree.dump();
         generateIR();
     }
 

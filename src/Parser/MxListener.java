@@ -268,18 +268,6 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitAnd(MxParser.AndContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code This}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterThis(MxParser.ThisContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code This}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitThis(MxParser.ThisContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code Compare}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree

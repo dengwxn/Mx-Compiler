@@ -49,7 +49,6 @@ expression
     | expression ('[' expression ']')+                        # Array
     | Identifier                                              # Identifier
     | expression '(' (expression (',' expression)*)? ')'      # FunctionCall
-    | THIS                                                    # This
     | expression '.' Identifier                               # Member
     | '(' expression ')'                                      # SubExpr
     | expression op=('++'|'--')                               # Suffix
@@ -160,7 +159,6 @@ CONTINUE: 'continue';
 RETURN: 'return';
 NEW: 'new';
 CLASS: 'class';
-THIS: 'this';
 
 Number: [0-9]+;
 Identifier: [a-zA-Z][_a-zA-Z0-9]*;

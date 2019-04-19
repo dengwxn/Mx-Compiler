@@ -2,10 +2,10 @@ package IR.Instruction;
 
 public class Operator {
     public enum BinaryOp {
-        ADD, SUB, MUL, DIV, MOD, SHL, SHR, AND, OR, XOR
+        ADD, SUB, MUL, DIV, MOD, SHL, SHR, AND, OR, XOR,
     }
 
-    public enum ConditonOp {
+    public enum CompareOp {
         EQ, NEQ, LT, LE, GT, GE
     }
 

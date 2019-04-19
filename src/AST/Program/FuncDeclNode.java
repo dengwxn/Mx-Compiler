@@ -2,6 +2,7 @@ package AST.Program;
 
 import AST.Build.Node;
 import AST.Statement.BlockStmtNode;
+import AST.Table.Symbol;
 import IR.Build.Block;
 
 import java.util.ArrayList;
@@ -10,15 +11,30 @@ public class FuncDeclNode extends Node {
     private String retType, funcName;
     private ArrayList<String> paramType, paramName;
     private BlockStmtNode blockStmt;
+    private ArrayList<Symbol> paramSymbol;
 
     public FuncDeclNode() {
         paramType = new ArrayList<>();
         paramName = new ArrayList<>();
     }
 
+    void setThis(String className) {
+        paramType.add(0, className);
+        paramName.add(0, "this");
+        funcName = className + "." + funcName;
+    }
+
     @Override
     public void generateIR(ArrayList<Block> block) {
         blockStmt.generateIR(block);
+    }
+
+    public ArrayList<Symbol> getParamSymbol() {
+        return paramSymbol;
+    }
+
+    public void setParamSymbol(ArrayList<Symbol> paramSymbol) {
+        this.paramSymbol = paramSymbol;
     }
 
     public String getRetType() {

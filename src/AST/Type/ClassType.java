@@ -1,7 +1,7 @@
 package AST.Type;
 
 public class ClassType extends Type {
-    String name;
+    private String name;
 
     public ClassType(String name) {
         this.name = name;

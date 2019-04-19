@@ -1,22 +1,38 @@
 package AST.Expression;
 
+import AST.Type.FuncType;
 import AST.Type.Type;
+import IR.Build.Block;
+import IR.Instruction.FuncCallInstruction;
+import IR.Instruction.Instruction;
+import IR.Operand.Operand;
 
 import java.util.ArrayList;
 
 public class FuncCallExprNode extends ExprNode {
-    ExprNode func;
-    ArrayList<ExprNode> param;
+    private ExprNode func;
+    private ArrayList<ExprNode> param;
 
     public FuncCallExprNode() {
         param = new ArrayList<>();
     }
 
+    @Override
+    public void generateIR(ArrayList<Block> block) {
+        param.forEach(p -> p.generateIR(block));
+        ArrayList<Operand> paramOp = new ArrayList<>();
+        param.forEach(p -> paramOp.add(p.getOperand()));
+        Instruction call = new FuncCallInstruction(getFuncName(), paramOp);
+        block.get(block.size() - 1).add(call);
+    }
+
+    public String getFuncName() {
+        return ((FuncType) getFuncType()).getFuncName();
+    }
+
     public void addExpr(ExprNode e) {
-        if (func == null)
-            func = e;
-        else
-            param.add(e);
+        if (func == null) func = e;
+        else param.add(e);
     }
 
     public ArrayList<ExprNode> getParam() {
@@ -25,15 +41,6 @@ public class FuncCallExprNode extends ExprNode {
 
     public Type getFuncType() {
         return func == null ? null : func.getType();
-    }
-
-    public String getFuncName() {
-        if (func instanceof IdentExprNode) {
-            return ((IdentExprNode) func).getIdent();
-        } else if (func instanceof MemberExprNode) {
-            return ((MemberExprNode) func).getRootTypeName() + "." + ((MemberExprNode) func).getIdent();
-        }
-        return null;
     }
 
     @Override

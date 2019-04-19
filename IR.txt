@@ -1,8 +1,16 @@
-.main():
-	.main.entry.0:
-		move		a 0
-		move		a 1
-	.main.exit.1:
-._globalVarDecl():
-	._globalVarDecl.entry.0:
-	._globalVarDecl.exit.1:
+_globalVarDecl():
+	_globalVarDecl.entry.0:
+		jmp		_globalVarDecl.exit.1
+	_globalVarDecl.exit.1:
+
+main():
+	main.entry.0:
+		jmp		main.exit.1
+	main.exit.1:
+
+test.hello(this, y):
+	test.hello.entry.0:
+		mov		y [this + 0]
+		jmp		test.hello.exit.1
+	test.hello.exit.1:
+

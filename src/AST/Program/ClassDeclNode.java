@@ -6,14 +6,18 @@ import AST.Statement.VarDeclStmtNode;
 import java.util.ArrayList;
 
 public class ClassDeclNode extends Node {
-    String name;
-    ArrayList<VarDeclStmtNode> varDecl;
-    ArrayList<FuncDeclNode> funcDecl;
+    private String name;
+    private ArrayList<VarDeclStmtNode> varDecl;
+    private ArrayList<FuncDeclNode> funcDecl;
 
     public ClassDeclNode(String name) {
         this.name = name;
         this.varDecl = new ArrayList<>();
         this.funcDecl = new ArrayList<>();
+    }
+
+    public void setThis() {
+        funcDecl.forEach(funcDecl -> funcDecl.setThis(name));
     }
 
     public String getName() {

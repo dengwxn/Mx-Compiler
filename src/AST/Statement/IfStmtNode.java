@@ -2,9 +2,16 @@ package AST.Statement;
 
 import AST.Expression.ExprNode;
 import IR.Build.Block;
+import IR.Instruction.CompareInstruction;
+import IR.Instruction.CondJumpInstruction;
+import IR.Instruction.Instruction;
+import IR.Instruction.JumpInstruction;
+import IR.Operand.Immediate;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import static IR.Build.FunctionIR.funcName;
+import static IR.Instruction.Operator.CompareOp.EQ;
 
 public class IfStmtNode extends StmtNode {
     private ExprNode condExpr;
@@ -17,7 +24,32 @@ public class IfStmtNode extends StmtNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {}
+    public void generateIR(ArrayList<Block> block) {
+        Block ifTrue = new Block(funcName + ".ifTrue", block.size());
+        Block ifFalse = new Block(funcName + ".ifFalse", block.size() + 1);
+        Block ifExit = new Block(funcName + ".ifExit", block.size() + 2);
+        Instruction jumpIfExit = new JumpInstruction(ifExit);
+
+        // current block
+        condExpr.generateIR(block);
+        Instruction cmp = new CompareInstruction(condExpr.getOperand(), new Immediate(1));
+        Instruction cjumpIfTrue = new CondJumpInstruction(EQ, ifTrue);
+        Instruction jumpIfFalse = new JumpInstruction(ifFalse);
+        block.get(block.size() - 1).add(cmp, cjumpIfTrue, jumpIfFalse);
+
+        // ifTrue
+        block.add(ifTrue);
+        if (thenStmt != null) thenStmt.generateIR(block);
+        block.get(block.size() - 1).add(jumpIfExit);
+
+        // ifFalse
+        block.add(ifFalse);
+        if (elseStmt != null) elseStmt.generateIR(block);
+        block.get(block.size() - 1).add(jumpIfExit);
+
+        // ifExit
+        block.add(ifExit);
+    }
 
     public ExprNode getCondExpr() {
         return condExpr;

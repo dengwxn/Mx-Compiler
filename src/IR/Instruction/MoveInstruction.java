@@ -13,7 +13,7 @@ public class MoveInstruction extends Instruction {
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
-        str.append("move\t\t" + dst.dump() + " " + src.dump() + "\n");
+        str.append("mov\t\t" + dst.dump() + " " + src.dump() + "\n");
         return str.toString();
     }
 }

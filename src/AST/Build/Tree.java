@@ -1,9 +1,12 @@
 package AST.Build;
 
+import AST.Loop.LoopStmtNode;
 import AST.Program.ProgNode;
 import AST.Table.SymbolTable;
 import AST.Table.TypeTable;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
+
+import java.util.Stack;
 
 public class Tree {
     static public ErrorListener errorListener = new ErrorListener();
@@ -11,18 +14,22 @@ public class Tree {
     static ParseTreeProperty<Object> map = new ParseTreeProperty<>();
     static SymbolTable symbolTable = new SymbolTable(null);
     static TypeTable typeTable = new TypeTable();
-    static private int loopCount;
+    static private Stack<LoopStmtNode> loopStmtStack = new Stack<>();
 
-    static void enterLoop() {
-        ++loopCount;
+    static void enterLoop(LoopStmtNode loopStmt) {
+        loopStmtStack.push(loopStmt);
     }
 
     static void exitLoop() {
-        --loopCount;
+        loopStmtStack.pop();
     }
 
     static int getLoopCount() {
-        return loopCount;
+        return loopStmtStack.size();
+    }
+
+    static LoopStmtNode getLoopStmt() {
+        return loopStmtStack.peek();
     }
 
     static void enterScope() {

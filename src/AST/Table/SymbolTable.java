@@ -41,7 +41,7 @@ public class SymbolTable {
         className = c;
     }
 
-    public boolean inClassDeclScope() {
+    public boolean isInClassDeclScope() {
         return className != null;
     }
 
@@ -70,9 +70,12 @@ public class SymbolTable {
         return null;
     }
 
-
     public void putSymbol(String name) {
         symbolHashMap.put(name, new Symbol(name));
+    }
+
+    public void putSymbol(String name, String prevTypeName) {
+        symbolHashMap.put(name, new Symbol(name, prevTypeName));
     }
 
     public Symbol getSymbol(String name) {

@@ -1,4 +1,11 @@
+class test {
+    int x;
+    int y;
+
+    void hello(int y) {
+        y = x;
+    }
+}
+
 int main() {
-    int a = 0;
-    a = 1;
 }

@@ -1,14 +1,42 @@
 package AST.Expression;
 
 import AST.Type.Type;
+import IR.Build.Block;
+import IR.Instruction.Instruction;
+import IR.Instruction.MoveInstruction;
+import IR.Instruction.Operator;
+import IR.Instruction.UnaryInstruction;
+
+import java.util.ArrayList;
+
+import static IR.Instruction.Operator.UnaryOp.DEC;
+import static IR.Instruction.Operator.UnaryOp.INC;
+import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
 
 public class SuffixExprNode extends ExprNode {
-    String op;
-    ExprNode expr;
+    private String op;
+    private ExprNode expr;
 
     public SuffixExprNode(String op, ExprNode expr) {
         this.op = op;
         this.expr = expr;
+    }
+
+    private Operator.UnaryOp convertUnaryOp() {
+        switch (op) {
+            case "++": return INC;
+            case "--": return DEC;
+            default: return null;
+        }
+    }
+
+    @Override
+    public void generateIR(ArrayList<Block> block) {
+        expr.generateIR(block);
+        operand = getTemporaryRegister();
+        Instruction mov = new MoveInstruction(operand, expr.getOperand());
+        Instruction inc = new UnaryInstruction(convertUnaryOp(), expr.getOperand());
+        block.get(block.size() - 1).add(mov, inc);
     }
 
     public ExprNode getExpr() {

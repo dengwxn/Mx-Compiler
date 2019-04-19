@@ -14,7 +14,7 @@ public class ExprStmtNode extends StmtNode {
 
     @Override
     public void generateIR(ArrayList<Block> block) {
-        expr.generateIR(block);
+        if (expr != null) expr.generateIR(block);
     }
 
     @Override

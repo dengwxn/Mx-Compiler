@@ -2,6 +2,7 @@ package IR.Build;
 
 import AST.Build.Node;
 import AST.Build.Tree;
+import AST.Program.ClassDeclNode;
 import AST.Program.FuncDeclNode;
 import AST.Statement.BlockStmtNode;
 import AST.Statement.StmtNode;
@@ -33,8 +34,12 @@ public class IR {
         functionIRMap = new HashMap<>();
         functionIRMap.put(globalVarDecl, new FunctionIR(globalVarDecl));
         for (Node decl : Tree.prog.getDecl()) {
-            if (decl instanceof FuncDeclNode)
+            if (decl instanceof FuncDeclNode) {
                 functionIRMap.put((FuncDeclNode) decl, new FunctionIR((FuncDeclNode) decl));
+            } else if (decl instanceof ClassDeclNode) {
+                for (FuncDeclNode funcDecl : ((ClassDeclNode) decl).getFuncDecl())
+                    functionIRMap.put(funcDecl, new FunctionIR(funcDecl));
+            }
         }
     }
 
@@ -46,6 +51,6 @@ public class IR {
         OutputStream fout = new FileOutputStream(file);
         PrintStream fprint = new PrintStream(fout);
         fprint.print(str.toString());
-        System.out.println(str.toString());
+        // System.out.println(str.toString());
     }
 }

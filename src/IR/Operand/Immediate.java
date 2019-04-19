@@ -1,7 +1,7 @@
 package IR.Operand;
 
 public class Immediate extends Operand {
-    int val;
+    private int val;
 
     public Immediate(int val) {
         this.val = val;

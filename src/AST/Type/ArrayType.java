@@ -26,7 +26,7 @@ public class ArrayType extends Type {
         return false;
     }
 
-    String repeat(String s, int d) {
+    private String repeat(String s, int d) {
         String t = "";
         for (int i = 0; i < d; ++i)
             t = t.concat(s);

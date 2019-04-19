@@ -1,5 +1,7 @@
 package AST.Build;
 
+import AST.Branch.BreakStmtNode;
+import AST.Branch.ContinueStmtNode;
 import AST.Branch.ReturnStmtNode;
 import AST.Expression.*;
 import AST.Loop.ForStmtNode;
@@ -13,9 +15,9 @@ import AST.Type.*;
 import Parser.MxParser;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static AST.Build.Tree.*;
+import static IR.Operand.Address.putOffset;
 
 public class TypeCheckListener extends Listener {
     @Override
@@ -25,7 +27,7 @@ public class TypeCheckListener extends Listener {
 
     @Override
     public void exitVariableDeclaration(MxParser.VariableDeclarationContext ctx) {
-        if (!symbolTable.inClassDeclScope()) {
+        if (!symbolTable.isInClassDeclScope()) {
             VarDeclStmtNode varDeclStmt = (VarDeclStmtNode) map.get(ctx);
             Type defType = typeTable.getType(varDeclStmt.getType());
             if (defType != null) {
@@ -51,9 +53,12 @@ public class TypeCheckListener extends Listener {
         ClassDeclNode classDecl = (ClassDeclNode) map.get(ctx);
         symbolTable.setClassName(classDecl.getName());
 
+        int cnt = 0;
         for (VarDeclStmtNode varDecl : classDecl.getVarDecl()) {
             String varName = classDecl.getName() + "." + varDecl.getName();
             symbolTable.putType(varDecl.getName(), symbolTable.getType(varName));
+            symbolTable.putSymbol(varDecl.getName(), classDecl.getName());
+            putOffset(varName, (cnt++) << 3);
         }
 
         for (FuncDeclNode funcDecl : classDecl.getFuncDecl()) {
@@ -73,7 +78,7 @@ public class TypeCheckListener extends Listener {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
         FuncType funcType = (FuncType) symbolTable.getType(funcDecl.getFuncName());
         if (funcDecl.getFuncName() == null) {
-            if (!symbolTable.inClassDeclScope()) {
+            if (!symbolTable.isInClassDeclScope()) {
                 addCompileError("expect an identifier of the function name.");
             } else if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
                 addCompileError("an illegal function declaration without a function name.");
@@ -82,12 +87,15 @@ public class TypeCheckListener extends Listener {
         enterScope();
         if (funcDecl.getFuncName() != null)
             symbolTable.setRetType(funcType.getRetType());
-        List<String> paramType = funcDecl.getParamType();
-        List<String> paramName = funcDecl.getParamName();
+        ArrayList<String> paramType = funcDecl.getParamType();
+        ArrayList<String> paramName = funcDecl.getParamName();
+        ArrayList<Symbol> paramSymbol = new ArrayList<>();
         for (int i = 0; i < paramName.size(); ++i) {
             symbolTable.putType(paramName.get(i), typeTable.getType(paramType.get(i)));
             symbolTable.putSymbol(paramName.get(i));
+            paramSymbol.add(symbolTable.getSymbol(paramName.get(i)));
         }
+        funcDecl.setParamSymbol(paramSymbol);
     }
 
     @Override
@@ -122,13 +130,15 @@ public class TypeCheckListener extends Listener {
     @Override
     public void enterFor(MxParser.ForContext ctx) {
         enterScope();
-        enterLoop();
+        ForStmtNode forStmt = (ForStmtNode) map.get(ctx);
+        enterLoop(forStmt);
     }
 
     @Override
     public void enterWhile(MxParser.WhileContext ctx) {
         enterScope();
-        enterLoop();
+        WhileStmtNode whileStmt = (WhileStmtNode) map.get(ctx);
+        enterLoop(whileStmt);
     }
 
     @Override
@@ -153,14 +163,22 @@ public class TypeCheckListener extends Listener {
 
     @Override
     public void enterContinue(MxParser.ContinueContext ctx) {
-        if (getLoopCount() == 0)
+        if (getLoopCount() == 0) {
             addCompileError("expect 'continue' to appear inside a loop.");
+        } else {
+            ContinueStmtNode continueStmt = (ContinueStmtNode) map.get(ctx);
+            continueStmt.setLoopStmt(getLoopStmt());
+        }
     }
 
     @Override
     public void enterBreak(MxParser.BreakContext ctx) {
-        if (getLoopCount() == 0)
+        if (getLoopCount() == 0) {
             addCompileError("expect 'break' to appear inside a loop.");
+        } else {
+            BreakStmtNode breakStmt = (BreakStmtNode) map.get(ctx);
+            breakStmt.setLoopStmt(getLoopStmt());
+        }
     }
 
     @Override
@@ -255,25 +273,19 @@ public class TypeCheckListener extends Listener {
     @Override
     public void exitMember(MxParser.MemberContext ctx) {
         MemberExprNode memberExpr = (MemberExprNode) map.get(ctx);
-        String name = memberExpr.getRootTypeName() + "." + memberExpr.getIdent();
+        String name = memberExpr.getPrevTypeName() + "." + memberExpr.getIdent();
         Type type = symbolTable.getType(name);
         memberExpr.setType(type);
-    }
-
-    @Override
-    public void exitThis(MxParser.ThisContext ctx) {
-        ThisExprNode thisExpr = (ThisExprNode) map.get(ctx);
-        if (symbolTable.getClassName() != null)
-            thisExpr.setType(symbolTable.getType(symbolTable.getClassName()));
-        else
-            addCompileError("expect a class scope to obtain 'this'.");
     }
 
     @Override
     public void exitIdentifier(MxParser.IdentifierContext ctx) {
         IdentExprNode identExpr = (IdentExprNode) map.get(ctx);
         identExpr.setType(symbolTable.getType(identExpr.getIdent()));
-        identExpr.setSymbol(symbolTable.getSymbol(identExpr.getIdent()));
+        Symbol symbol = symbolTable.getSymbol(identExpr.getIdent());
+        identExpr.setSymbol(symbol);
+        if (symbol.isInClassDeclScope())
+            identExpr.setClassThis(symbolTable.getSymbol("this"));
     }
 
     private void exitBinaryExpression(BinaryExprNode binaryExpr, Type base) {

@@ -29,7 +29,7 @@ public class DeclarationListener extends Listener {
     }
 
     private String getScopeName() {
-        if (!symbolTable.inClassDeclScope())
+        if (!symbolTable.isInClassDeclScope())
             return "";
         else
             return symbolTable.getClassName() + ".";
@@ -42,7 +42,7 @@ public class DeclarationListener extends Listener {
         ArrayList<Type> paramType = new ArrayList<>();
         funcDecl.getParamType().forEach(t -> paramType.add(typeTable.getType(t)));
         String funcName = getScopeName() + funcDecl.getFuncName();
-        symbolTable.putType(funcName, new FuncType(retType, paramType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType));
     }
 
     private void mainPrint() {
@@ -50,7 +50,7 @@ public class DeclarationListener extends Listener {
         ArrayList<Type> paramType = new ArrayList<>();
         paramType.add(symbolTable.getType("string"));
         String funcName = "print";
-        symbolTable.putType(funcName, new FuncType(retType, paramType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType));
     }
 
     private void mainPrintln() {
@@ -58,19 +58,19 @@ public class DeclarationListener extends Listener {
         ArrayList<Type> paramType = new ArrayList<>();
         paramType.add(symbolTable.getType("string"));
         String funcName = "println";
-        symbolTable.putType(funcName, new FuncType(retType, paramType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType));
     }
 
     private void mainGetString() {
         Type retType = symbolTable.getType("string");
         String funcName = "getString";
-        symbolTable.putType(funcName, new FuncType(retType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType));
     }
 
     private void mainGetInt() {
         Type retType = symbolTable.getType("int");
         String funcName = "getInt";
-        symbolTable.putType(funcName, new FuncType(retType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType));
     }
 
     private void mainToString() {
@@ -78,19 +78,19 @@ public class DeclarationListener extends Listener {
         ArrayList<Type> paramType = new ArrayList<>();
         paramType.add(symbolTable.getType("int"));
         String funcName = "toString";
-        symbolTable.putType(funcName, new FuncType(retType, paramType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType));
     }
 
     private void arraySize() {
         Type retType = symbolTable.getType("int");
         String funcName = ".size";
-        symbolTable.putType(funcName, new FuncType(retType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType));
     }
 
     private void stringLength() {
         Type retType = symbolTable.getType("int");
         String funcName = "string.length";
-        symbolTable.putType(funcName, new FuncType(retType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType));
     }
 
     private void stringSubstring() {
@@ -99,13 +99,13 @@ public class DeclarationListener extends Listener {
         ArrayList<Type> paramType = new ArrayList<>();
         paramType.add(symbolTable.getType("int"));
         paramType.add(symbolTable.getType("int"));
-        symbolTable.putType(funcName, new FuncType(retType, paramType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType));
     }
 
     private void stringParseInt() {
         Type retType = symbolTable.getType("int");
         String funcName = "string.parseInt";
-        symbolTable.putType(funcName, new FuncType(retType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType));
     }
 
     private void stringOrd() {
@@ -113,7 +113,7 @@ public class DeclarationListener extends Listener {
         String funcName = "string.ord";
         ArrayList<Type> paramType = new ArrayList<>();
         paramType.add(symbolTable.getType("int"));
-        symbolTable.putType(funcName, new FuncType(retType, paramType));
+        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType));
     }
 
     private boolean isMainValid() {

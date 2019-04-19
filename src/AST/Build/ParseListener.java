@@ -38,6 +38,7 @@ public class ParseListener extends Listener {
         ClassDeclNode classDecl = new ClassDeclNode(ctx.Identifier().getText());
         ctx.variableDeclaration().forEach(varDecl -> classDecl.addVarDecl((VarDeclStmtNode) map.get(varDecl)));
         ctx.functionDeclaration().forEach(funcDecl -> classDecl.addFuncDecl((FuncDeclNode) map.get(funcDecl)));
+        classDecl.setThis();
         map.put(ctx, classDecl);
     }
 
@@ -188,11 +189,6 @@ public class ParseListener extends Listener {
     @Override
     public void exitIdentifier(MxParser.IdentifierContext ctx) {
         map.put(ctx, new IdentExprNode(ctx.Identifier().getText()));
-    }
-
-    @Override
-    public void exitThis(MxParser.ThisContext ctx) {
-        map.put(ctx, new ThisExprNode());
     }
 
     @Override
