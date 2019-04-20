@@ -21,8 +21,7 @@ public class FuncDeclNode extends Node {
     void setThis(String className) {
         paramType.add(0, className);
         paramName.add(0, "this");
-        if (funcName != null)
-            funcName = className + "." + funcName;
+        funcName = className + "." + funcName;
     }
 
     @Override

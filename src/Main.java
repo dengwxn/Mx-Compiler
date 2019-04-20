@@ -21,7 +21,7 @@ public class Main {
         generateIR();
     }
 
-    static private void generateIR() throws Exception {
+    static private void generateIR() {
         IR.generate();
         // IR.dump();
     }

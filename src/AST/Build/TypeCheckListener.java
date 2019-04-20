@@ -64,7 +64,8 @@ public class TypeCheckListener extends Listener {
 
         for (FuncDeclNode funcDecl : classDecl.getFuncDecl()) {
             String funcName = funcDecl.getFuncName();
-            symbolTable.putType(filterClassName(funcName), symbolTable.getType(funcName));
+            if (!filterClassName(funcName).equals("null"))
+                symbolTable.putType(filterClassName(funcName), symbolTable.getType(funcName));
         }
     }
 
@@ -85,7 +86,7 @@ public class TypeCheckListener extends Listener {
     public void enterFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
         FuncType funcType = (FuncType) symbolTable.getType(funcDecl.getFuncName());
-        if (funcDecl.getFuncName() == null) {
+        if (funcDecl.getFuncName() == null || filterClassName(funcDecl.getFuncName()).equals("null")) {
             if (!symbolTable.isInClassDeclScope()) {
                 addCompileError("expect an identifier of the function name.");
             } else if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
