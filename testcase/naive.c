@@ -1,20 +1,9 @@
+A get() { return new A; } // this is valid
+
 class A {
-  B t;
-  A() {
-    t = new B();
-  }
+    A() {
+        return get(); // cannot return any value in a constructor
+    }
 }
 
-class B {
-  A t;
-  B() {
-    t = new A();
-  }
-}
-
-int main() {
-  A a = new A;
-  B b = new B;
-  a.t = b;
-  b.t = a;
-}
+int main() { return 0; }

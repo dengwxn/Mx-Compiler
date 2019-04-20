@@ -86,16 +86,17 @@ public class TypeCheckListener extends Listener {
     public void enterFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
         FuncType funcType = (FuncType) symbolTable.getType(funcDecl.getFuncName());
-        if (funcDecl.getFuncName() == null || filterClassName(funcDecl.getFuncName()).equals("null")) {
+        boolean funcNameIsNull = funcDecl.getFuncName() == null || filterClassName(funcDecl.getFuncName()).equals("null");
+        if (funcNameIsNull) {
             if (!symbolTable.isInClassDeclScope()) {
                 addCompileError("expect an identifier of the function name.");
             } else if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
                 addCompileError("an illegal function declaration without a function name.");
             }
-        } else {
-            symbolTable.setRetType(funcType.getRetType());
         }
         enterScope();
+        if (!funcNameIsNull)
+            symbolTable.setRetType(funcType.getRetType());
         ArrayList<String> paramType = funcDecl.getParamType();
         ArrayList<String> paramName = funcDecl.getParamName();
         ArrayList<Symbol> paramSymbol = new ArrayList<>();
