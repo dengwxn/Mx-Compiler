@@ -59,19 +59,19 @@ public class TypeCheckListener extends Listener {
             symbolTable.putType(varDecl.getName(), symbolTable.getType(varName));
             symbolTable.putSymbol(varDecl.getName(), classDecl.getName());
             putOffset(varName, (cnt++) << 3);
-            if (varDecl.getName().equals("this"))
-                addCompileError("'this' must not be a variable name.");
         }
         putOffset(classDecl.getName(), cnt << 3);
 
         for (FuncDeclNode funcDecl : classDecl.getFuncDecl()) {
             String funcName = funcDecl.getFuncName();
-            symbolTable.putType(filterClassName(funcName), symbolTable.getType(funcName));
+            if (!filterClassName(funcName).equals("null"))
+                symbolTable.putType(filterClassName(funcName), symbolTable.getType(funcName));
         }
     }
 
     private String filterClassName(String str) {
-        return str.substring(str.indexOf(".") + 1);
+        if (str.contains(".")) return str.substring(str.indexOf(".") + 1);
+        else return str;
     }
 
     @Override
@@ -83,26 +83,28 @@ public class TypeCheckListener extends Listener {
     @Override
     public void enterFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
-        FuncType funcType = (FuncType) symbolTable.getType(funcDecl.getFuncName());
-        if (funcDecl.getFuncName() == null) {
-            if (!symbolTable.isInClassDeclScope()) {
-                addCompileError("expect an identifier of the function name.");
-            } else if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
-                addCompileError("an illegal function declaration without a function name.");
+        if (funcDecl.getFuncName() == null)
+            addCompileError("expect an identifier of the function name.");
+        else {
+            enterScope();
+            FuncType funcType = (FuncType) symbolTable.getType(funcDecl.getFuncName());
+            if (filterClassName(funcDecl.getFuncName()).equals("null")) {
+                if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
+                    addCompileError("an illegal function declaration without a function name.");
+                }
+            } else {
+                symbolTable.setRetType(funcType.getRetType());
             }
+            ArrayList<String> paramType = funcDecl.getParamType();
+            ArrayList<String> paramName = funcDecl.getParamName();
+            ArrayList<Symbol> paramSymbol = new ArrayList<>();
+            for (int i = 0; i < paramName.size(); ++i) {
+                symbolTable.putType(paramName.get(i), typeTable.getType(paramType.get(i)));
+                symbolTable.putSymbol(paramName.get(i));
+                paramSymbol.add(symbolTable.getSymbol(paramName.get(i)));
+            }
+            funcDecl.setParamSymbol(paramSymbol);
         }
-        enterScope();
-        if (funcDecl.getFuncName() != null)
-            symbolTable.setRetType(funcType.getRetType());
-        ArrayList<String> paramType = funcDecl.getParamType();
-        ArrayList<String> paramName = funcDecl.getParamName();
-        ArrayList<Symbol> paramSymbol = new ArrayList<>();
-        for (int i = 0; i < paramName.size(); ++i) {
-            symbolTable.putType(paramName.get(i), typeTable.getType(paramType.get(i)));
-            symbolTable.putSymbol(paramName.get(i));
-            paramSymbol.add(symbolTable.getSymbol(paramName.get(i)));
-        }
-        funcDecl.setParamSymbol(paramSymbol);
     }
 
     @Override
@@ -299,9 +301,17 @@ public class TypeCheckListener extends Listener {
             if (symbol.isInClassDeclScope())
                 identExpr.setClassThis(symbolTable.getSymbol("this"));
         }
-        if (identExpr.getIdent().equals("this")) {
-            if (symbolTable.getClassName() == null)
-                addCompileError("expect a class scope to obtain 'this'.");
+    }
+
+    @Override
+    public void exitThis(MxParser.ThisContext ctx) {
+        ThisExprNode thisExpr = (ThisExprNode) map.get(ctx);
+        if (symbolTable.getClassName() != null) {
+            thisExpr.setType(symbolTable.getType(symbolTable.getClassName()));
+            thisExpr.setSymbol(symbolTable.getSymbol("this"));
+        }
+        else {
+            addCompileError("expect a class scope to obtain 'this'.");
         }
     }
 

@@ -192,6 +192,11 @@ public class ParseListener extends Listener {
     }
 
     @Override
+    public void exitThis(MxParser.ThisContext ctx) {
+        map.put(ctx, new ThisExprNode());
+    }
+
+    @Override
     public void exitSubExpr(MxParser.SubExprContext ctx) {
         map.put(ctx, map.get(ctx.expression()));
     }

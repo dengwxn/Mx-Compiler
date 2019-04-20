@@ -64,6 +64,7 @@ expression
     | expression op='&&' expression                           # LogicAnd
     | expression op='||' expression                           # LogicOr
     | expression op='=' expression                            # Assign
+    | THIS                                                    # This
     ;
 
 ifStatement
@@ -159,6 +160,7 @@ CONTINUE: 'continue';
 RETURN: 'return';
 NEW: 'new';
 CLASS: 'class';
+THIS: 'this';
 
 Number: [0-9]+;
 Identifier: [a-zA-Z][_a-zA-Z0-9]*;
