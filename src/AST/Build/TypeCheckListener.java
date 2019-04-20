@@ -40,7 +40,7 @@ public class TypeCheckListener extends Listener {
                     symbolTable.putSymbol(varDeclStmt.getName());
                     varDeclStmt.setSymbol(symbolTable.getSymbol(varDeclStmt.getName()));
                     Type exprType = varDeclStmt.getExprType();
-                    if (!defType.canOperateWith(exprType))
+                    if (exprType != null && !defType.canOperateWith(exprType))
                         addCompileError(String.format("expect a '%s' type expression.", defType.getTypeName()));
                 }
             }
@@ -69,8 +69,10 @@ public class TypeCheckListener extends Listener {
     }
 
     private String filterClassName(String str) {
-        if (str.contains(".")) return str.substring(str.indexOf(".") + 1);
-        else return str;
+        if (str != null && str.contains("."))
+            return str.substring(str.indexOf(".") + 1);
+        else
+            return str;
     }
 
     @Override

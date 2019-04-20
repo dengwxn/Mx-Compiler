@@ -57,9 +57,6 @@ public class SymbolTable {
             else
                 addCompileError(String.format("ambiguous redefinition on '%s'.", name));
         } else {
-            if (type == null) {
-                int d = 0;
-            }
             typeHashMap.put(name, type);
         }
     }
