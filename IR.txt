@@ -3,49 +3,14 @@ _globalVarDecl():
 		jmp 	_globalVarDecl.exit.1
 	_globalVarDecl.exit.1:
 
+Array.size(this):
+	Array.size.entry.0:
+		jmp 	Array.size.exit.1
+	Array.size.exit.1:
+
 main():
 	main.entry.0:
-		jmp 	new.body.1
-	new.body.1:
-		mov 	t3 10
-		add 	t3 1
-		shl 	t3 3
-		call 	malloc(t3)
-		mov 	t4 rax
-		mov 	[t4] 10
-		mov 	t2 t4
-		add 	t2 8
-		mov 	t1 t2
-		jmp 	new.exit.2
-	new.exit.2:
-		mov 	a t1
-		mov 	t5 a
-		mov 	t6 0
-		shl 	t6 3
-		jmp 	new.body.3
-	new.body.3:
-		mov 	t9 20
-		add 	t9 1
-		shl 	t9 3
-		call 	malloc(t9)
-		mov 	t10 rax
-		mov 	[t10] 20
-		mov 	t8 t10
-		add 	t8 8
-		mov 	t7 t8
-		jmp 	new.exit.4
-	new.exit.4:
-		mov 	[t5 + t6] t7
-		mov 	t11 a
-		mov 	t12 0
-		shl 	t12 3
-		mov 	t11 [t11 + t12]
-		mov 	t12 0
-		shl 	t12 3
-		call 	malloc(8)
-		mov 	t13 rax
-		mov 	[t11 + t12] t13
-		ret 	0
-		jmp 	main.exit.5
-	main.exit.5:
+		mov 	a 0
+		jmp 	main.exit.1
+	main.exit.1:
 

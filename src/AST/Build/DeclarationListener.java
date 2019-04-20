@@ -28,21 +28,15 @@ public class DeclarationListener extends Listener {
         symbolTable.setClassName(null);
     }
 
-    private String getScopeName() {
-        if (!symbolTable.isInClassDeclScope())
-            return "";
-        else
-            return symbolTable.getClassName() + ".";
-    }
-
     @Override
     public void enterFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
         Type retType = typeTable.getType(funcDecl.getRetType());
         ArrayList<Type> paramType = new ArrayList<>();
         funcDecl.getParamType().forEach(t -> paramType.add(typeTable.getType(t)));
-        String funcName = getScopeName() + funcDecl.getFuncName();
-        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType));
+        String funcName = funcDecl.getFuncName();
+        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType, funcName.contains(".")));
+        symbolTable.getType(funcName);
     }
 
     private void mainPrint() {

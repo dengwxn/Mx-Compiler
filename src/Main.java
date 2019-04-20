@@ -23,7 +23,7 @@ public class Main {
 
     static private void generateIR() throws Exception {
         IR.generate();
-        IR.dump();
+        // IR.dump();
     }
 
     static private void buildAST() throws Exception {

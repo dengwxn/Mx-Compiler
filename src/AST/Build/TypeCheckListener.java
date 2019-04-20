@@ -59,13 +59,19 @@ public class TypeCheckListener extends Listener {
             symbolTable.putType(varDecl.getName(), symbolTable.getType(varName));
             symbolTable.putSymbol(varDecl.getName(), classDecl.getName());
             putOffset(varName, (cnt++) << 3);
+            if (varDecl.getName().equals("this"))
+                addCompileError("'this' must not be a variable name.");
         }
         putOffset(classDecl.getName(), cnt << 3);
 
         for (FuncDeclNode funcDecl : classDecl.getFuncDecl()) {
-            String funcName = classDecl.getName() + "." + funcDecl.getFuncName();
-            symbolTable.putType(funcDecl.getFuncName(), symbolTable.getType(funcName));
+            String funcName = funcDecl.getFuncName();
+            symbolTable.putType(filterClassName(funcName), symbolTable.getType(funcName));
         }
+    }
+
+    private String filterClassName(String str) {
+        return str.substring(str.indexOf(".") + 1);
     }
 
     @Override
@@ -228,14 +234,18 @@ public class TypeCheckListener extends Listener {
                 funcCallExpr.setType(funcType.getRetType());
                 ArrayList<ExprNode> param = funcCallExpr.getParam();
                 ArrayList<Type> paramType = funcType.getParamType();
-                if (param.size() != paramType.size()) {
-                    addCompileError(String.format("expect %d parameter(s).", paramType.size()));
+
+                int thisShift = 0;
+                if (funcType.isClassFunc()) thisShift = 1;
+                if (param.size() + thisShift != paramType.size()) {
+                    addCompileError(String.format("expect %d parameter(s).", paramType.size() - thisShift));
                     return;
                 }
                 for (int i = 0; i < param.size(); ++i) {
-                    if (paramType.get(i) != null) {
-                        if (!paramType.get(i).canOperateWith(param.get(i).getType()))
-                            addCompileError(String.format("expect a '%s' type parameter.", paramType.get(i).getTypeName()));
+                    Type type = paramType.get(i + thisShift);
+                    if (type != null) {
+                        if (!type.canOperateWith(param.get(i).getType()))
+                            addCompileError(String.format("expect a '%s' type parameter.", type.getTypeName()));
                     }
                 }
             }
@@ -288,6 +298,10 @@ public class TypeCheckListener extends Listener {
             identExpr.setSymbol(symbol);
             if (symbol.isInClassDeclScope())
                 identExpr.setClassThis(symbolTable.getSymbol("this"));
+        }
+        if (identExpr.getIdent().equals("this")) {
+            if (symbolTable.getClassName() == null)
+                addCompileError("expect a class scope to obtain 'this'.");
         }
     }
 
