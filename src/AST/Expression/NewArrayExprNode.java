@@ -8,6 +8,7 @@ import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static IR.Instruction.Operator.BinaryOp.ADD;
@@ -56,7 +57,7 @@ public class NewArrayExprNode extends ExprNode {
             blockList.add(new MoveInstruction(len, size));
             blockList.add(new BinaryInstruction(ADD, len, 1));
             blockList.add(new BinaryInstruction(SHL, len, 3));
-            ArrayList<Operand> paramOp = new ArrayList<>(List.of(len));
+            ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(len));
             blockList.add(new FuncCallInstruction("malloc", paramOp));
             VirtualRegister ptr = getTemporaryRegister();
             blockList.add(new MoveInstruction(ptr, getVirtualRegister("rax")));

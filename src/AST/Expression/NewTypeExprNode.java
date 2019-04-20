@@ -8,6 +8,7 @@ import IR.Operand.Immediate;
 import IR.Operand.Operand;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static IR.Operand.Address.getOffset;
@@ -23,7 +24,7 @@ public class NewTypeExprNode extends ExprNode {
 
     @Override
     public void generateIR(BlockList blockList) {
-        ArrayList<Operand> paramOp = new ArrayList<>(List.of(new Immediate(getOffset(base))));
+        ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(new Immediate(getOffset(base))));
         Instruction malloc = new FuncCallInstruction("malloc", paramOp);
         operand = getTemporaryRegister();
         Instruction mov = new MoveInstruction(operand, getVirtualRegister("rax"));
