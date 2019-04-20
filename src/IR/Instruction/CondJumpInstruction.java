@@ -2,8 +2,9 @@ package IR.Instruction;
 
 import IR.Build.Block;
 
-public class CondJumpInstruction extends Instruction {
-    private Operator.CompareOp op;
+import static IR.Build.IR.formatInstruction;
+
+public class CondJumpInstruction extends CondInstruction {
     private Block dst;
 
     public CondJumpInstruction(Operator.CompareOp op, Block dst) {
@@ -14,7 +15,7 @@ public class CondJumpInstruction extends Instruction {
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
-        str.append("j" + op.toString().toLowerCase() + "\t\t" + dst.getLabel() + "\n");
+        str.append(formatInstruction("j" + op.toString().toLowerCase(), dst.getLabel()));
         return str.toString();
     }
 }

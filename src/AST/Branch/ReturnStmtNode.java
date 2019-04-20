@@ -3,12 +3,9 @@ package AST.Branch;
 import AST.Expression.ExprNode;
 import AST.Statement.StmtNode;
 import AST.Type.Type;
-import IR.Build.Block;
-import IR.Build.FunctionIR;
+import IR.Build.BlockList;
 import IR.Instruction.Instruction;
 import IR.Instruction.ReturnInstruction;
-
-import java.util.ArrayList;
 
 import static IR.Build.FunctionIR.jumpFuncExit;
 
@@ -20,14 +17,13 @@ public class ReturnStmtNode extends StmtNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
+    public void generateIR(BlockList blockList) {
         if (expr != null) {
-            expr.generateIR(block);
+            expr.generateIR(blockList);
             Instruction ret = new ReturnInstruction(expr.getOperand());
-            block.get(block.size() - 1).add(ret, jumpFuncExit);
-        }
-        else {
-            block.get(block.size() - 1).add(jumpFuncExit);
+            blockList.add(ret, jumpFuncExit);
+        } else {
+            blockList.add(jumpFuncExit);
         }
     }
 

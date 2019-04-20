@@ -3,13 +3,12 @@ package AST.Loop;
 import AST.Expression.ExprNode;
 import AST.Statement.StmtNode;
 import IR.Build.Block;
+import IR.Build.BlockList;
 import IR.Instruction.CompareInstruction;
 import IR.Instruction.CondJumpInstruction;
 import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
 import IR.Operand.Immediate;
-
-import java.util.ArrayList;
 
 import static IR.Build.FunctionIR.funcName;
 import static IR.Instruction.Operator.CompareOp.EQ;
@@ -26,46 +25,45 @@ public class ForStmtNode extends LoopStmtNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        Block forHeader = new Block(funcName + ".forHeader", block.size());
-        Block forBlock = new Block(funcName + ".forBlock", block.size() + 1);
-        Block forIncr = new Block(funcName + ".forIncr", block.size() + 2);
-        Block forExit = new Block(funcName + ".forExit", block.size() + 3);
+    public void generateIR(BlockList blockList) {
+        Block forHeader = new Block(funcName + ".forHeader");
+        Block forBlock = new Block(funcName + ".forBlock");
+        Block forIncr = new Block(funcName + ".forIncr");
+        Block forExit = new Block(funcName + ".forExit");
         Instruction jumpForIncr = new JumpInstruction(forIncr);
         Instruction jumpForExit = new JumpInstruction(forExit);
         loopContinueBlock = forIncr;
         loopBreakBlock = forExit;
 
-        // current block
-        if (initExpr != null) initExpr.generateIR(block);
+        // current blockList
+        if (initExpr != null) initExpr.generateIR(blockList);
         Instruction jumpForHeader = new JumpInstruction(forHeader);
-        block.get(block.size() - 1).add(jumpForHeader);
+        blockList.add(jumpForHeader);
 
         // forHeader
-        block.add(forHeader);
+        blockList.add(forHeader);
         if (condExpr != null) {
-            condExpr.generateIR(block);
-            Instruction cmp = new CompareInstruction(condExpr.getOperand(), new Immediate(1));
+            condExpr.generateIR(blockList);
+            Instruction cmp = new CompareInstruction(condExpr.getOperand(), 1);
             Instruction cjumpForBlock = new CondJumpInstruction(EQ, forBlock);
-            block.get(block.size() - 1).add(cmp, cjumpForBlock, jumpForExit);
-        }
-        else {
+            blockList.add(cmp, cjumpForBlock, jumpForExit);
+        } else {
             Instruction jumpForBlock = new JumpInstruction(forBlock);
-            block.get(block.size() - 1).add(jumpForBlock);
+            blockList.add(jumpForBlock);
         }
 
         // forBlock
-        block.add(forBlock);
-        if (thenStmt != null) thenStmt.generateIR(block);
-        block.get(block.size() - 1).add(jumpForIncr);
+        blockList.add(forBlock);
+        if (thenStmt != null) thenStmt.generateIR(blockList);
+        blockList.add(jumpForIncr);
 
         // forIncr
-        block.add(forIncr);
-        if (incrExpr != null) incrExpr.generateIR(block);
-        block.get(block.size() - 1).add(jumpForHeader);
+        blockList.add(forIncr);
+        if (incrExpr != null) incrExpr.generateIR(blockList);
+        blockList.add(jumpForHeader);
 
         // forExit
-        block.add(forExit);
+        blockList.add(forExit);
     }
 
 

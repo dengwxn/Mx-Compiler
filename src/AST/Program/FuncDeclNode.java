@@ -3,7 +3,7 @@ package AST.Program;
 import AST.Build.Node;
 import AST.Statement.BlockStmtNode;
 import AST.Table.Symbol;
-import IR.Build.Block;
+import IR.Build.BlockList;
 
 import java.util.ArrayList;
 
@@ -25,8 +25,8 @@ public class FuncDeclNode extends Node {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        blockStmt.generateIR(block);
+    public void generateIR(BlockList blockList) {
+        blockStmt.generateIR(blockList);
     }
 
     public ArrayList<Symbol> getParamSymbol() {

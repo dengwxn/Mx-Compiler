@@ -1,13 +1,10 @@
 package AST.Expression;
 
 import AST.Table.Symbol;
-import IR.Build.Block;
+import IR.Build.BlockList;
 import IR.Operand.Address;
-import IR.Operand.Immediate;
 import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
-
-import java.util.ArrayList;
 
 import static IR.Operand.Address.getOffset;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
@@ -22,13 +19,12 @@ public class IdentExprNode extends ExprNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
+    public void generateIR(BlockList blockList) {
         if (classThis != null) {
             Operand base = getVirtualRegister(classThis);
-            Immediate offset = new Immediate(getOffset(symbol.getPrevTypeName() + "." + ident));
+            int offset = getOffset(symbol.getPrevTypeName() + "." + ident);
             operand = new Address((VirtualRegister) base, offset);
-        }
-        else {
+        } else {
             operand = getVirtualRegister(symbol);
         }
     }

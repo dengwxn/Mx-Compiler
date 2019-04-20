@@ -60,6 +60,7 @@ public class TypeCheckListener extends Listener {
             symbolTable.putSymbol(varDecl.getName(), classDecl.getName());
             putOffset(varName, (cnt++) << 3);
         }
+        putOffset(classDecl.getName(), cnt << 3);
 
         for (FuncDeclNode funcDecl : classDecl.getFuncDecl()) {
             String funcName = classDecl.getName() + "." + funcDecl.getFuncName();
@@ -283,9 +284,11 @@ public class TypeCheckListener extends Listener {
         IdentExprNode identExpr = (IdentExprNode) map.get(ctx);
         identExpr.setType(symbolTable.getType(identExpr.getIdent()));
         Symbol symbol = symbolTable.getSymbol(identExpr.getIdent());
-        identExpr.setSymbol(symbol);
-        if (symbol.isInClassDeclScope())
-            identExpr.setClassThis(symbolTable.getSymbol("this"));
+        if (symbol != null) {
+            identExpr.setSymbol(symbol);
+            if (symbol.isInClassDeclScope())
+                identExpr.setClassThis(symbolTable.getSymbol("this"));
+        }
     }
 
     private void exitBinaryExpression(BinaryExprNode binaryExpr, Type base) {

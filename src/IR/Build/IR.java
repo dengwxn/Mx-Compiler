@@ -14,6 +14,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 
+import static IR.Operand.VirtualRegisterTable.setSpecificRegister;
+
 public class IR {
     static private FuncDeclNode globalVarDecl;
     static private HashMap<FuncDeclNode, FunctionIR> functionIRMap;
@@ -31,6 +33,7 @@ public class IR {
 
     static public void generate() {
         setGlobalVarDecl();
+        setSpecificRegister();
         functionIRMap = new HashMap<>();
         functionIRMap.put(globalVarDecl, new FunctionIR(globalVarDecl));
         for (Node decl : Tree.prog.getDecl()) {
@@ -52,5 +55,13 @@ public class IR {
         PrintStream fprint = new PrintStream(fout);
         fprint.print(str.toString());
         // System.out.println(str.toString());
+    }
+
+    static public String formatInstruction(String instr, String op) {
+        return String.format("\t\t%s \t%s\n", instr, op);
+    }
+
+    static public String formatInstruction(String instr, String lhs, String rhs) {
+        return String.format("\t\t%s \t%s %s\n", instr, lhs, rhs);
     }
 }

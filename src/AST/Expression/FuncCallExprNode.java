@@ -2,12 +2,17 @@ package AST.Expression;
 
 import AST.Type.FuncType;
 import AST.Type.Type;
-import IR.Build.Block;
+import AST.Type.VoidType;
+import IR.Build.BlockList;
 import IR.Instruction.FuncCallInstruction;
 import IR.Instruction.Instruction;
+import IR.Instruction.MoveInstruction;
 import IR.Operand.Operand;
 
 import java.util.ArrayList;
+
+import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
+import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class FuncCallExprNode extends ExprNode {
     private ExprNode func;
@@ -18,12 +23,18 @@ public class FuncCallExprNode extends ExprNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        param.forEach(p -> p.generateIR(block));
+    public void generateIR(BlockList blockList) {
+        param.forEach(p -> p.generateIR(blockList));
         ArrayList<Operand> paramOp = new ArrayList<>();
         param.forEach(p -> paramOp.add(p.getOperand()));
         Instruction call = new FuncCallInstruction(getFuncName(), paramOp);
-        block.get(block.size() - 1).add(call);
+        FuncType funcType = (FuncType) getFuncType();
+        blockList.add(call);
+        if (!(funcType.getRetType() instanceof VoidType)) {
+            operand = getTemporaryRegister();
+            Instruction mov = new MoveInstruction(operand, getVirtualRegister("rax"));
+            blockList.add(mov);
+        }
     }
 
     public String getFuncName() {

@@ -2,6 +2,8 @@ package IR.Instruction;
 
 import IR.Operand.Operand;
 
+import static IR.Build.IR.formatInstruction;
+
 public class ReturnInstruction extends Instruction {
     private Operand val;
 
@@ -12,7 +14,7 @@ public class ReturnInstruction extends Instruction {
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
-        str.append("ret" + "\t\t" + (val != null ? val.dump() : "") + "\n");
+        str.append(formatInstruction("ret", (val != null ? val.dump() : "")));
         return str.toString();
     }
 }

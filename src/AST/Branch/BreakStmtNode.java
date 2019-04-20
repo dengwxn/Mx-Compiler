@@ -2,11 +2,9 @@ package AST.Branch;
 
 import AST.Loop.LoopStmtNode;
 import AST.Statement.StmtNode;
-import IR.Build.Block;
+import IR.Build.BlockList;
 import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
-
-import java.util.ArrayList;
 
 public class BreakStmtNode extends StmtNode {
     private LoopStmtNode loopStmt;
@@ -16,9 +14,9 @@ public class BreakStmtNode extends StmtNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
+    public void generateIR(BlockList blockList) {
         Instruction jumpLoopExit = new JumpInstruction(loopStmt.getLoopBreakBlock());
-        block.get(block.size() - 1).add(jumpLoopExit);
+        blockList.add(jumpLoopExit);
     }
 
     @Override

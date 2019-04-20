@@ -1,7 +1,7 @@
 package IR.Build;
 
-import IR.Instruction.Instruction;
-import IR.Instruction.JumpInstruction;
+import IR.Instruction.*;
+import IR.Operand.Immediate;
 
 import java.util.ArrayList;
 
@@ -20,17 +20,31 @@ public class Block {
         this.id = id;
     }
 
-    public Block(String label, int id) {
-        this.label = label;
-        this.instr = new ArrayList<>();
-        this.id = id;
-    }
-
     public void add(Instruction... il) {
         for (Instruction i : il) {
             if (jump != null) break;
             instr.add(i);
             if (i instanceof JumpInstruction) jump = i;
+        }
+
+        if (instr.size() >= 4) {
+            if (instr.get(instr.size() - 4) instanceof CondSetInstruction
+                    && instr.get(instr.size() - 3) instanceof CompareInstruction
+                    && instr.get(instr.size() - 2) instanceof CondInstruction) {
+
+                CondSetInstruction condSet = (CondSetInstruction) instr.get(instr.size() - 4);
+                CompareInstruction cmp = (CompareInstruction) instr.get(instr.size() - 3);
+
+                if (condSet.getDst() == cmp.getLhs()
+                        && cmp.getRhs() instanceof Immediate
+                        && ((Immediate) cmp.getRhs()).getVal() == 1) {
+
+                    CondInstruction cond = (CondInstruction) instr.get(instr.size() - 2);
+                    cond.setOp(condSet.getOp());
+                    instr.remove(instr.size() - 3);
+                    instr.remove(instr.size() - 3);
+                }
+            }
         }
     }
 
@@ -41,7 +55,7 @@ public class Block {
     public String dump() {
         StringBuilder str = new StringBuilder();
         str.append("\t" + getLabel() + ":\n");
-        instr.forEach(i -> str.append("\t\t" + i.dump()));
+        instr.forEach(i -> str.append(i.dump()));
         return str.toString();
     }
 }

@@ -1,6 +1,6 @@
 package IR.Instruction;
 
-public class Instruction {
+abstract public class Instruction {
     public String dump() {
         return null;
     }

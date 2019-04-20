@@ -3,13 +3,12 @@ package AST.Loop;
 import AST.Expression.ExprNode;
 import AST.Statement.StmtNode;
 import IR.Build.Block;
+import IR.Build.BlockList;
 import IR.Instruction.CompareInstruction;
 import IR.Instruction.CondJumpInstruction;
 import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
 import IR.Operand.Immediate;
-
-import java.util.ArrayList;
 
 import static IR.Build.FunctionIR.funcName;
 import static IR.Instruction.Operator.CompareOp.EQ;
@@ -24,38 +23,37 @@ public class WhileStmtNode extends LoopStmtNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        Block whileHeader = new Block(funcName + ".whileHeader", block.size());
-        Block whileBlock = new Block(funcName + ".whileBlock", block.size() + 1);
-        Block whileExit = new Block(funcName + ".whileExit", block.size() + 2);
+    public void generateIR(BlockList blockList) {
+        Block whileHeader = new Block(funcName + ".whileHeader");
+        Block whileBlock = new Block(funcName + ".whileBlock");
+        Block whileExit = new Block(funcName + ".whileExit");
         Instruction jumpWhileExit = new JumpInstruction(whileExit);
         loopContinueBlock = whileHeader;
         loopBreakBlock = whileExit;
 
-        // current block
+        // current blockList
         Instruction jumpWhileHeader = new JumpInstruction(whileHeader);
-        block.get(block.size() - 1).add(jumpWhileHeader);
+        blockList.add(jumpWhileHeader);
 
         // whileHeader
-        block.add(whileHeader);
+        blockList.add(whileHeader);
         if (condExpr != null) {
-            condExpr.generateIR(block);
-            Instruction cmp = new CompareInstruction(condExpr.getOperand(), new Immediate(1));
+            condExpr.generateIR(blockList);
+            Instruction cmp = new CompareInstruction(condExpr.getOperand(), 1);
             Instruction cjumpWhileBlock = new CondJumpInstruction(EQ, whileBlock);
-            block.get(block.size() - 1).add(cmp, cjumpWhileBlock, jumpWhileExit);
-        }
-        else {
+            blockList.add(cmp, cjumpWhileBlock, jumpWhileExit);
+        } else {
             Instruction jumpWhileBlock = new JumpInstruction(whileBlock);
-            block.get(block.size() - 1).add(jumpWhileBlock);
+            blockList.add(jumpWhileBlock);
         }
 
         // whileBlock
-        block.add(whileBlock);
-        thenStmt.generateIR(block);
-        block.get(block.size() - 1).add(jumpWhileHeader);
+        blockList.add(whileBlock);
+        thenStmt.generateIR(blockList);
+        blockList.add(jumpWhileHeader);
 
         // whileExit
-        block.add(whileExit);
+        blockList.add(whileExit);
     }
 
     public ExprNode getCondExpr() {

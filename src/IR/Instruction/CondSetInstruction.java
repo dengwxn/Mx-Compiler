@@ -2,8 +2,9 @@ package IR.Instruction;
 
 import IR.Operand.Operand;
 
-public class CondSetInstruction extends Instruction {
-    private Operator.CompareOp op;
+import static IR.Build.IR.formatInstruction;
+
+public class CondSetInstruction extends CondInstruction {
     private Operand dst;
 
     public CondSetInstruction(Operator.CompareOp op, Operand dst) {
@@ -11,10 +12,18 @@ public class CondSetInstruction extends Instruction {
         this.dst = dst;
     }
 
+    public Operator.CompareOp getOp() {
+        return op;
+    }
+
+    public Operand getDst() {
+        return dst;
+    }
+
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
-        str.append("set" + op.toString().toLowerCase() + "\t" + dst.dump() + "\n");
+        str.append(formatInstruction("set" + op.toString().toLowerCase(), dst.dump()));
         return str.toString();
     }
 }

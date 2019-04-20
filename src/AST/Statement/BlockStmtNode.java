@@ -1,9 +1,8 @@
 package AST.Statement;
 
-import IR.Build.Block;
+import IR.Build.BlockList;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class BlockStmtNode extends StmtNode {
     private ArrayList<StmtNode> stmt;
@@ -13,8 +12,8 @@ public class BlockStmtNode extends StmtNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        stmt.forEach(s -> s.generateIR(block));
+    public void generateIR(BlockList blockList) {
+        stmt.forEach(s -> s.generateIR(blockList));
     }
 
     public void addStmt(StmtNode s) {

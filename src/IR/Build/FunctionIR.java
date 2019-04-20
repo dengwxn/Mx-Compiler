@@ -4,33 +4,29 @@ import AST.Program.FuncDeclNode;
 import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
 
-import java.util.ArrayList;
-
 public class FunctionIR {
     static public String funcName;
     static public Instruction jumpFuncExit;
     private FuncDeclNode funcDecl;
-    private ArrayList<Block> block;
+    private BlockList blockList;
 
     FunctionIR(FuncDeclNode funcDecl) {
+        blockList = new BlockList();
         this.funcDecl = funcDecl;
-        Block funcEntry = new Block(funcDecl.getFuncName() + ".entry", 0);
+        Block funcEntry = new Block(funcDecl.getFuncName() + ".entry");
         Block funcExit = new Block(funcDecl.getFuncName() + ".exit");
         jumpFuncExit = new JumpInstruction(funcExit);
         funcName = funcDecl.getFuncName();
 
-        block = new ArrayList<>();
-
         // funcEntry
-        block.add(funcEntry);
+        blockList.add(funcEntry);
 
         // blockStatement
-        funcDecl.generateIR(block);
+        funcDecl.generateIR(blockList);
 
         // funcExit
-        funcExit.setId(block.size());
-        block.add(funcExit);
-        block.get(block.size() - 2).add(jumpFuncExit);
+        blockList.add(jumpFuncExit);
+        blockList.add(funcExit);
     }
 
     public String dump() {
@@ -46,7 +42,7 @@ public class FunctionIR {
             }
         }
         str.append("):\n");
-        for (Block b : block)
+        for (Block b : blockList.getBlockList())
             str.append(b.dump());
         str.append("\n");
         return str.toString();

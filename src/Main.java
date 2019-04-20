@@ -1,4 +1,5 @@
 import AST.Build.*;
+import AST.Table.Symbol;
 import IR.Build.IR;
 import Parser.MxLexer;
 import Parser.MxParser;

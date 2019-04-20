@@ -1,11 +1,8 @@
 package AST.Expression;
 
 import AST.Type.Type;
-import IR.Build.Block;
+import IR.Build.BlockList;
 import IR.Instruction.*;
-import IR.Operand.Immediate;
-
-import java.util.ArrayList;
 
 import static IR.Instruction.Operator.BinaryOp.XOR;
 import static IR.Instruction.Operator.UnaryOp.*;
@@ -22,36 +19,38 @@ public class PrefixExprNode extends ExprNode {
 
     private Operator.UnaryOp convertUnaryOp() {
         switch (op) {
-            case "++": return INC;
-            case "--": return DEC;
-            case "-": return NEG;
-            case "~": return NOT;
-            default: return null;
+            case "++":
+                return INC;
+            case "--":
+                return DEC;
+            case "-":
+                return NEG;
+            case "~":
+                return NOT;
+            default:
+                return null;
         }
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        expr.generateIR(block);
+    public void generateIR(BlockList blockList) {
+        expr.generateIR(blockList);
         if (op.equals("+")) {
             operand = expr.getOperand();
-        }
-        else if (op.equals("!")) {
+        } else if (op.equals("!")) {
             operand = getTemporaryRegister();
             Instruction mov = new MoveInstruction(operand, expr.getOperand());
-            Instruction not = new BinaryInstruction(XOR, operand, new Immediate(1));
-            block.get(block.size() - 1).add(mov, not);
-        }
-        else if (op.equals("++") || op.equals("--")) {
+            Instruction not = new BinaryInstruction(XOR, operand, 1);
+            blockList.add(mov, not);
+        } else if (op.equals("++") || op.equals("--")) {
             operand = expr.getOperand();
             Instruction unary = new UnaryInstruction(convertUnaryOp(), operand);
-            block.get(block.size() - 1).add(unary);
-        }
-        else {
+            blockList.add(unary);
+        } else {
             operand = getTemporaryRegister();
             Instruction mov = new MoveInstruction(operand, expr.getOperand());
             Instruction unary = new UnaryInstruction(convertUnaryOp(), operand);
-            block.get(block.size() - 1).add(mov, unary);
+            blockList.add(mov, unary);
         }
     }
 

@@ -3,12 +3,10 @@ package AST.Statement;
 import AST.Expression.ExprNode;
 import AST.Table.Symbol;
 import AST.Type.Type;
-import IR.Build.Block;
+import IR.Build.BlockList;
 import IR.Instruction.Instruction;
 import IR.Instruction.MoveInstruction;
 import IR.Operand.Operand;
-
-import java.util.ArrayList;
 
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
@@ -24,11 +22,13 @@ public class VarDeclStmtNode extends StmtNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        expr.generateIR(block);
-        Operand dst = getVirtualRegister(symbol);
-        Instruction instr = new MoveInstruction(dst, expr.getOperand());
-        block.get(block.size() - 1).add(instr);
+    public void generateIR(BlockList blockList) {
+        if (expr != null) {
+            expr.generateIR(blockList);
+            Operand dst = getVirtualRegister(symbol);
+            Instruction mov = new MoveInstruction(dst, expr.getOperand());
+            blockList.add(mov);
+        }
     }
 
     public void setSymbol(Symbol symbol) {

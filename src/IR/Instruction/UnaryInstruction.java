@@ -2,6 +2,8 @@ package IR.Instruction;
 
 import IR.Operand.Operand;
 
+import static IR.Build.IR.formatInstruction;
+
 public class UnaryInstruction extends Instruction {
     private Operator.UnaryOp op;
     private Operand dst;
@@ -14,7 +16,7 @@ public class UnaryInstruction extends Instruction {
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
-        str.append(op.toString().toLowerCase() + "\t\t" + dst.dump() + "\n");
+        str.append(formatInstruction(op.toString().toLowerCase(), dst.dump()));
         return str.toString();
     }
 }

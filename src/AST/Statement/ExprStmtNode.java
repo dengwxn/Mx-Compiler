@@ -1,9 +1,7 @@
 package AST.Statement;
 
 import AST.Expression.ExprNode;
-import IR.Build.Block;
-
-import java.util.ArrayList;
+import IR.Build.BlockList;
 
 public class ExprStmtNode extends StmtNode {
     private ExprNode expr;
@@ -13,8 +11,8 @@ public class ExprStmtNode extends StmtNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        if (expr != null) expr.generateIR(block);
+    public void generateIR(BlockList blockList) {
+        if (expr != null) expr.generateIR(blockList);
     }
 
     @Override

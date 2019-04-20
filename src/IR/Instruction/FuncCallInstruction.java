@@ -4,6 +4,8 @@ import IR.Operand.Operand;
 
 import java.util.ArrayList;
 
+import static IR.Build.IR.formatInstruction;
+
 public class FuncCallInstruction extends Instruction {
     private String name;
     private ArrayList<Operand> param;
@@ -16,7 +18,7 @@ public class FuncCallInstruction extends Instruction {
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
-        str.append("call" + "\t" + name + "(");
+        str.append(name + "(");
         boolean comma = false;
         for (Operand p : param) {
             if (comma)
@@ -26,7 +28,7 @@ public class FuncCallInstruction extends Instruction {
                 comma = true;
             }
         }
-        str.append(")\n");
-        return str.toString();
+        str.append(")");
+        return formatInstruction("call", str.toString());
     }
 }

@@ -7,6 +7,10 @@ public class Immediate extends Operand {
         this.val = val;
     }
 
+    public int getVal() {
+        return val;
+    }
+
     @Override
     public String dump() {
         return String.valueOf(val);

@@ -1,15 +1,12 @@
 package AST.Expression;
 
 import AST.Type.ArrayType;
-import IR.Build.Block;
+import IR.Build.BlockList;
 import IR.Instruction.Instruction;
 import IR.Instruction.MoveInstruction;
 import IR.Operand.Address;
-import IR.Operand.Immediate;
 import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
-
-import java.util.ArrayList;
 
 import static IR.Operand.Address.getOffset;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
@@ -24,17 +21,17 @@ public class MemberExprNode extends ExprNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        ls.generateIR(block);
+    public void generateIR(BlockList blockList) {
+        ls.generateIR(blockList);
         Operand base = ls.getOperand();
-        Immediate offset = new Immediate(getOffset(getPrevTypeName() + "." +  ident));
+        int offset = getOffset(getPrevTypeName() + "." + ident);
         if (base instanceof VirtualRegister) {
             operand = new Address((VirtualRegister) base, offset);
         } else {
-            Operand lsAddr = getTemporaryRegister();
+            VirtualRegister lsAddr = getTemporaryRegister();
             Instruction movBase = new MoveInstruction(lsAddr, base);
-            block.get(block.size() - 1).add(movBase);
-            operand = new Address((VirtualRegister) lsAddr, offset);
+            blockList.add(movBase);
+            operand = new Address(lsAddr, offset);
         }
     }
 

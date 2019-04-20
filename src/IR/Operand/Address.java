@@ -5,25 +5,31 @@ import java.util.HashMap;
 public class Address extends Operand {
     static private HashMap<String, Integer> offsetTable = new HashMap<>();
     private VirtualRegister base;
-    private Immediate offset;
+    private Operand offset;
 
-    public Address(VirtualRegister base, Immediate offset) {
+    public Address(VirtualRegister base, Operand offset) {
         this.base = base;
         this.offset = offset;
     }
 
-    static public int getOffset(String symbol) {
-        return offsetTable.get(symbol);
+    public Address(VirtualRegister base, int offset) {
+        this.base = base;
+        this.offset = new Immediate(offset);
     }
 
-    static public void putOffset(String symbol, Integer offset) {
-        offsetTable.put(symbol, offset);
+    static public int getOffset(String name) {
+        return offsetTable.get(name);
+    }
+
+    static public void putOffset(String name, Integer offset) {
+        offsetTable.put(name, offset);
     }
 
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
-        str.append("[" + base.dump() + " + " + offset.dump() + "]");
+        if (offset instanceof Immediate && ((Immediate) offset).getVal() == 0) str.append("[" + base.dump() + "]");
+        else str.append("[" + base.dump() + " + " + offset.dump() + "]");
         return str.toString();
     }
 }

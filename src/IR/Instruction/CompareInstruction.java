@@ -1,19 +1,35 @@
 package IR.Instruction;
 
+import IR.Operand.Immediate;
 import IR.Operand.Operand;
 
-public class CompareInstruction extends Instruction {
-    private Operand dst, src;
+import static IR.Build.IR.formatInstruction;
 
-    public CompareInstruction(Operand dst, Operand src) {
-        this.dst = dst;
-        this.src = src;
+public class CompareInstruction extends Instruction {
+    private Operand lhs, rhs;
+
+    public CompareInstruction(Operand lhs, Operand rhs) {
+        this.lhs = lhs;
+        this.rhs = rhs;
+    }
+
+    public CompareInstruction(Operand lhs, int rhs) {
+        this.lhs = lhs;
+        this.rhs = new Immediate(rhs);
+    }
+
+    public Operand getLhs() {
+        return lhs;
+    }
+
+    public Operand getRhs() {
+        return rhs;
     }
 
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
-        str.append("cmp\t\t" + dst.dump() + " " + src.dump() + "\n");
+        str.append(formatInstruction("cmp", lhs.dump(), rhs.dump()));
         return str.toString();
     }
 }

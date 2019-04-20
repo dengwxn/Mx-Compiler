@@ -1,11 +1,9 @@
 package AST.Expression;
 
 import AST.Type.Type;
-import IR.Build.Block;
+import IR.Build.BlockList;
 import IR.Instruction.Instruction;
 import IR.Instruction.MoveInstruction;
-
-import java.util.ArrayList;
 
 public class AssignExprNode extends ExprNode {
     private ExprNode lhs, rhs;
@@ -16,11 +14,11 @@ public class AssignExprNode extends ExprNode {
     }
 
     @Override
-    public void generateIR(ArrayList<Block> block) {
-        lhs.generateIR(block);
-        rhs.generateIR(block);
+    public void generateIR(BlockList blockList) {
+        lhs.generateIR(blockList);
+        rhs.generateIR(blockList);
         Instruction instr = new MoveInstruction(lhs.getOperand(), rhs.getOperand());
-        block.get(block.size() - 1).add(instr);
+        blockList.add(instr);
     }
 
     public Type getLhsType() {

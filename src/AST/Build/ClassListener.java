@@ -5,6 +5,7 @@ import AST.Type.*;
 import Parser.MxParser;
 
 import static AST.Build.Tree.*;
+import static IR.Operand.Address.putOffset;
 
 public class ClassListener extends Listener {
     @Override
