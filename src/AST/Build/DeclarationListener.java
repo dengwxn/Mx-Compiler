@@ -35,7 +35,8 @@ public class DeclarationListener extends Listener {
         ArrayList<Type> paramType = new ArrayList<>();
         funcDecl.getParamType().forEach(t -> paramType.add(typeTable.getType(t)));
         String funcName = funcDecl.getFuncName();
-        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType, funcName.contains(".")));
+        boolean isClassFunc = funcName != null && funcName.contains(".");
+        symbolTable.putType(funcName, new FuncType(funcName, retType, paramType, isClassFunc));
         symbolTable.getType(funcName);
     }
 

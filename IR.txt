@@ -1,16 +1,18 @@
+test.null(this, x):
+	test.null.entry.0:
+		mov 	x 1
+		mov 	[this + 8] 2
+		jmp 	test.null.exit.1
+	test.null.exit.1:
+
+main():
+	main.entry.0:
+		ret 	0
+		jmp 	main.exit.1
+	main.exit.1:
+
 _globalVarDecl():
 	_globalVarDecl.entry.0:
 		jmp 	_globalVarDecl.exit.1
 	_globalVarDecl.exit.1:
-
-Array.size(this):
-	Array.size.entry.0:
-		jmp 	Array.size.exit.1
-	Array.size.exit.1:
-
-main():
-	main.entry.0:
-		mov 	a 0
-		jmp 	main.exit.1
-	main.exit.1:
 

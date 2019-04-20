@@ -40,7 +40,7 @@ public class TypeCheckListener extends Listener {
                     symbolTable.putSymbol(varDeclStmt.getName());
                     varDeclStmt.setSymbol(symbolTable.getSymbol(varDeclStmt.getName()));
                     Type exprType = varDeclStmt.getExprType();
-                    if (exprType != null && !defType.canOperateWith(exprType))
+                    if (!defType.canOperateWith(exprType))
                         addCompileError(String.format("expect a '%s' type expression.", defType.getTypeName()));
                 }
             }
@@ -64,8 +64,7 @@ public class TypeCheckListener extends Listener {
 
         for (FuncDeclNode funcDecl : classDecl.getFuncDecl()) {
             String funcName = funcDecl.getFuncName();
-            if (!filterClassName(funcName).equals("null"))
-                symbolTable.putType(filterClassName(funcName), symbolTable.getType(funcName));
+            symbolTable.putType(filterClassName(funcName), symbolTable.getType(funcName));
         }
     }
 
@@ -83,28 +82,27 @@ public class TypeCheckListener extends Listener {
     @Override
     public void enterFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
-        if (funcDecl.getFuncName() == null)
-            addCompileError("expect an identifier of the function name.");
-        else {
-            enterScope();
-            FuncType funcType = (FuncType) symbolTable.getType(funcDecl.getFuncName());
-            if (filterClassName(funcDecl.getFuncName()).equals("null")) {
-                if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
-                    addCompileError("an illegal function declaration without a function name.");
-                }
-            } else {
-                symbolTable.setRetType(funcType.getRetType());
+        FuncType funcType = (FuncType) symbolTable.getType(funcDecl.getFuncName());
+        enterScope();
+        if (funcDecl.getFuncName() == null) {
+            if (!symbolTable.isInClassDeclScope()) {
+                addCompileError("expect an identifier of the function name.");
+            } else if (!symbolTable.getClassName().equals(funcType.getRetType().getTypeName())) {
+                addCompileError("an illegal function declaration without a function name.");
             }
-            ArrayList<String> paramType = funcDecl.getParamType();
-            ArrayList<String> paramName = funcDecl.getParamName();
-            ArrayList<Symbol> paramSymbol = new ArrayList<>();
-            for (int i = 0; i < paramName.size(); ++i) {
-                symbolTable.putType(paramName.get(i), typeTable.getType(paramType.get(i)));
-                symbolTable.putSymbol(paramName.get(i));
-                paramSymbol.add(symbolTable.getSymbol(paramName.get(i)));
-            }
-            funcDecl.setParamSymbol(paramSymbol);
+        } else {
+            symbolTable.setRetType(funcType.getRetType());
         }
+
+        ArrayList<String> paramType = funcDecl.getParamType();
+        ArrayList<String> paramName = funcDecl.getParamName();
+        ArrayList<Symbol> paramSymbol = new ArrayList<>();
+        for (int i = 0; i < paramName.size(); ++i) {
+            symbolTable.putType(paramName.get(i), typeTable.getType(paramType.get(i)));
+            symbolTable.putSymbol(paramName.get(i));
+            paramSymbol.add(symbolTable.getSymbol(paramName.get(i)));
+        }
+        funcDecl.setParamSymbol(paramSymbol);
     }
 
     @Override
@@ -309,8 +307,7 @@ public class TypeCheckListener extends Listener {
         if (symbolTable.getClassName() != null) {
             thisExpr.setType(symbolTable.getType(symbolTable.getClassName()));
             thisExpr.setSymbol(symbolTable.getSymbol("this"));
-        }
-        else {
+        } else {
             addCompileError("expect a class scope to obtain 'this'.");
         }
     }
@@ -471,7 +468,7 @@ public class TypeCheckListener extends Listener {
         if (retType != null) {
             if (!retType.canOperateWith(exprType))
                 addCompileError(String.format("expect a '%s' type expression.", retType.getTypeName()));
-        } else if (exprType != null)
+        } else if (exprType != null && symbolTable.getClassName() != null)
             addCompileError("expected no value returned in a class constructor.");
     }
 }
