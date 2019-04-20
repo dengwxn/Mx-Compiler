@@ -85,7 +85,6 @@ public class TypeCheckListener extends Listener {
     public void enterFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         FuncDeclNode funcDecl = (FuncDeclNode) map.get(ctx);
         FuncType funcType = (FuncType) symbolTable.getType(funcDecl.getFuncName());
-        enterScope();
         if (funcDecl.getFuncName() == null) {
             if (!symbolTable.isInClassDeclScope()) {
                 addCompileError("expect an identifier of the function name.");
@@ -95,7 +94,7 @@ public class TypeCheckListener extends Listener {
         } else {
             symbolTable.setRetType(funcType.getRetType());
         }
-
+        enterScope();
         ArrayList<String> paramType = funcDecl.getParamType();
         ArrayList<String> paramName = funcDecl.getParamName();
         ArrayList<Symbol> paramSymbol = new ArrayList<>();
