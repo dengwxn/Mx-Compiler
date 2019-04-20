@@ -17,7 +17,7 @@ import static AST.Build.Tree.errorListener;
 public class Main {
     static public void main(String[] args) throws Exception {
         buildAST();
-        Tree.dump();
+        // Tree.dump();
         generateIR();
     }
 
@@ -27,8 +27,8 @@ public class Main {
     }
 
     static private void buildAST() throws Exception {
-        InputStream is = new FileInputStream("./testcase/naive.c");
-        // InputStream is = System.in;
+        // InputStream is = new FileInputStream("./testcase/naive.c");
+        InputStream is = System.in;
         CharStream input = CharStreams.fromStream(is);
         MxLexer lexer = new MxLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
