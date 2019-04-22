@@ -1,14 +1,21 @@
 package AST.Expression;
 
+import AST.Type.StringType;
 import AST.Type.Type;
 import IR.Build.Block;
 import IR.Build.BlockList;
 import IR.Instruction.*;
+import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static IR.Build.FunctionIR.funcName;
 import static IR.Instruction.Operator.BinaryOp.*;
 import static IR.Instruction.Operator.CompareOp.*;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
+import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class BinaryExprNode extends ExprNode {
     private String op;
@@ -66,6 +73,11 @@ public class BinaryExprNode extends ExprNode {
         }
     }
 
+    private String convertStringOp() {
+        if (op.equals("+")) return "add";
+        else return convertCompareOp().toString().toLowerCase();
+    }
+
     @Override
     public void generateIR(BlockList blockList) {
         operand = getTemporaryRegister();
@@ -111,7 +123,11 @@ public class BinaryExprNode extends ExprNode {
         } else {
             lhs.generateIR(blockList);
             rhs.generateIR(blockList);
-            if (convertBinaryOp() != null) {
+            if (lhs.getType() instanceof StringType) {
+                ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(lhs.getOperand(), rhs.getOperand()));
+                blockList.add(new FuncCallInstruction("string."+ convertStringOp(), paramOp));
+                blockList.add(new MoveInstruction(operand, getVirtualRegister("rax")));
+            } else if (convertBinaryOp() != null) {
                 Instruction mov = new MoveInstruction(operand, lhs.getOperand());
                 Instruction binary = new BinaryInstruction(convertBinaryOp(), operand, rhs.getOperand());
                 blockList.add(mov, binary);

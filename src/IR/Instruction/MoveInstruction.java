@@ -19,11 +19,6 @@ public class MoveInstruction extends Instruction {
         this.src = new Immediate(src);
     }
 
-    public MoveInstruction(Operand dst, String src) {
-        this.dst = dst;
-        this.src = new StringConstant(src);
-    }
-
     @Override
     public void livenessAnalysis() {
         putDef(dst);
