@@ -2,6 +2,7 @@ package IR.Instruction;
 
 import IR.Operand.Immediate;
 import IR.Operand.Operand;
+import IR.Operand.StringConstant;
 
 import static IR.Build.IR.formatInstruction;
 
@@ -16,6 +17,11 @@ public class MoveInstruction extends Instruction {
     public MoveInstruction(Operand dst, int src) {
         this.dst = dst;
         this.src = new Immediate(src);
+    }
+
+    public MoveInstruction(Operand dst, String src) {
+        this.dst = dst;
+        this.src = new StringConstant(src);
     }
 
     @Override

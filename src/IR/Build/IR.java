@@ -13,12 +13,20 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Map;
 
 import static IR.Operand.VirtualRegisterTable.setSpecificRegister;
 
 public class IR {
     static private FuncDeclNode globalVarDecl;
     static public HashMap<FuncDeclNode, FunctionIR> functionIRMap;
+    static public HashMap<String, Integer> stringConst;
+
+    static public int putStringConst(String str) {
+        if (!stringConst.containsKey(str))
+            stringConst.put(str, stringConst.size());
+        return stringConst.get(str);
+    }
 
     static private void setGlobalVarDecl() {
         BlockStmtNode block = new BlockStmtNode();
@@ -35,6 +43,7 @@ public class IR {
         setGlobalVarDecl();
         setSpecificRegister();
         functionIRMap = new HashMap<>();
+        stringConst = new HashMap<>();
         functionIRMap.put(globalVarDecl, new FunctionIR(globalVarDecl));
         for (Node decl : Tree.prog.getDecl()) {
             if (decl instanceof FuncDeclNode) {
@@ -48,8 +57,25 @@ public class IR {
 
     static public void dump() throws Exception {
         StringBuilder str = new StringBuilder();
+
         for (FunctionIR functionIR : functionIRMap.values())
             str.append(functionIR.dump());
+
+        str.append("section .data\n");
+        for (Map.Entry<String, Integer> entry : stringConst.entrySet()) {
+            String key = entry.getKey();
+            key = key.substring(1, key.length() - 1);
+            key = key.replace("\\b", "\b");
+            key = key.replace("\\t", "\t");
+            key = key.replace("\\n", "\n");
+            key = key.replace("\\r", "\r");
+            key = key.replace("\\\"", "\"");
+            key = key.replace("\\\\", "\\");
+            str.append(formatInstruction("dq  ", String.valueOf(key.length())));
+            str.append("_string_constant_" + key.length() + ":\n");
+            str.append(formatInstruction("db  ", entry.getKey() + ", 0"));
+        }
+
         File file = new File("IR.txt");
         OutputStream fout = new FileOutputStream(file);
         PrintStream fprint = new PrintStream(fout);

@@ -1,11 +1,30 @@
-Test.null(this):
-	Test.null.prologue.0:
-		jmp 	Test.null.entry.1
-	Test.null.entry.1:
-		mov 	[this] 1
-		mov 	[this + 8] 2
-		jmp 	Test.null.epilogue.2
-	Test.null.epilogue.2:
+main():
+	main.prologue.0:
+		jmp 	main.entry.1
+	main.entry.1:
+		call 	_global_var_decl()
+		mov 	t1 _string_constant_0
+		mov 	a t1
+		call 	string.substring(0, 1)
+		mov 	t2 rax
+		jmp 	new.body.2
+	new.body.2:
+		mov 	t5 3
+		add 	t5 1
+		shl 	t5 3
+		call 	malloc(t5)
+		mov 	t6 rax
+		mov 	[t6] 3
+		mov 	t4 t6
+		add 	t4 8
+		mov 	t3 t4
+		jmp 	new.exit.3
+	new.exit.3:
+		mov 	b t3
+		call 	array.size()
+		mov 	t7 rax
+		jmp 	main.epilogue.4
+	main.epilogue.4:
 
 _global_var_decl():
 	_global_var_decl.prologue.0:
@@ -14,26 +33,7 @@ _global_var_decl():
 		jmp 	_global_var_decl.epilogue.2
 	_global_var_decl.epilogue.2:
 
-Test.f(this, x):
-	Test.f.prologue.0:
-		jmp 	Test.f.entry.1
-	Test.f.entry.1:
-		mov 	x 1
-		mov 	[this] 2
-		mov 	[this + 8] 3
-		jmp 	Test.f.epilogue.2
-	Test.f.epilogue.2:
-
-main():
-	main.prologue.0:
-		jmp 	main.entry.1
-	main.entry.1:
-		call 	_global_var_decl()
-		call 	malloc(16)
-		mov 	t1 rax
-		call 	Test.null(t1)
-		mov 	t t1
-		ret 	0
-		jmp 	main.epilogue.2
-	main.epilogue.2:
-
+section .data
+		dq   	10
+_string_constant_10:
+		db   	"hello\n\n\n\\\t", 0
