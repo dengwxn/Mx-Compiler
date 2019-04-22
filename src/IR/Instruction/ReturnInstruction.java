@@ -12,6 +12,11 @@ public class ReturnInstruction extends Instruction {
     }
 
     @Override
+    public void livenessAnalysis() {
+        putUse(val);
+    }
+
+    @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
         str.append(formatInstruction("ret", (val != null ? val.dump() : "")));

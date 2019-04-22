@@ -1,32 +1,49 @@
 package IR.Build;
 
 import AST.Program.FuncDeclNode;
+import IR.Instruction.FuncCallInstruction;
 import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
 
+import java.util.ArrayList;
+
 public class FunctionIR {
     static public String funcName;
-    static public Instruction jumpFuncExit;
+    static public Instruction jumpFuncEpilogue;
     private FuncDeclNode funcDecl;
     private BlockList blockList;
 
     FunctionIR(FuncDeclNode funcDecl) {
         blockList = new BlockList();
         this.funcDecl = funcDecl;
-        Block funcEntry = new Block(funcDecl.getFuncName() + ".entry");
-        Block funcExit = new Block(funcDecl.getFuncName() + ".exit");
-        jumpFuncExit = new JumpInstruction(funcExit);
         funcName = funcDecl.getFuncName();
+        Block funcPrologue = new Block(funcName + ".prologue");
+        Block funcEntry = new Block(funcName + ".entry");
+        Block funcEpilogue = new Block(funcName + ".epilogue");
+        jumpFuncEpilogue = new JumpInstruction(funcEpilogue);
+
+        // funcPrologue
+        blockList.add(funcPrologue);
+        blockList.add(new JumpInstruction(funcEntry));
 
         // funcEntry
         blockList.add(funcEntry);
+        if (funcName.equals("main"))
+            blockList.add(new FuncCallInstruction("_global_var_decl", new ArrayList<>()));
 
         // blockStatement
         funcDecl.generateIR(blockList);
 
         // funcExit
-        blockList.add(jumpFuncExit);
-        blockList.add(funcExit);
+        blockList.add(jumpFuncEpilogue);
+        blockList.add(funcEpilogue);
+
+        // optimize
+        blockList.linkPreSuc();
+    }
+
+    public void livenessAnalysis() {
+        blockList.livenessAnalysis();
     }
 
     public String dump() {

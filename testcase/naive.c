@@ -1,9 +1,19 @@
-A get() { return new A; } // this is valid
+class Test {
+    int x;
+    int y;
+    void f(int x) {
+        x = 1;
+        this.x = 2;
+        y = 3;
+    }
 
-class A {
-    A() {
-        return get(); // cannot return any value in a constructor
+    Test() {
+        x = 1;
+        y = 2;
     }
 }
 
-int main() { return 0; }
+int main() {
+    Test t = new Test();
+    return 0;
+}

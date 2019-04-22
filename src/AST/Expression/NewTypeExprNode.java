@@ -1,5 +1,6 @@
 package AST.Expression;
 
+import AST.Type.ClassType;
 import IR.Build.BlockList;
 import IR.Instruction.FuncCallInstruction;
 import IR.Instruction.Instruction;
@@ -9,8 +10,8 @@ import IR.Operand.Operand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
+import static AST.Build.Tree.symbolTable;
 import static IR.Operand.Address.getOffset;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
@@ -24,11 +25,18 @@ public class NewTypeExprNode extends ExprNode {
 
     @Override
     public void generateIR(BlockList blockList) {
-        ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(new Immediate(getOffset(base))));
-        Instruction malloc = new FuncCallInstruction("malloc", paramOp);
+        ArrayList<Operand> paramOpMem = new ArrayList<>(Arrays.asList(new Immediate(getOffset(base))));
+        Instruction mallocMem = new FuncCallInstruction("malloc", paramOpMem);
         operand = getTemporaryRegister();
         Instruction mov = new MoveInstruction(operand, getVirtualRegister("rax"));
-        blockList.add(malloc, mov);
+        blockList.add(mallocMem, mov);
+
+        String newType = base + ".null";
+        if (symbolTable.getType(newType) != null) {
+            ArrayList<Operand> paramOpNew = new ArrayList<>(Arrays.asList(operand));
+            Instruction callNew = new FuncCallInstruction(newType, paramOpNew);
+            blockList.add(callNew);
+        }
     }
 
     public String getBase() {

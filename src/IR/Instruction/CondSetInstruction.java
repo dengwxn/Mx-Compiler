@@ -12,6 +12,11 @@ public class CondSetInstruction extends CondInstruction {
         this.dst = dst;
     }
 
+    @Override
+    public void livenessAnalysis() {
+        putDef(dst);
+    }
+
     public Operator.CompareOp getOp() {
         return op;
     }

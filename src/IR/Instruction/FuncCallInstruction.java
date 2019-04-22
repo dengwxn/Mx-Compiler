@@ -16,6 +16,11 @@ public class FuncCallInstruction extends Instruction {
     }
 
     @Override
+    public void livenessAnalysis() {
+        param.forEach(this::putUse);
+    }
+
+    @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
         str.append(name + "(");

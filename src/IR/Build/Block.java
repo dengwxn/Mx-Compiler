@@ -16,6 +16,27 @@ public class Block {
         this.instr = new ArrayList<>();
     }
 
+    void linkPreSuc() {
+        for (int i = 0; i < instr.size() - 1; ++i) {
+            Instruction u = instr.get(i);
+            Instruction v = instr.get(i + 1);
+            u.linkSuc(v);
+            v.linkPre(u);
+        }
+    }
+
+    void livenessAnalysis() {
+        instr.forEach(Instruction::livenessAnalysis);
+    }
+
+    Instruction getHead() {
+        return instr.size() > 0 ? instr.get(0) : null;
+    }
+
+    JumpInstruction getTail() {
+        return (JumpInstruction) jump;
+    }
+
     void setId(int id) {
         this.id = id;
     }

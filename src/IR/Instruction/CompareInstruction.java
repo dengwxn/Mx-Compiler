@@ -18,6 +18,12 @@ public class CompareInstruction extends Instruction {
         this.rhs = new Immediate(rhs);
     }
 
+    @Override
+    public void livenessAnalysis() {
+        putUse(lhs);
+        putUse(rhs);
+    }
+
     public Operand getLhs() {
         return lhs;
     }

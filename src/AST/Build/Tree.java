@@ -12,7 +12,7 @@ public class Tree {
     static public ErrorListener errorListener = new ErrorListener();
     static public ProgNode prog;
     static ParseTreeProperty<Object> map = new ParseTreeProperty<>();
-    static SymbolTable symbolTable = new SymbolTable(null);
+    static public SymbolTable symbolTable = new SymbolTable(null);
     static TypeTable typeTable = new TypeTable();
     static private Stack<LoopStmtNode> loopStmtStack = new Stack<>();
 

@@ -19,6 +19,12 @@ public class MoveInstruction extends Instruction {
     }
 
     @Override
+    public void livenessAnalysis() {
+        putDef(dst);
+        putUse(src);
+    }
+
+    @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
         str.append(formatInstruction("mov", dst.dump(), src.dump()));

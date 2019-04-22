@@ -1,18 +1,39 @@
-test.null(this, x):
-	test.null.entry.0:
-		mov 	x 1
+Test.null(this):
+	Test.null.prologue.0:
+		jmp 	Test.null.entry.1
+	Test.null.entry.1:
+		mov 	[this] 1
 		mov 	[this + 8] 2
-		jmp 	test.null.exit.1
-	test.null.exit.1:
+		jmp 	Test.null.epilogue.2
+	Test.null.epilogue.2:
+
+_global_var_decl():
+	_global_var_decl.prologue.0:
+		jmp 	_global_var_decl.entry.1
+	_global_var_decl.entry.1:
+		jmp 	_global_var_decl.epilogue.2
+	_global_var_decl.epilogue.2:
+
+Test.f(this, x):
+	Test.f.prologue.0:
+		jmp 	Test.f.entry.1
+	Test.f.entry.1:
+		mov 	x 1
+		mov 	[this] 2
+		mov 	[this + 8] 3
+		jmp 	Test.f.epilogue.2
+	Test.f.epilogue.2:
 
 main():
-	main.entry.0:
+	main.prologue.0:
+		jmp 	main.entry.1
+	main.entry.1:
+		call 	_global_var_decl()
+		call 	malloc(16)
+		mov 	t1 rax
+		call 	Test.null(t1)
+		mov 	t t1
 		ret 	0
-		jmp 	main.exit.1
-	main.exit.1:
-
-_globalVarDecl():
-	_globalVarDecl.entry.0:
-		jmp 	_globalVarDecl.exit.1
-	_globalVarDecl.exit.1:
+		jmp 	main.epilogue.2
+	main.epilogue.2:
 

@@ -18,7 +18,7 @@ import static IR.Operand.VirtualRegisterTable.setSpecificRegister;
 
 public class IR {
     static private FuncDeclNode globalVarDecl;
-    static private HashMap<FuncDeclNode, FunctionIR> functionIRMap;
+    static public HashMap<FuncDeclNode, FunctionIR> functionIRMap;
 
     static private void setGlobalVarDecl() {
         BlockStmtNode block = new BlockStmtNode();
@@ -27,7 +27,7 @@ public class IR {
                 block.addStmt((StmtNode) decl);
         }
         globalVarDecl = new FuncDeclNode();
-        globalVarDecl.setFuncName("_globalVarDecl");
+        globalVarDecl.setFuncName("_global_var_decl");
         globalVarDecl.setBlockStmt(block);
     }
 

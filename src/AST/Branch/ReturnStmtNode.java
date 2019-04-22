@@ -7,7 +7,7 @@ import IR.Build.BlockList;
 import IR.Instruction.Instruction;
 import IR.Instruction.ReturnInstruction;
 
-import static IR.Build.FunctionIR.jumpFuncExit;
+import static IR.Build.FunctionIR.jumpFuncEpilogue;
 
 public class ReturnStmtNode extends StmtNode {
     private ExprNode expr;
@@ -21,9 +21,9 @@ public class ReturnStmtNode extends StmtNode {
         if (expr != null) {
             expr.generateIR(blockList);
             Instruction ret = new ReturnInstruction(expr.getOperand());
-            blockList.add(ret, jumpFuncExit);
+            blockList.add(ret, jumpFuncEpilogue);
         } else {
-            blockList.add(jumpFuncExit);
+            blockList.add(jumpFuncEpilogue);
         }
     }
 

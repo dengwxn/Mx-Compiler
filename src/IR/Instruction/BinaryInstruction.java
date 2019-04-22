@@ -22,6 +22,13 @@ public class BinaryInstruction extends Instruction {
     }
 
     @Override
+    public void livenessAnalysis() {
+        putDef(dst);
+        putUse(dst);
+        putUse(src);
+    }
+
+    @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
         str.append(formatInstruction(op.toString().toLowerCase(), dst.dump(), src.dump()));

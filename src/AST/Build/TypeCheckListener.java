@@ -66,6 +66,8 @@ public class TypeCheckListener extends Listener {
             String funcName = funcDecl.getFuncName();
             if (!filterClassName(funcName).equals("null"))
                 symbolTable.putType(filterClassName(funcName), symbolTable.getType(funcName));
+            else
+                symbolTable.putType(funcName, symbolTable.getType(funcName));
         }
     }
 

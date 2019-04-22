@@ -1,6 +1,9 @@
-import AST.Build.*;
-import AST.Table.Symbol;
+import AST.Build.ClassListener;
+import AST.Build.DeclarationListener;
+import AST.Build.ParseListener;
+import AST.Build.TypeCheckListener;
 import IR.Build.IR;
+import Optimizer.Build.Liveness;
 import Parser.MxLexer;
 import Parser.MxParser;
 import org.antlr.v4.runtime.CharStream;
@@ -17,13 +20,17 @@ import static AST.Build.Tree.errorListener;
 public class Main {
     static public void main(String[] args) throws Exception {
         buildAST();
-        // Tree.dump();
         generateIR();
+        Optimize();
     }
 
-    static private void generateIR() {
+    static private void generateIR() throws Exception {
         IR.generate();
-        // IR.dump();
+        IR.dump();
+    }
+
+    static private void Optimize() {
+        Liveness.run();
     }
 
     static private void buildAST() throws Exception {
@@ -42,5 +49,6 @@ public class Main {
         walker.walk(new ClassListener(), tree);
         walker.walk(new DeclarationListener(), tree);
         walker.walk(new TypeCheckListener(), tree);
+        // Tree.dump();
     }
 }

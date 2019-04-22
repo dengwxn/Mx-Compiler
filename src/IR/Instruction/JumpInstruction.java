@@ -11,6 +11,10 @@ public class JumpInstruction extends Instruction {
         this.dst = dst;
     }
 
+    public Block getDst() {
+        return dst;
+    }
+
     @Override
     public String dump() {
         StringBuilder str = new StringBuilder();
