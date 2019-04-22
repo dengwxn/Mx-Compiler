@@ -18,20 +18,28 @@ abstract public class Instruction {
     }
 
     void putUse(Operand op) {
-        if (op instanceof VirtualRegister)
-            putLive((VirtualRegister) op);
-    }
-
-    private void putLive(VirtualRegister var) {
-        if (!live.contains(var)) {
+        if (op instanceof VirtualRegister) {
+            VirtualRegister var = (VirtualRegister) op;
             live.add(var);
-            pre.forEach(p -> p.propLive(var));
+
+            ArrayList<Instruction> queue = new ArrayList<>();
+            queue.add(this);
+            for (int i = 0; i < queue.size(); ++i) {
+                Instruction u = queue.get(i);
+                for (Instruction v : u.pre) {
+                    if (v.propLive(var))
+                        queue.add(v);
+                }
+            }
         }
     }
 
-    private void propLive(VirtualRegister var) {
-        if (!def.contains(var))
-            putLive(var);
+    private boolean propLive(VirtualRegister var) {
+        if (!def.contains(var) && !live.contains(var)) {
+            live.add(var);
+            return true;
+        }
+        return false;
     }
 
     public void linkSuc(Instruction suc) {
