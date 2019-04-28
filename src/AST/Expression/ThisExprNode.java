@@ -3,8 +3,6 @@ package AST.Expression;
 import AST.Table.Symbol;
 import IR.Build.BlockList;
 
-import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
-
 public class ThisExprNode extends ExprNode {
     private Symbol symbol;
 
@@ -13,7 +11,7 @@ public class ThisExprNode extends ExprNode {
 
     @Override
     public void generateIR(BlockList blockList) {
-        operand = getVirtualRegister(symbol);
+        operand = symbol.getOperand();
     }
 
     public void setSymbol(Symbol symbol) {

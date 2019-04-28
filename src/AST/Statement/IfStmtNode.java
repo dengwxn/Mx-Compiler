@@ -7,10 +7,8 @@ import IR.Instruction.CompareInstruction;
 import IR.Instruction.CondJumpInstruction;
 import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
-import IR.Operand.Immediate;
 
-import static IR.Build.FunctionIR.funcName;
-import static IR.Instruction.Operator.CompareOp.EQ;
+import static IR.Instruction.Operator.CompareOp.E;
 
 public class IfStmtNode extends StmtNode {
     private ExprNode condExpr;
@@ -24,15 +22,15 @@ public class IfStmtNode extends StmtNode {
 
     @Override
     public void generateIR(BlockList blockList) {
-        Block ifTrue = new Block(funcName + ".ifTrue");
-        Block ifFalse = new Block(funcName + ".ifFalse");
-        Block ifExit = new Block(funcName + ".ifExit");
+        Block ifTrue = new Block("ifTrue");
+        Block ifFalse = new Block("ifFalse");
+        Block ifExit = new Block("ifExit");
         Instruction jumpIfExit = new JumpInstruction(ifExit);
 
         // current blockList
         condExpr.generateIR(blockList);
         Instruction cmp = new CompareInstruction(condExpr.getOperand(), 1);
-        Instruction cjumpIfTrue = new CondJumpInstruction(EQ, ifTrue);
+        Instruction cjumpIfTrue = new CondJumpInstruction(E, ifTrue);
         Instruction jumpIfFalse = new JumpInstruction(ifFalse);
         blockList.add(cmp, cjumpIfTrue, jumpIfFalse);
 

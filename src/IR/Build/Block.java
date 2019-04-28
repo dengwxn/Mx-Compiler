@@ -9,32 +9,48 @@ public class Block {
     private String label;
     private ArrayList<Instruction> instr;
     private int id;
-    private Instruction jump;
+    private JumpInstruction jump;
 
     public Block(String label) {
         this.label = label;
         this.instr = new ArrayList<>();
     }
 
+    void putSpill() {
+        instr.forEach(i -> i.putSpill());
+    }
+
     void linkPreSuc() {
-        for (int i = 0; i < instr.size() - 1; ++i) {
+        for (int i = 0; i < instr.size(); ++i) {
             Instruction u = instr.get(i);
-            Instruction v = instr.get(i + 1);
-            u.linkSuc(v);
-            v.linkPre(u);
+
+            if (i < instr.size() - 1) {
+                Instruction v = instr.get(i + 1);
+                u.linkSuc(v);
+                v.linkPre(u);
+            }
+
+            if (u instanceof JumpInterface) {
+                Instruction v = ((JumpInterface) u).getDst().getHead();
+                if (v != null) {
+                    u.linkSuc(v);
+                    v.linkPre(u);
+                }
+            }
         }
     }
 
     void livenessAnalysis() {
-        instr.forEach(Instruction::livenessAnalysis);
+        instr.forEach(i -> i.livenessAnalysis());
     }
 
-    Instruction getHead() {
+    void setFuncName(String funcName) {
+        if (label.equals("")) label = funcName;
+        else label = funcName + "." + label;
+    }
+
+    private Instruction getHead() {
         return instr.size() > 0 ? instr.get(0) : null;
-    }
-
-    JumpInstruction getTail() {
-        return (JumpInstruction) jump;
     }
 
     void setId(int id) {
@@ -44,8 +60,8 @@ public class Block {
     public void add(Instruction... il) {
         for (Instruction i : il) {
             if (jump != null) break;
-            instr.add(i);
-            if (i instanceof JumpInstruction) jump = i;
+            if (i instanceof JumpInstruction) jump = (JumpInstruction) i;
+            else instr.add(i);
         }
 
         if (instr.size() >= 4) {
@@ -70,13 +86,24 @@ public class Block {
     }
 
     public String getLabel() {
-        return label + "." + id;
+        if (id == 0) return label;
+        else return label + "." + id;
     }
 
-    public String dump() {
+    public String toNASM(Block nextBlock) {
         StringBuilder str = new StringBuilder();
-        str.append("\t" + getLabel() + ":\n");
-        instr.forEach(i -> str.append(i.dump()));
+        str.append(getLabel() + ":\n");
+        instr.forEach(i -> str.append(i.toNASM()));
+        if (jump != null && jump.getDst() != nextBlock)
+            str.append(jump.toNASM());
+        return str.toString();
+    }
+
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append(getLabel() + ":\n");
+        instr.forEach(i -> str.append(i.toString()));
+        if (jump != null) str.append(jump.toString());
         return str.toString();
     }
 }

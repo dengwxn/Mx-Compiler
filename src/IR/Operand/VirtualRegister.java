@@ -2,6 +2,9 @@ package IR.Operand;
 
 import AST.Table.Symbol;
 
+import static IR.Build.BlockList.spillPool;
+import static Optimizer.RegisterAllocation.getPhysicalRegister;
+
 public class VirtualRegister extends Operand {
     private Symbol symbol;
 
@@ -10,7 +13,13 @@ public class VirtualRegister extends Operand {
     }
 
     @Override
-    public String dump() {
+    public void putSpill() {
+        if (getPhysicalRegister(this) == null)
+            spillPool.add(this);
+    }
+
+    @Override
+    public String toString() {
         return symbol.getName();
     }
 }

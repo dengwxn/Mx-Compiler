@@ -2,9 +2,9 @@ package IR.Instruction;
 
 import IR.Build.Block;
 
-import static IR.Build.IR.formatInstruction;
+import static IR.Build.IR.formatInstr;
 
-public class CondJumpInstruction extends CondInstruction {
+public class CondJumpInstruction extends CondInstruction implements JumpInterface {
     private Block dst;
 
     public CondJumpInstruction(Operator.CompareOp op, Block dst) {
@@ -12,10 +12,19 @@ public class CondJumpInstruction extends CondInstruction {
         this.dst = dst;
     }
 
+    public Block getDst() {
+        return dst;
+    }
+
     @Override
-    public String dump() {
+    public String toNASM() {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append(formatInstruction("j" + op.toString().toLowerCase(), dst.getLabel()));
+        str.append(formatInstr("j" + op.toString().toLowerCase(), dst.getLabel()));
         return str.toString();
     }
 }

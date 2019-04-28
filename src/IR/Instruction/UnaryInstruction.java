@@ -1,8 +1,10 @@
 package IR.Instruction;
 
+import Generator.Operand.PhysicalOperand;
 import IR.Operand.Operand;
 
-import static IR.Build.IR.formatInstruction;
+import static Generator.Operand.PhysicalOperand.convertOperand;
+import static IR.Build.IR.formatInstr;
 
 public class UnaryInstruction extends Instruction {
     private Operator.UnaryOp op;
@@ -14,15 +16,28 @@ public class UnaryInstruction extends Instruction {
     }
 
     @Override
+    public void putSpill() {
+        dst.putSpill();
+    }
+
+    @Override
     public void livenessAnalysis() {
         putDef(dst);
         putUse(dst);
     }
 
     @Override
-    public String dump() {
+    public String toNASM() {
         StringBuilder str = new StringBuilder();
-        str.append(formatInstruction(op.toString().toLowerCase(), dst.dump()));
+        PhysicalOperand dst = convertOperand(str, this.dst);
+        str.append(formatInstr(op.toString().toLowerCase(), dst.toNASM()));
+        return str.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append(formatInstr(op.toString().toLowerCase(), dst.toString()));
         return str.toString();
     }
 }

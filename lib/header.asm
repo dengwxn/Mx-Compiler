@@ -1,0 +1,11 @@
+    global  main
+	extern 	printf
+	extern 	malloc
+	extern 	strcpy
+	extern 	scanf
+	extern 	strlen
+	extern 	sscanf
+	extern 	sprintf
+	extern 	memcpy
+	extern 	strcmp
+	extern 	puts

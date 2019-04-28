@@ -1,8 +1,11 @@
 package IR.Instruction;
 
+import Generator.Operand.PhysicalAddress;
+import Generator.Operand.PhysicalOperand;
 import IR.Operand.Operand;
 
-import static IR.Build.IR.formatInstruction;
+import static Generator.Operand.PhysicalOperand.convertOperand;
+import static IR.Build.IR.formatInstr;
 
 public class CondSetInstruction extends CondInstruction {
     private Operand dst;
@@ -10,6 +13,11 @@ public class CondSetInstruction extends CondInstruction {
     public CondSetInstruction(Operator.CompareOp op, Operand dst) {
         this.op = op;
         this.dst = dst;
+    }
+
+    @Override
+    public void putSpill() {
+        dst.putSpill();
     }
 
     @Override
@@ -26,9 +34,24 @@ public class CondSetInstruction extends CondInstruction {
     }
 
     @Override
-    public String dump() {
+    public String toNASM() {
         StringBuilder str = new StringBuilder();
-        str.append(formatInstruction("set" + op.toString().toLowerCase(), dst.dump()));
+        PhysicalOperand dst = convertOperand(str, this.dst);
+        if (dst instanceof PhysicalAddress) {
+            str.append(formatInstr("mov", "ler8", "0"));
+            str.append(formatInstr("set" + op.toString().toLowerCase(), "ler8_l8"));
+            str.append(formatInstr("mov", dst.toNASM(), "ler8"));
+        } else {
+            str.append(formatInstr("mov", dst.toNASM(), "0"));
+            str.append(formatInstr("set" + op.toString().toLowerCase(), dst.toNASM() + "_l8"));
+        }
+        return str.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append(formatInstr("set" + op.toString().toLowerCase(), dst.toString()));
         return str.toString();
     }
 }

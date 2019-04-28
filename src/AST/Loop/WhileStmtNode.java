@@ -8,10 +8,8 @@ import IR.Instruction.CompareInstruction;
 import IR.Instruction.CondJumpInstruction;
 import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
-import IR.Operand.Immediate;
 
-import static IR.Build.FunctionIR.funcName;
-import static IR.Instruction.Operator.CompareOp.EQ;
+import static IR.Instruction.Operator.CompareOp.E;
 
 public class WhileStmtNode extends LoopStmtNode {
     private ExprNode condExpr;
@@ -24,9 +22,9 @@ public class WhileStmtNode extends LoopStmtNode {
 
     @Override
     public void generateIR(BlockList blockList) {
-        Block whileHeader = new Block(funcName + ".whileHeader");
-        Block whileBlock = new Block(funcName + ".whileBlock");
-        Block whileExit = new Block(funcName + ".whileExit");
+        Block whileHeader = new Block("whileHeader");
+        Block whileBlock = new Block("whileBlock");
+        Block whileExit = new Block("whileExit");
         Instruction jumpWhileExit = new JumpInstruction(whileExit);
         loopContinueBlock = whileHeader;
         loopBreakBlock = whileExit;
@@ -40,7 +38,7 @@ public class WhileStmtNode extends LoopStmtNode {
         if (condExpr != null) {
             condExpr.generateIR(blockList);
             Instruction cmp = new CompareInstruction(condExpr.getOperand(), 1);
-            Instruction cjumpWhileBlock = new CondJumpInstruction(EQ, whileBlock);
+            Instruction cjumpWhileBlock = new CondJumpInstruction(E, whileBlock);
             blockList.add(cmp, cjumpWhileBlock, jumpWhileExit);
         } else {
             Instruction jumpWhileBlock = new JumpInstruction(whileBlock);

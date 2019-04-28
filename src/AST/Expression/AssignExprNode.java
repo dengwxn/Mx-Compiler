@@ -5,6 +5,8 @@ import IR.Build.BlockList;
 import IR.Instruction.Instruction;
 import IR.Instruction.MoveInstruction;
 
+import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
+
 public class AssignExprNode extends ExprNode {
     private ExprNode lhs, rhs;
 
@@ -17,8 +19,10 @@ public class AssignExprNode extends ExprNode {
     public void generateIR(BlockList blockList) {
         lhs.generateIR(blockList);
         rhs.generateIR(blockList);
-        Instruction instr = new MoveInstruction(lhs.getOperand(), rhs.getOperand());
-        blockList.add(instr);
+        operand = getTemporaryRegister();
+        Instruction cpy = new MoveInstruction(operand, rhs.getOperand());
+        Instruction mov = new MoveInstruction(lhs.getOperand(), operand);
+        blockList.add(cpy, mov);
     }
 
     public Type getLhsType() {

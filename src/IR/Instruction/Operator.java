@@ -6,7 +6,7 @@ public class Operator {
     }
 
     public enum CompareOp {
-        EQ, NEQ, LT, LE, GT, GE
+        E, NE, L, LE, G, GE
     }
 
     public enum UnaryOp {

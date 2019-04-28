@@ -1,6 +1,5 @@
 int main() {
-    string a = "1";
-    a + a;
-    a < a;
-    a == a;
+    int a = 1 + 2;
+    println(toString(a));
+    return 0;
 }

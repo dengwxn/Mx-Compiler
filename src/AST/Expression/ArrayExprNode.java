@@ -10,6 +10,7 @@ import IR.Operand.VirtualRegister;
 
 import java.util.ArrayList;
 
+import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SHL;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
 
@@ -34,8 +35,9 @@ public class ArrayExprNode extends ExprNode {
             param.get(i).generateIR(blockList);
             Instruction movOffset = new MoveInstruction(offset, param.get(i).getOperand());
             Instruction shl = new BinaryInstruction(SHL, offset, 3);
-            Address addr = new Address((VirtualRegister) operand, offset);
-            blockList.add(movOffset, shl);
+            Instruction add = new BinaryInstruction(ADD, operand, offset);
+            Address addr = new Address((VirtualRegister) operand, 0);
+            blockList.add(movOffset, shl, add);
             if (i < dim - 1) {
                 Instruction movOperand = new MoveInstruction(operand, addr);
                 blockList.add(movOperand);

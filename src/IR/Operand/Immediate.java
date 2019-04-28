@@ -12,7 +12,7 @@ public class Immediate extends Operand {
     }
 
     @Override
-    public String dump() {
+    public String toString() {
         return String.valueOf(val);
     }
 }

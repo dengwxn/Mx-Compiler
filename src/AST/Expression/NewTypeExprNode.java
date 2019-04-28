@@ -1,6 +1,5 @@
 package AST.Expression;
 
-import AST.Type.ClassType;
 import IR.Build.BlockList;
 import IR.Instruction.FuncCallInstruction;
 import IR.Instruction.Instruction;
@@ -28,7 +27,7 @@ public class NewTypeExprNode extends ExprNode {
         ArrayList<Operand> paramOpMem = new ArrayList<>(Arrays.asList(new Immediate(getOffset(base))));
         Instruction mallocMem = new FuncCallInstruction("malloc", paramOpMem);
         operand = getTemporaryRegister();
-        Instruction mov = new MoveInstruction(operand, getVirtualRegister("rax"));
+        Instruction mov = new MoveInstruction(operand, "res0");
         blockList.add(mallocMem, mov);
 
         String newType = base + ".null";

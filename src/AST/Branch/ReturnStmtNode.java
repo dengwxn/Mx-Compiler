@@ -5,9 +5,10 @@ import AST.Statement.StmtNode;
 import AST.Type.Type;
 import IR.Build.BlockList;
 import IR.Instruction.Instruction;
-import IR.Instruction.ReturnInstruction;
+import IR.Instruction.MoveInstruction;
 
 import static IR.Build.FunctionIR.jumpFuncEpilogue;
+import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class ReturnStmtNode extends StmtNode {
     private ExprNode expr;
@@ -20,8 +21,8 @@ public class ReturnStmtNode extends StmtNode {
     public void generateIR(BlockList blockList) {
         if (expr != null) {
             expr.generateIR(blockList);
-            Instruction ret = new ReturnInstruction(expr.getOperand());
-            blockList.add(ret, jumpFuncEpilogue);
+            Instruction mov = new MoveInstruction("res0", expr.getOperand());
+            blockList.add(mov, jumpFuncEpilogue);
         } else {
             blockList.add(jumpFuncEpilogue);
         }

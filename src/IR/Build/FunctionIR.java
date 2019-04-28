@@ -8,45 +8,46 @@ import IR.Instruction.JumpInstruction;
 import java.util.ArrayList;
 
 public class FunctionIR {
-    static public String funcName;
     static public Instruction jumpFuncEpilogue;
     private FuncDeclNode funcDecl;
     private BlockList blockList;
 
     FunctionIR(FuncDeclNode funcDecl) {
         blockList = new BlockList();
+        blockList.setFuncName(funcDecl.getFuncName());
         this.funcDecl = funcDecl;
-        funcName = funcDecl.getFuncName();
-        Block funcPrologue = new Block(funcName + ".prologue");
-        Block funcEntry = new Block(funcName + ".entry");
-        Block funcEpilogue = new Block(funcName + ".epilogue");
-        jumpFuncEpilogue = new JumpInstruction(funcEpilogue);
+        Block func = new Block("");
+        Block funcEntry = new Block("entry");
+        Block funcExit = new Block("exit");
+        jumpFuncEpilogue = new JumpInstruction(funcExit);
 
-        // funcPrologue
-        blockList.add(funcPrologue);
-        blockList.add(new JumpInstruction(funcEntry));
+        // func
+        blockList.add(func);
 
         // funcEntry
         blockList.add(funcEntry);
-        if (funcName.equals("main"))
-            blockList.add(new FuncCallInstruction("_global_var_decl", new ArrayList<>()));
+        if (funcDecl.getFuncName().equals("main"))
+            blockList.add(new FuncCallInstruction("@global_var_decl", new ArrayList<>()));
 
         // blockStatement
         funcDecl.generateIR(blockList);
 
         // funcExit
-        blockList.add(jumpFuncEpilogue);
-        blockList.add(funcEpilogue);
+        blockList.add(funcExit);
 
-        // optimize
-        blockList.linkPreSuc();
+        // linkPreSuc
+        blockList.getBlockList().forEach(block -> block.linkPreSuc());
     }
 
     public void livenessAnalysis() {
-        blockList.livenessAnalysis();
+        blockList.getBlockList().forEach(block -> block.livenessAnalysis());
     }
 
-    public String dump() {
+    String toNASM() {
+        return blockList.toNASM();
+    }
+
+    public String toString() {
         StringBuilder str = new StringBuilder();
         str.append(funcDecl.getFuncName() + "(");
         boolean comma = false;
@@ -58,9 +59,8 @@ public class FunctionIR {
                 comma = true;
             }
         }
-        str.append("):\n");
-        for (Block b : blockList.getBlockList())
-            str.append(b.dump());
+        str.append("):\n\n");
+        str.append(blockList.toString());
         str.append("\n");
         return str.toString();
     }

@@ -1,11 +1,11 @@
-package Optimizer.Build;
+package Optimizer;
 
 import IR.Build.FunctionIR;
 
 import static IR.Build.IR.functionIRMap;
 
-public class Liveness {
-    static public void run() {
+public class LivenessAnalysis {
+    static public void optimize() {
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.livenessAnalysis();
     }

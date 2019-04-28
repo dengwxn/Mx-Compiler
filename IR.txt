@@ -1,26 +1,21 @@
-_global_var_decl():
-	_global_var_decl.prologue.0:
-		jmp 	_global_var_decl.entry.1
-	_global_var_decl.entry.1:
-		jmp 	_global_var_decl.epilogue.2
-	_global_var_decl.epilogue.2:
+@global_var_decl():
+
+@global_var_decl:
+@global_var_decl.entry.1:
+@global_var_decl.exit.2:
 
 main():
-	main.prologue.0:
-		jmp 	main.entry.1
-	main.entry.1:
-		call 	_global_var_decl()
-		mov 	a _string_constant_0
-		call 	string.add(a, a)
-		mov 	t1 rax
-		call 	string.lt(a, a)
-		mov 	t2 rax
-		call 	string.eq(a, a)
-		mov 	t3 rax
-		jmp 	main.epilogue.2
-	main.epilogue.2:
 
-section .data
-		dq   	1
-_string_constant_1:
-		db   	"1", 0
+main:
+main.entry.1:
+	call  	@global_var_decl()
+	mov  	t1, 1
+	add  	t1, 2
+	mov  	a, t1
+	call  	toString(a)
+	mov  	t2, rax
+	call  	println(t2)
+	mov  	rax, 0
+	jmp  	main.exit.2
+main.exit.2:
+

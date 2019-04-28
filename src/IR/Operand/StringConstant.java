@@ -7,8 +7,12 @@ public class StringConstant extends Operand {
         this.str = str;
     }
 
+    public String getStr() {
+        return str;
+    }
+
     @Override
-    public String dump() {
+    public String toString() {
         return str;
     }
 }

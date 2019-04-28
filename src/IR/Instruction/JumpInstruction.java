@@ -2,9 +2,9 @@ package IR.Instruction;
 
 import IR.Build.Block;
 
-import static IR.Build.IR.formatInstruction;
+import static IR.Build.IR.formatInstr;
 
-public class JumpInstruction extends Instruction {
+public class JumpInstruction extends Instruction implements JumpInterface {
     private Block dst;
 
     public JumpInstruction(Block dst) {
@@ -16,9 +16,14 @@ public class JumpInstruction extends Instruction {
     }
 
     @Override
-    public String dump() {
+    public String toNASM() {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append(formatInstruction("jmp", dst.getLabel()));
+        str.append(formatInstr("jmp", dst.getLabel()));
         return str.toString();
     }
 }

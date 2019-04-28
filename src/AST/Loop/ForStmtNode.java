@@ -8,10 +8,8 @@ import IR.Instruction.CompareInstruction;
 import IR.Instruction.CondJumpInstruction;
 import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
-import IR.Operand.Immediate;
 
-import static IR.Build.FunctionIR.funcName;
-import static IR.Instruction.Operator.CompareOp.EQ;
+import static IR.Instruction.Operator.CompareOp.E;
 
 public class ForStmtNode extends LoopStmtNode {
     private ExprNode initExpr, condExpr, incrExpr;
@@ -26,10 +24,10 @@ public class ForStmtNode extends LoopStmtNode {
 
     @Override
     public void generateIR(BlockList blockList) {
-        Block forHeader = new Block(funcName + ".forHeader");
-        Block forBlock = new Block(funcName + ".forBlock");
-        Block forIncr = new Block(funcName + ".forIncr");
-        Block forExit = new Block(funcName + ".forExit");
+        Block forHeader = new Block("forHeader");
+        Block forBlock = new Block("forBlock");
+        Block forIncr = new Block("forIncr");
+        Block forExit = new Block("forExit");
         Instruction jumpForIncr = new JumpInstruction(forIncr);
         Instruction jumpForExit = new JumpInstruction(forExit);
         loopContinueBlock = forIncr;
@@ -45,7 +43,7 @@ public class ForStmtNode extends LoopStmtNode {
         if (condExpr != null) {
             condExpr.generateIR(blockList);
             Instruction cmp = new CompareInstruction(condExpr.getOperand(), 1);
-            Instruction cjumpForBlock = new CondJumpInstruction(EQ, forBlock);
+            Instruction cjumpForBlock = new CondJumpInstruction(E, forBlock);
             blockList.add(cmp, cjumpForBlock, jumpForExit);
         } else {
             Instruction jumpForBlock = new JumpInstruction(forBlock);

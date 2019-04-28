@@ -42,7 +42,7 @@ public class MemberExprNode extends ExprNode {
     public String getPrevTypeName() {
         if (ls.getType() != null) {
             if (ls.getType() instanceof ArrayType)
-                return "";
+                return "_";
             else
                 return ls.getType().getTypeName();
         } else

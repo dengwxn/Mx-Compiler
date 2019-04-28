@@ -58,9 +58,9 @@ public class TypeCheckListener extends Listener {
             String varName = classDecl.getName() + "." + varDecl.getName();
             symbolTable.putType(varDecl.getName(), symbolTable.getType(varName));
             symbolTable.putSymbol(varDecl.getName(), classDecl.getName());
-            putOffset(varName, (cnt++) << 3);
+            putOffset(varName, (cnt++) * 8);
         }
-        putOffset(classDecl.getName(), cnt << 3);
+        putOffset(classDecl.getName(), cnt * 8);
 
         for (FuncDeclNode funcDecl : classDecl.getFuncDecl()) {
             String funcName = funcDecl.getFuncName();

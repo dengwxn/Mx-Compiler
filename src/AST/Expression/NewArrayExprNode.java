@@ -9,11 +9,10 @@ import IR.Operand.VirtualRegister;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SHL;
-import static IR.Instruction.Operator.CompareOp.LT;
+import static IR.Instruction.Operator.CompareOp.L;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
@@ -60,7 +59,7 @@ public class NewArrayExprNode extends ExprNode {
             ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(len));
             blockList.add(new FuncCallInstruction("malloc", paramOp));
             VirtualRegister ptr = getTemporaryRegister();
-            blockList.add(new MoveInstruction(ptr, getVirtualRegister("rax")));
+            blockList.add(new MoveInstruction(ptr, "res0"));
 
             blockList.add(new MoveInstruction(new Address(ptr, 0), size));
             VirtualRegister head = headList[i];
@@ -77,7 +76,7 @@ public class NewArrayExprNode extends ExprNode {
                 blockList.add(newCond);
                 lastList[i + 1] = new Address(head, 0);
                 blockList.add(new CompareInstruction(head, tail));
-                blockList.add(new CondJumpInstruction(LT, newBodyList[i + 1]));
+                blockList.add(new CondJumpInstruction(L, newBodyList[i + 1]));
             }
 
             if (i > 0) {

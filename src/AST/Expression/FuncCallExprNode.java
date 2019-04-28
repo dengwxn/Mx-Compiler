@@ -32,7 +32,7 @@ public class FuncCallExprNode extends ExprNode {
         blockList.add(call);
         if (!(funcType.getRetType() instanceof VoidType)) {
             operand = getTemporaryRegister();
-            Instruction mov = new MoveInstruction(operand, getVirtualRegister("rax"));
+            Instruction mov = new MoveInstruction(operand, "res0");
             blockList.add(mov);
         }
     }

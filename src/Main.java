@@ -2,8 +2,10 @@ import AST.Build.ClassListener;
 import AST.Build.DeclarationListener;
 import AST.Build.ParseListener;
 import AST.Build.TypeCheckListener;
+import Generator.Build.Generator;
 import IR.Build.IR;
-import Optimizer.Build.Liveness;
+import Optimizer.LivenessAnalysis;
+import Optimizer.RegisterAllocation;
 import Parser.MxLexer;
 import Parser.MxParser;
 import org.antlr.v4.runtime.CharStream;
@@ -21,7 +23,8 @@ public class Main {
     static public void main(String[] args) throws Exception {
         buildAST();
         generateIR();
-        Optimize();
+        optimize();
+        generate();
     }
 
     static private void generateIR() throws Exception {
@@ -29,8 +32,13 @@ public class Main {
         IR.dump();
     }
 
-    static private void Optimize() {
-        Liveness.run();
+    static private void optimize() {
+        LivenessAnalysis.optimize();
+        RegisterAllocation.optimize();
+    }
+
+    static private void generate() throws Exception {
+        Generator.generate();
     }
 
     static private void buildAST() throws Exception {
@@ -49,6 +57,6 @@ public class Main {
         walker.walk(new ClassListener(), tree);
         walker.walk(new DeclarationListener(), tree);
         walker.walk(new TypeCheckListener(), tree);
-        // Tree.dump();
+        // Tree.toString();
     }
 }

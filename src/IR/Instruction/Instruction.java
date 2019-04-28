@@ -12,6 +12,14 @@ abstract public class Instruction {
     private HashSet<VirtualRegister> live = new HashSet<>();
     private HashSet<VirtualRegister> def = new HashSet<>();
 
+    public void putSpill() {}
+
+    public void livenessAnalysis() {}
+
+    abstract public String toString();
+
+    abstract public String toNASM();
+
     void putDef(Operand op) {
         if (op instanceof VirtualRegister)
             def.add((VirtualRegister) op);
@@ -48,12 +56,5 @@ abstract public class Instruction {
 
     public void linkPre(Instruction pre) {
         this.pre.add(pre);
-    }
-
-    public String dump() {
-        return null;
-    }
-
-    public void livenessAnalysis() {
     }
 }

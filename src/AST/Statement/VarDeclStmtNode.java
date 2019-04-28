@@ -8,8 +8,6 @@ import IR.Instruction.Instruction;
 import IR.Instruction.MoveInstruction;
 import IR.Operand.Operand;
 
-import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
-
 public class VarDeclStmtNode extends StmtNode {
     private String type, name;
     private ExprNode expr;
@@ -21,11 +19,20 @@ public class VarDeclStmtNode extends StmtNode {
         this.expr = expr;
     }
 
+    public String getSymbolName() {
+        return symbol.getName();
+    }
+
+    public void setGlobal() {
+        symbol.setGlobal();
+    }
+
     @Override
     public void generateIR(BlockList blockList) {
         if (expr != null) {
             expr.generateIR(blockList);
-            Operand dst = getVirtualRegister(symbol);
+            symbol.setOperand();
+            Operand dst = symbol.getOperand();
             Instruction mov = new MoveInstruction(dst, expr.getOperand());
             blockList.add(mov);
         }

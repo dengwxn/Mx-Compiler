@@ -7,7 +7,6 @@ import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
 import static IR.Operand.Address.getOffset;
-import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class IdentExprNode extends ExprNode {
     private String ident;
@@ -21,11 +20,11 @@ public class IdentExprNode extends ExprNode {
     @Override
     public void generateIR(BlockList blockList) {
         if (classThis != null) {
-            Operand base = getVirtualRegister(classThis);
+            Operand base = classThis.getOperand();
             int offset = getOffset(symbol.getPrevTypeName() + "." + ident);
             operand = new Address((VirtualRegister) base, offset);
         } else {
-            operand = getVirtualRegister(symbol);
+            operand = symbol.getOperand();
         }
     }
 

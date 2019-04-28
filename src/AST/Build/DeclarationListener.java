@@ -78,8 +78,8 @@ public class DeclarationListener extends Listener {
 
     private void arraySize() {
         Type retType = symbolTable.getType("int");
-        String funcName = ".size";
-        symbolTable.putType(funcName, new FuncType("array" + funcName, retType));
+        String funcName = "_.size";
+        symbolTable.putType(funcName, new FuncType(funcName, retType));
     }
 
     private void stringLength() {
