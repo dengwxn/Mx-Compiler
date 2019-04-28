@@ -8,6 +8,8 @@ import IR.Instruction.Instruction;
 import IR.Instruction.MoveInstruction;
 import IR.Operand.Operand;
 
+import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
+
 public class VarDeclStmtNode extends StmtNode {
     private String type, name;
     private ExprNode expr;
@@ -33,8 +35,10 @@ public class VarDeclStmtNode extends StmtNode {
         if (expr != null) {
             expr.generateIR(blockList);
             Operand dst = symbol.getOperand();
-            Instruction mov = new MoveInstruction(dst, expr.getOperand());
-            blockList.add(mov);
+            Operand tmp = getTemporaryRegister();
+            Instruction cpy = new MoveInstruction(tmp, expr.getOperand());
+            Instruction mov = new MoveInstruction(dst, tmp);
+            blockList.add(cpy, mov);
         }
     }
 

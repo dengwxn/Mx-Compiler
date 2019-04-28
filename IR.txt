@@ -1,208 +1,24 @@
+@global_var_decl():
+
+@global_var_decl:
+@global_var_decl.entry.1:
+	mov  	t1, [@b]
+	mov  	t2, [t1]
+	mov  	[@c], t2
+@global_var_decl.exit.2:
+
+A.fun(this):
+
+A.fun:
+A.fun.entry.1:
+	mov  	t3, [@c]
+	mov  	[this], t3
+A.fun.exit.2:
+
 main():
 
 main:
 main.entry.1:
 	call  	@global_var_decl()
-	jmp  	main.new.body.2
-main.new.body.2:
-	mov  	t6, 100
-	add  	t6, 1
-	shl  	t6, 3
-	call  	malloc(t6)
-	mov  	t7, rax
-	mov  	[t7], 100
-	mov  	t2, t7
-	add  	t2, 8
-	mov  	t1, t2
-	mov  	t8, t7
-	add  	t8, t6
-	jmp  	main.new.cond.3
-main.new.cond.3:
-	cmp  	t2, t8
-	jl  	main.new.body.4
-	jmp  	main.new.exit.9
-main.new.body.4:
-	mov  	t9, 200
-	add  	t9, 1
-	shl  	t9, 3
-	call  	malloc(t9)
-	mov  	t10, rax
-	mov  	[t10], 200
-	mov  	t3, t10
-	add  	t3, 8
-	mov  	[t2], t3
-	mov  	t11, t10
-	add  	t11, t9
-	jmp  	main.new.cond.5
-main.new.cond.5:
-	cmp  	t3, t11
-	jl  	main.new.body.6
-	add  	t2, 8
-	jmp  	main.new.cond.3
-main.new.body.6:
-	mov  	t12, 300
-	add  	t12, 1
-	shl  	t12, 3
-	call  	malloc(t12)
-	mov  	t13, rax
-	mov  	[t13], 300
-	mov  	t4, t13
-	add  	t4, 8
-	mov  	[t3], t4
-	mov  	t14, t13
-	add  	t14, t12
-	jmp  	main.new.cond.7
-main.new.cond.7:
-	cmp  	t4, t14
-	jl  	main.new.body.8
-	add  	t3, 8
-	jmp  	main.new.cond.5
-main.new.body.8:
-	mov  	t15, 500
-	add  	t15, 1
-	shl  	t15, 3
-	call  	malloc(t15)
-	mov  	t16, rax
-	mov  	[t16], 500
-	mov  	t5, t16
-	add  	t5, 8
-	mov  	[t4], t5
-	add  	t4, 8
-	jmp  	main.new.cond.7
-main.new.exit.9:
-	mov  	a, t1
-	mov  	t17, a
-	mov  	t18, 3
-	shl  	t18, 3
-	add  	t17, t18
-	mov  	c, [t17]
-	mov  	t19, c
-	mov  	t20, 7
-	shl  	t20, 3
-	add  	t19, t20
-	mov  	d, [t19]
-	mov  	t21, c
-	mov  	t22, 7
-	shl  	t22, 3
-	add  	t21, t22
-	mov  	t21, [t21]
-	mov  	t22, 8
-	shl  	t22, 3
-	add  	t21, t22
-	mov  	t21, [t21]
-	mov  	t22, 9
-	shl  	t22, 3
-	add  	t21, t22
-	mov  	e, [t21]
-	mov  	t26, d
-	mov  	t27, 2
-	shl  	t27, 3
-	add  	t26, t27
-	mov  	t26, [t26]
-	mov  	t27, 1
-	shl  	t27, 3
-	add  	t26, t27
-	mov  	t28, c
-	mov  	t29, 1
-	shl  	t29, 3
-	add  	t28, t29
-	mov  	t28, [t28]
-	mov  	t29, 2
-	shl  	t29, 3
-	add  	t28, t29
-	mov  	t28, [t28]
-	mov  	t29, 3
-	shl  	t29, 3
-	add  	t28, t29
-	mov  	t25, [t26]
-	cmp  	t25, [t28]
-	sete  	t25
-	cmp  	t25, 1
-	je  	main.lhsTrue.10
-	jmp  	main.lhsFalse.11
-main.lhsTrue.10:
-	mov  	t31, d
-	mov  	t32, 2
-	shl  	t32, 3
-	add  	t31, t32
-	mov  	t31, [t31]
-	mov  	t32, 2
-	shl  	t32, 3
-	add  	t31, t32
-	mov  	t33, a
-	mov  	t34, 1
-	shl  	t34, 3
-	add  	t33, t34
-	mov  	t33, [t33]
-	mov  	t34, 2
-	shl  	t34, 3
-	add  	t33, t34
-	mov  	t33, [t33]
-	mov  	t34, 3
-	shl  	t34, 3
-	add  	t33, t34
-	mov  	t33, [t33]
-	mov  	t34, 4
-	shl  	t34, 3
-	add  	t33, t34
-	mov  	t30, [t31]
-	cmp  	t30, [t33]
-	sete  	t30
-	cmp  	t30, 1
-	sete  	t24
-	jmp  	main.logicExit.12
-main.lhsFalse.11:
-	mov  	t24, 0
-	jmp  	main.logicExit.12
-main.logicExit.12:
-	cmp  	t24, 1
-	je  	main.lhsTrue.13
-	jmp  	main.lhsFalse.14
-main.lhsTrue.13:
-	mov  	t36, d
-	mov  	t37, 2
-	shl  	t37, 3
-	add  	t36, t37
-	mov  	t36, [t36]
-	mov  	t37, 3
-	shl  	t37, 3
-	add  	t36, t37
-	mov  	t35, [t36]
-	cmp  	t35, b
-	sete  	t35
-	cmp  	t35, 1
-	sete  	t23
-	jmp  	main.logicExit.15
-main.lhsFalse.14:
-	mov  	t23, 0
-	jmp  	main.logicExit.15
-main.logicExit.15:
-	cmp  	t23, 1
-	je  	main.ifTrue.16
-	jmp  	main.ifFalse.17
-main.ifTrue.16:
-	mov  	t38, c
-	mov  	t39, 1
-	shl  	t39, 3
-	add  	t38, t39
-	mov  	t38, [t38]
-	mov  	t39, 2
-	shl  	t39, 3
-	add  	t38, t39
-	mov  	t38, [t38]
-	mov  	t39, 3
-	shl  	t39, 3
-	add  	t38, t39
-	inc  	[t38]
-	jmp  	main.ifExit.18
-main.ifFalse.17:
-	jmp  	main.ifExit.18
-main.ifExit.18:
-main.exit.19:
-
-@global_var_decl():
-
-@global_var_decl:
-@global_var_decl.entry.1:
-@global_var_decl.exit.2:
+main.exit.2:
 
