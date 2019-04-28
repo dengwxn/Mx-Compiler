@@ -27,12 +27,9 @@ int makeHeap() {
 }
 
 int adjustHeap(int n) {
-    int i;
-    int j;
-    int t;
-    i = 0;
-    j = 0;
-    t = 0;
+    int i = 0;
+    int j = 0;
+    int t = 0;
     while (i * 2 < n) {
         j = i*2;
         if (i*2+1<n && a[i*2+1] < a[i*2]) j = i*2+1;

@@ -15,7 +15,7 @@ exchange:
 	sub  	rsp, 120
 exchange.entry.1:
 	mov  	r11, qword [rsp + 104]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 112], r11
 	mov  	r11, qword [rsp + 88]
 	mov  	qword [rsp + 96], r11
@@ -23,12 +23,12 @@ exchange.entry.1:
 	mov  	r11, qword [rsp + 96]
 	add  	qword [rsp + 112], r11
 	mov  	r11, qword [rsp + 112]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 80], r11
 	mov  	r11, qword [rsp + 80]
 	mov  	qword [rsp + 72], r11
 	mov  	r11, qword [rsp + 104]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 64], r11
 	mov  	r11, qword [rsp + 88]
 	mov  	qword [rsp + 56], r11
@@ -36,7 +36,7 @@ exchange.entry.1:
 	mov  	r11, qword [rsp + 56]
 	add  	qword [rsp + 64], r11
 	mov  	r11, qword [rsp + 104]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 48], r11
 	mov  	r11, qword [rsp + 32]
 	mov  	qword [rsp + 40], r11
@@ -44,13 +44,13 @@ exchange.entry.1:
 	mov  	r11, qword [rsp + 40]
 	add  	qword [rsp + 48], r11
 	mov  	r11, qword [rsp + 48]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 24], r11
 	mov  	r11, qword [rsp + 64]
 	mov  	r11, qword [rsp + 24]
-	mov  	qword [ler8 + 0], r11
+	mov  	qword [r11 + 0], r11
 	mov  	r11, qword [rsp + 104]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 16], r11
 	mov  	r11, qword [rsp + 32]
 	mov  	qword [rsp + 8], r11
@@ -61,9 +61,300 @@ exchange.entry.1:
 	mov  	qword [rsp + 0], r11
 	mov  	r11, qword [rsp + 16]
 	mov  	r11, qword [rsp + 0]
-	mov  	qword [ler8 + 0], r11
+	mov  	qword [r11 + 0], r11
 exchange.exit.2:
 	add  	rsp, 120
+	ret
+makeHeap:
+	sub  	rsp, 280
+makeHeap.entry.1:
+	mov  	r11, qword [rsp + 264]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 272], r11
+	sub  	qword [rsp + 272], 1
+	mov  	r11, qword [rsp + 272]
+	mov  	qword [rsp + 256], r11
+	mov  	rax, qword [rsp + 256]
+	cqo
+	idiv  	2
+	mov  	qword [rsp + 256], rax
+	mov  	r11, qword [rsp + 256]
+	mov  	qword [rsp + 248], r11
+	mov  	r11, qword [rsp + 248]
+	mov  	qword [rsp + 240], r11
+	mov  	qword [rsp + 232], 0
+	mov  	r11, qword [rsp + 232]
+	mov  	qword [rsp + 224], r11
+	mov  	qword [rsp + 216], 0
+	mov  	r11, qword [rsp + 216]
+	mov  	qword [rsp + 208], r11
+makeHeap.whileHeader.2:
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 200], r11
+	cmp  	qword [rsp + 200], 0
+	mov  	r11, 0
+	setge  	r11b
+	mov  	qword [rsp + 200], r11
+	cmp  	qword [rsp + 200], 1
+	je  	makeHeap.whileBlock.3
+	jmp  	makeHeap.whileExit.13
+makeHeap.whileBlock.3:
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 192], r11
+	mov  	r11, qword [rsp + 192]
+	imul  	r11, 2
+	mov  	qword [rsp + 192], r11
+	mov  	r11, qword [rsp + 192]
+	mov  	qword [rsp + 184], r11
+	mov  	r11, qword [rsp + 184]
+	mov  	qword [rsp + 208], r11
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 176], r11
+	mov  	r11, qword [rsp + 176]
+	imul  	r11, 2
+	mov  	qword [rsp + 176], r11
+	mov  	r11, qword [rsp + 176]
+	mov  	qword [rsp + 168], r11
+	add  	qword [rsp + 168], 1
+	mov  	r11, qword [rsp + 168]
+	mov  	qword [rsp + 160], r11
+	mov  	r11, qword [rsp + 264]
+	mov  	r11, qword [rsp + 160]
+	cmp  	r11, qword [r11 + 0]
+	mov  	r11, 0
+	setl  	r11b
+	mov  	qword [rsp + 160], r11
+	cmp  	qword [rsp + 160], 1
+	je  	makeHeap.lhsTrue.4
+	jmp  	makeHeap.lhsFalse.5
+makeHeap.lhsTrue.4:
+	mov  	r11, qword [rsp + 144]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 152], r11
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 136], r11
+	mov  	r11, qword [rsp + 136]
+	imul  	r11, 2
+	mov  	qword [rsp + 136], r11
+	mov  	r11, qword [rsp + 136]
+	mov  	qword [rsp + 128], r11
+	add  	qword [rsp + 128], 1
+	mov  	r11, qword [rsp + 128]
+	mov  	qword [rsp + 120], r11
+	sal  	qword [rsp + 120], 3
+	mov  	r11, qword [rsp + 120]
+	add  	qword [rsp + 152], r11
+	mov  	r11, qword [rsp + 144]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 112], r11
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 104], r11
+	mov  	r11, qword [rsp + 104]
+	imul  	r11, 2
+	mov  	qword [rsp + 104], r11
+	mov  	r11, qword [rsp + 104]
+	mov  	qword [rsp + 96], r11
+	sal  	qword [rsp + 96], 3
+	mov  	r11, qword [rsp + 96]
+	add  	qword [rsp + 112], r11
+	mov  	r11, qword [rsp + 152]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 88], r11
+	mov  	r11, qword [rsp + 112]
+	mov  	r11, qword [rsp + 88]
+	cmp  	r11, qword [r11 + 0]
+	mov  	r11, 0
+	setl  	r11b
+	mov  	qword [rsp + 88], r11
+	cmp  	qword [rsp + 88], 1
+	mov  	r11, 0
+	sete  	r11b
+	mov  	qword [rsp + 80], r11
+	jmp  	makeHeap.logicExit.6
+makeHeap.lhsFalse.5:
+	mov  	qword [rsp + 80], 0
+makeHeap.logicExit.6:
+	cmp  	qword [rsp + 80], 1
+	je  	makeHeap.ifTrue.7
+	jmp  	makeHeap.ifFalse.8
+makeHeap.ifTrue.7:
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 72], r11
+	mov  	r11, qword [rsp + 72]
+	imul  	r11, 2
+	mov  	qword [rsp + 72], r11
+	mov  	r11, qword [rsp + 72]
+	mov  	qword [rsp + 64], r11
+	add  	qword [rsp + 64], 1
+	mov  	r11, qword [rsp + 64]
+	mov  	qword [rsp + 56], r11
+	mov  	r11, qword [rsp + 56]
+	mov  	qword [rsp + 208], r11
+	jmp  	makeHeap.ifExit.9
+makeHeap.ifFalse.8:
+makeHeap.ifExit.9:
+	mov  	r11, qword [rsp + 144]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 48], r11
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 40], r11
+	sal  	qword [rsp + 40], 3
+	mov  	r11, qword [rsp + 40]
+	add  	qword [rsp + 48], r11
+	mov  	r11, qword [rsp + 144]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 32], r11
+	mov  	r11, qword [rsp + 208]
+	mov  	qword [rsp + 24], r11
+	sal  	qword [rsp + 24], 3
+	mov  	r11, qword [rsp + 24]
+	add  	qword [rsp + 32], r11
+	mov  	r11, qword [rsp + 48]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 16], r11
+	mov  	r11, qword [rsp + 32]
+	mov  	r11, qword [rsp + 16]
+	cmp  	r11, qword [r11 + 0]
+	mov  	r11, 0
+	setg  	r11b
+	mov  	qword [rsp + 16], r11
+	cmp  	qword [rsp + 16], 1
+	je  	makeHeap.ifTrue.10
+	jmp  	makeHeap.ifFalse.11
+makeHeap.ifTrue.10:
+	mov  	rdi, qword [rsp + 240]
+	mov  	rsi, qword [rsp + 208]
+	call  	exchange
+	jmp  	makeHeap.ifExit.12
+makeHeap.ifFalse.11:
+makeHeap.ifExit.12:
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 8], r11
+	sub  	qword [rsp + 8], 1
+	mov  	r11, qword [rsp + 8]
+	mov  	qword [rsp + 0], r11
+	mov  	r11, qword [rsp + 0]
+	mov  	qword [rsp + 240], r11
+	jmp  	makeHeap.whileHeader.2
+makeHeap.whileExit.13:
+	mov  	rax, 0
+makeHeap.exit.14:
+	add  	rsp, 280
+	ret
+heapSort:
+	sub  	rsp, 216
+heapSort.entry.1:
+	mov  	qword [rsp + 208], 0
+	mov  	r11, qword [rsp + 208]
+	mov  	qword [rsp + 200], r11
+	mov  	qword [rsp + 192], 0
+	mov  	r11, qword [rsp + 192]
+	mov  	qword [rsp + 184], r11
+heapSort.forHeader.2:
+	mov  	r11, qword [rsp + 184]
+	mov  	qword [rsp + 176], r11
+	mov  	r11, qword [rsp + 168]
+	mov  	r11, qword [rsp + 176]
+	cmp  	r11, qword [r11 + 0]
+	mov  	r11, 0
+	setl  	r11b
+	mov  	qword [rsp + 176], r11
+	cmp  	qword [rsp + 176], 1
+	je  	heapSort.forBlock.3
+	jmp  	heapSort.forExit.5
+heapSort.forBlock.3:
+	mov  	r11, qword [rsp + 152]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 160], r11
+	mov  	qword [rsp + 144], 0
+	sal  	qword [rsp + 144], 3
+	mov  	r11, qword [rsp + 144]
+	add  	qword [rsp + 160], r11
+	mov  	r11, qword [rsp + 160]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 136], r11
+	mov  	r11, qword [rsp + 136]
+	mov  	qword [rsp + 200], r11
+	mov  	r11, qword [rsp + 152]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 128], r11
+	mov  	qword [rsp + 120], 0
+	sal  	qword [rsp + 120], 3
+	mov  	r11, qword [rsp + 120]
+	add  	qword [rsp + 128], r11
+	mov  	r11, qword [rsp + 152]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 112], r11
+	mov  	r11, qword [rsp + 168]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 104], r11
+	mov  	r11, qword [rsp + 184]
+	sub  	qword [rsp + 104], r11
+	mov  	r11, qword [rsp + 104]
+	mov  	qword [rsp + 96], r11
+	sub  	qword [rsp + 96], 1
+	mov  	r11, qword [rsp + 96]
+	mov  	qword [rsp + 88], r11
+	sal  	qword [rsp + 88], 3
+	mov  	r11, qword [rsp + 88]
+	add  	qword [rsp + 112], r11
+	mov  	r11, qword [rsp + 112]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 80], r11
+	mov  	r11, qword [rsp + 128]
+	mov  	r11, qword [rsp + 80]
+	mov  	qword [r11 + 0], r11
+	mov  	r11, qword [rsp + 152]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 72], r11
+	mov  	r11, qword [rsp + 168]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 64], r11
+	mov  	r11, qword [rsp + 184]
+	sub  	qword [rsp + 64], r11
+	mov  	r11, qword [rsp + 64]
+	mov  	qword [rsp + 56], r11
+	sub  	qword [rsp + 56], 1
+	mov  	r11, qword [rsp + 56]
+	mov  	qword [rsp + 48], r11
+	sal  	qword [rsp + 48], 3
+	mov  	r11, qword [rsp + 48]
+	add  	qword [rsp + 72], r11
+	mov  	r11, qword [rsp + 200]
+	mov  	qword [rsp + 40], r11
+	mov  	r11, qword [rsp + 72]
+	mov  	r11, qword [rsp + 40]
+	mov  	qword [r11 + 0], r11
+	mov  	r11, qword [rsp + 168]
+	mov  	r11, qword [r11 + 0]
+	mov  	qword [rsp + 32], r11
+	mov  	r11, qword [rsp + 184]
+	sub  	qword [rsp + 32], r11
+	mov  	r11, qword [rsp + 32]
+	mov  	qword [rsp + 24], r11
+	sub  	qword [rsp + 24], 1
+	mov  	rdi, qword [rsp + 24]
+	call  	adjustHeap
+	mov  	qword [rsp + 16], rax
+heapSort.forIncr.4:
+	mov  	r11, qword [rsp + 184]
+	mov  	qword [rsp + 8], r11
+	add  	qword [rsp + 8], 1
+	mov  	r11, qword [rsp + 8]
+	mov  	qword [rsp + 0], r11
+	mov  	r11, qword [rsp + 0]
+	mov  	qword [rsp + 184], r11
+	jmp  	heapSort.forHeader.2
+heapSort.forExit.5:
+	mov  	rax, 0
+heapSort.exit.6:
+	add  	rsp, 216
+	ret
+@global_var_decl:
+	sub  	rsp, 8
+@global_var_decl.entry.1:
+@global_var_decl.exit.2:
+	add  	rsp, 8
 	ret
 main:
 	sub  	rsp, 248
@@ -75,10 +366,10 @@ main.entry.1:
 	mov  	qword [rsp + 232], r11
 	mov  	r11, qword [rsp + 224]
 	mov  	r11, qword [rsp + 232]
-	mov  	qword [ler8 + 0], r11
+	mov  	qword [r11 + 0], r11
 main.new.body.2:
 	mov  	r11, qword [rsp + 224]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 216], r11
 	mov  	r11, qword [rsp + 216]
 	mov  	qword [rsp + 208], r11
@@ -89,7 +380,7 @@ main.new.body.2:
 	mov  	qword [rsp + 200], rax
 	mov  	r11, qword [rsp + 200]
 	mov  	r11, qword [rsp + 216]
-	mov  	qword [ler8 + 0], r11
+	mov  	qword [r11 + 0], r11
 	mov  	r11, qword [rsp + 200]
 	mov  	qword [rsp + 192], r11
 	add  	qword [rsp + 192], 8
@@ -100,7 +391,7 @@ main.new.exit.3:
 	mov  	qword [rsp + 176], r11
 	mov  	r11, qword [rsp + 168]
 	mov  	r11, qword [rsp + 176]
-	mov  	qword [ler8 + 0], r11
+	mov  	qword [r11 + 0], r11
 	mov  	qword [rsp + 160], 0
 	mov  	r11, qword [rsp + 160]
 	mov  	qword [rsp + 152], r11
@@ -119,7 +410,7 @@ main.forHeader.4:
 	jmp  	main.forExit.7
 main.forBlock.5:
 	mov  	r11, qword [rsp + 168]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 128], r11
 	mov  	r11, qword [rsp + 152]
 	mov  	qword [rsp + 120], r11
@@ -130,7 +421,7 @@ main.forBlock.5:
 	mov  	qword [rsp + 112], r11
 	mov  	r11, qword [rsp + 128]
 	mov  	r11, qword [rsp + 112]
-	mov  	qword [ler8 + 0], r11
+	mov  	qword [r11 + 0], r11
 main.forIncr.6:
 	mov  	r11, qword [rsp + 152]
 	mov  	qword [rsp + 104], r11
@@ -163,7 +454,7 @@ main.forHeader.8:
 	jmp  	main.forExit.11
 main.forBlock.9:
 	mov  	r11, qword [rsp + 168]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 48], r11
 	mov  	r11, qword [rsp + 152]
 	mov  	qword [rsp + 40], r11
@@ -171,7 +462,7 @@ main.forBlock.9:
 	mov  	r11, qword [rsp + 40]
 	add  	qword [rsp + 48], r11
 	mov  	r11, qword [rsp + 48]
-	mov  	rdi, qword [ler8 + 0]
+	mov  	rdi, qword [r11 + 0]
 	call  	toString
 	mov  	qword [rsp + 32], rax
 	mov  	rdi, qword [rsp + 32]
@@ -254,7 +545,7 @@ adjustHeap.whileBlock.3:
 	jmp  	adjustHeap.lhsFalse.5
 adjustHeap.lhsTrue.4:
 	mov  	r11, qword [rsp + 232]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 240], r11
 	mov  	r11, qword [rsp + 344]
 	mov  	qword [rsp + 224], r11
@@ -270,7 +561,7 @@ adjustHeap.lhsTrue.4:
 	mov  	r11, qword [rsp + 208]
 	add  	qword [rsp + 240], r11
 	mov  	r11, qword [rsp + 232]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 200], r11
 	mov  	r11, qword [rsp + 344]
 	mov  	qword [rsp + 192], r11
@@ -283,11 +574,11 @@ adjustHeap.lhsTrue.4:
 	mov  	r11, qword [rsp + 184]
 	add  	qword [rsp + 200], r11
 	mov  	r11, qword [rsp + 240]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 176], r11
 	mov  	r11, qword [rsp + 200]
 	mov  	r11, qword [rsp + 176]
-	cmp  	r11, qword [ler8 + 0]
+	cmp  	r11, qword [r11 + 0]
 	mov  	r11, 0
 	setl  	r11b
 	mov  	qword [rsp + 176], r11
@@ -319,7 +610,7 @@ adjustHeap.ifTrue.7:
 adjustHeap.ifFalse.8:
 adjustHeap.ifExit.9:
 	mov  	r11, qword [rsp + 232]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 136], r11
 	mov  	r11, qword [rsp + 344]
 	mov  	qword [rsp + 128], r11
@@ -327,7 +618,7 @@ adjustHeap.ifExit.9:
 	mov  	r11, qword [rsp + 128]
 	add  	qword [rsp + 136], r11
 	mov  	r11, qword [rsp + 232]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 120], r11
 	mov  	r11, qword [rsp + 328]
 	mov  	qword [rsp + 112], r11
@@ -335,11 +626,11 @@ adjustHeap.ifExit.9:
 	mov  	r11, qword [rsp + 112]
 	add  	qword [rsp + 120], r11
 	mov  	r11, qword [rsp + 136]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 104], r11
 	mov  	r11, qword [rsp + 120]
 	mov  	r11, qword [rsp + 104]
-	cmp  	r11, qword [ler8 + 0]
+	cmp  	r11, qword [r11 + 0]
 	mov  	r11, 0
 	setg  	r11b
 	mov  	qword [rsp + 104], r11
@@ -348,7 +639,7 @@ adjustHeap.ifExit.9:
 	jmp  	adjustHeap.ifFalse.11
 adjustHeap.ifTrue.10:
 	mov  	r11, qword [rsp + 232]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 96], r11
 	mov  	r11, qword [rsp + 344]
 	mov  	qword [rsp + 88], r11
@@ -356,12 +647,12 @@ adjustHeap.ifTrue.10:
 	mov  	r11, qword [rsp + 88]
 	add  	qword [rsp + 96], r11
 	mov  	r11, qword [rsp + 96]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 80], r11
 	mov  	r11, qword [rsp + 80]
 	mov  	qword [rsp + 72], r11
 	mov  	r11, qword [rsp + 232]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 64], r11
 	mov  	r11, qword [rsp + 344]
 	mov  	qword [rsp + 56], r11
@@ -369,7 +660,7 @@ adjustHeap.ifTrue.10:
 	mov  	r11, qword [rsp + 56]
 	add  	qword [rsp + 64], r11
 	mov  	r11, qword [rsp + 232]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 48], r11
 	mov  	r11, qword [rsp + 328]
 	mov  	qword [rsp + 40], r11
@@ -377,13 +668,13 @@ adjustHeap.ifTrue.10:
 	mov  	r11, qword [rsp + 40]
 	add  	qword [rsp + 48], r11
 	mov  	r11, qword [rsp + 48]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 32], r11
 	mov  	r11, qword [rsp + 64]
 	mov  	r11, qword [rsp + 32]
-	mov  	qword [ler8 + 0], r11
+	mov  	qword [r11 + 0], r11
 	mov  	r11, qword [rsp + 232]
-	mov  	r11, qword [ler8 + 0]
+	mov  	r11, qword [r11 + 0]
 	mov  	qword [rsp + 24], r11
 	mov  	r11, qword [rsp + 328]
 	mov  	qword [rsp + 16], r11
@@ -394,7 +685,7 @@ adjustHeap.ifTrue.10:
 	mov  	qword [rsp + 8], r11
 	mov  	r11, qword [rsp + 24]
 	mov  	r11, qword [rsp + 8]
-	mov  	qword [ler8 + 0], r11
+	mov  	qword [r11 + 0], r11
 	mov  	r11, qword [rsp + 328]
 	mov  	qword [rsp + 0], r11
 	mov  	r11, qword [rsp + 0]
@@ -408,297 +699,6 @@ adjustHeap.whileExit.13:
 	mov  	rax, 0
 adjustHeap.exit.14:
 	add  	rsp, 360
-	ret
-@global_var_decl:
-	sub  	rsp, 8
-@global_var_decl.entry.1:
-@global_var_decl.exit.2:
-	add  	rsp, 8
-	ret
-makeHeap:
-	sub  	rsp, 280
-makeHeap.entry.1:
-	mov  	r11, qword [rsp + 264]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 272], r11
-	sub  	qword [rsp + 272], 1
-	mov  	r11, qword [rsp + 272]
-	mov  	qword [rsp + 256], r11
-	mov  	rax, qword [rsp + 256]
-	cqo
-	idiv  	2
-	mov  	qword [rsp + 256], rax
-	mov  	r11, qword [rsp + 256]
-	mov  	qword [rsp + 248], r11
-	mov  	r11, qword [rsp + 248]
-	mov  	qword [rsp + 240], r11
-	mov  	qword [rsp + 232], 0
-	mov  	r11, qword [rsp + 232]
-	mov  	qword [rsp + 224], r11
-	mov  	qword [rsp + 216], 0
-	mov  	r11, qword [rsp + 216]
-	mov  	qword [rsp + 208], r11
-makeHeap.whileHeader.2:
-	mov  	r11, qword [rsp + 240]
-	mov  	qword [rsp + 200], r11
-	cmp  	qword [rsp + 200], 0
-	mov  	r11, 0
-	setge  	r11b
-	mov  	qword [rsp + 200], r11
-	cmp  	qword [rsp + 200], 1
-	je  	makeHeap.whileBlock.3
-	jmp  	makeHeap.whileExit.13
-makeHeap.whileBlock.3:
-	mov  	r11, qword [rsp + 240]
-	mov  	qword [rsp + 192], r11
-	mov  	r11, qword [rsp + 192]
-	imul  	r11, 2
-	mov  	qword [rsp + 192], r11
-	mov  	r11, qword [rsp + 192]
-	mov  	qword [rsp + 184], r11
-	mov  	r11, qword [rsp + 184]
-	mov  	qword [rsp + 208], r11
-	mov  	r11, qword [rsp + 240]
-	mov  	qword [rsp + 176], r11
-	mov  	r11, qword [rsp + 176]
-	imul  	r11, 2
-	mov  	qword [rsp + 176], r11
-	mov  	r11, qword [rsp + 176]
-	mov  	qword [rsp + 168], r11
-	add  	qword [rsp + 168], 1
-	mov  	r11, qword [rsp + 168]
-	mov  	qword [rsp + 160], r11
-	mov  	r11, qword [rsp + 264]
-	mov  	r11, qword [rsp + 160]
-	cmp  	r11, qword [ler8 + 0]
-	mov  	r11, 0
-	setl  	r11b
-	mov  	qword [rsp + 160], r11
-	cmp  	qword [rsp + 160], 1
-	je  	makeHeap.lhsTrue.4
-	jmp  	makeHeap.lhsFalse.5
-makeHeap.lhsTrue.4:
-	mov  	r11, qword [rsp + 144]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 152], r11
-	mov  	r11, qword [rsp + 240]
-	mov  	qword [rsp + 136], r11
-	mov  	r11, qword [rsp + 136]
-	imul  	r11, 2
-	mov  	qword [rsp + 136], r11
-	mov  	r11, qword [rsp + 136]
-	mov  	qword [rsp + 128], r11
-	add  	qword [rsp + 128], 1
-	mov  	r11, qword [rsp + 128]
-	mov  	qword [rsp + 120], r11
-	sal  	qword [rsp + 120], 3
-	mov  	r11, qword [rsp + 120]
-	add  	qword [rsp + 152], r11
-	mov  	r11, qword [rsp + 144]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 112], r11
-	mov  	r11, qword [rsp + 240]
-	mov  	qword [rsp + 104], r11
-	mov  	r11, qword [rsp + 104]
-	imul  	r11, 2
-	mov  	qword [rsp + 104], r11
-	mov  	r11, qword [rsp + 104]
-	mov  	qword [rsp + 96], r11
-	sal  	qword [rsp + 96], 3
-	mov  	r11, qword [rsp + 96]
-	add  	qword [rsp + 112], r11
-	mov  	r11, qword [rsp + 152]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 88], r11
-	mov  	r11, qword [rsp + 112]
-	mov  	r11, qword [rsp + 88]
-	cmp  	r11, qword [ler8 + 0]
-	mov  	r11, 0
-	setl  	r11b
-	mov  	qword [rsp + 88], r11
-	cmp  	qword [rsp + 88], 1
-	mov  	r11, 0
-	sete  	r11b
-	mov  	qword [rsp + 80], r11
-	jmp  	makeHeap.logicExit.6
-makeHeap.lhsFalse.5:
-	mov  	qword [rsp + 80], 0
-makeHeap.logicExit.6:
-	cmp  	qword [rsp + 80], 1
-	je  	makeHeap.ifTrue.7
-	jmp  	makeHeap.ifFalse.8
-makeHeap.ifTrue.7:
-	mov  	r11, qword [rsp + 240]
-	mov  	qword [rsp + 72], r11
-	mov  	r11, qword [rsp + 72]
-	imul  	r11, 2
-	mov  	qword [rsp + 72], r11
-	mov  	r11, qword [rsp + 72]
-	mov  	qword [rsp + 64], r11
-	add  	qword [rsp + 64], 1
-	mov  	r11, qword [rsp + 64]
-	mov  	qword [rsp + 56], r11
-	mov  	r11, qword [rsp + 56]
-	mov  	qword [rsp + 208], r11
-	jmp  	makeHeap.ifExit.9
-makeHeap.ifFalse.8:
-makeHeap.ifExit.9:
-	mov  	r11, qword [rsp + 144]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 48], r11
-	mov  	r11, qword [rsp + 240]
-	mov  	qword [rsp + 40], r11
-	sal  	qword [rsp + 40], 3
-	mov  	r11, qword [rsp + 40]
-	add  	qword [rsp + 48], r11
-	mov  	r11, qword [rsp + 144]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 32], r11
-	mov  	r11, qword [rsp + 208]
-	mov  	qword [rsp + 24], r11
-	sal  	qword [rsp + 24], 3
-	mov  	r11, qword [rsp + 24]
-	add  	qword [rsp + 32], r11
-	mov  	r11, qword [rsp + 48]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 16], r11
-	mov  	r11, qword [rsp + 32]
-	mov  	r11, qword [rsp + 16]
-	cmp  	r11, qword [ler8 + 0]
-	mov  	r11, 0
-	setg  	r11b
-	mov  	qword [rsp + 16], r11
-	cmp  	qword [rsp + 16], 1
-	je  	makeHeap.ifTrue.10
-	jmp  	makeHeap.ifFalse.11
-makeHeap.ifTrue.10:
-	mov  	rdi, qword [rsp + 240]
-	mov  	rsi, qword [rsp + 208]
-	call  	exchange
-	jmp  	makeHeap.ifExit.12
-makeHeap.ifFalse.11:
-makeHeap.ifExit.12:
-	mov  	r11, qword [rsp + 240]
-	mov  	qword [rsp + 8], r11
-	sub  	qword [rsp + 8], 1
-	mov  	r11, qword [rsp + 8]
-	mov  	qword [rsp + 0], r11
-	mov  	r11, qword [rsp + 0]
-	mov  	qword [rsp + 240], r11
-	jmp  	makeHeap.whileHeader.2
-makeHeap.whileExit.13:
-	mov  	rax, 0
-makeHeap.exit.14:
-	add  	rsp, 280
-	ret
-heapSort:
-	sub  	rsp, 216
-heapSort.entry.1:
-	mov  	qword [rsp + 208], 0
-	mov  	r11, qword [rsp + 208]
-	mov  	qword [rsp + 200], r11
-	mov  	qword [rsp + 192], 0
-	mov  	r11, qword [rsp + 192]
-	mov  	qword [rsp + 184], r11
-heapSort.forHeader.2:
-	mov  	r11, qword [rsp + 184]
-	mov  	qword [rsp + 176], r11
-	mov  	r11, qword [rsp + 168]
-	mov  	r11, qword [rsp + 176]
-	cmp  	r11, qword [ler8 + 0]
-	mov  	r11, 0
-	setl  	r11b
-	mov  	qword [rsp + 176], r11
-	cmp  	qword [rsp + 176], 1
-	je  	heapSort.forBlock.3
-	jmp  	heapSort.forExit.5
-heapSort.forBlock.3:
-	mov  	r11, qword [rsp + 152]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 160], r11
-	mov  	qword [rsp + 144], 0
-	sal  	qword [rsp + 144], 3
-	mov  	r11, qword [rsp + 144]
-	add  	qword [rsp + 160], r11
-	mov  	r11, qword [rsp + 160]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 136], r11
-	mov  	r11, qword [rsp + 136]
-	mov  	qword [rsp + 200], r11
-	mov  	r11, qword [rsp + 152]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 128], r11
-	mov  	qword [rsp + 120], 0
-	sal  	qword [rsp + 120], 3
-	mov  	r11, qword [rsp + 120]
-	add  	qword [rsp + 128], r11
-	mov  	r11, qword [rsp + 152]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 112], r11
-	mov  	r11, qword [rsp + 168]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 104], r11
-	mov  	r11, qword [rsp + 184]
-	sub  	qword [rsp + 104], r11
-	mov  	r11, qword [rsp + 104]
-	mov  	qword [rsp + 96], r11
-	sub  	qword [rsp + 96], 1
-	mov  	r11, qword [rsp + 96]
-	mov  	qword [rsp + 88], r11
-	sal  	qword [rsp + 88], 3
-	mov  	r11, qword [rsp + 88]
-	add  	qword [rsp + 112], r11
-	mov  	r11, qword [rsp + 112]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 80], r11
-	mov  	r11, qword [rsp + 128]
-	mov  	r11, qword [rsp + 80]
-	mov  	qword [ler8 + 0], r11
-	mov  	r11, qword [rsp + 152]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 72], r11
-	mov  	r11, qword [rsp + 168]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 64], r11
-	mov  	r11, qword [rsp + 184]
-	sub  	qword [rsp + 64], r11
-	mov  	r11, qword [rsp + 64]
-	mov  	qword [rsp + 56], r11
-	sub  	qword [rsp + 56], 1
-	mov  	r11, qword [rsp + 56]
-	mov  	qword [rsp + 48], r11
-	sal  	qword [rsp + 48], 3
-	mov  	r11, qword [rsp + 48]
-	add  	qword [rsp + 72], r11
-	mov  	r11, qword [rsp + 200]
-	mov  	qword [rsp + 40], r11
-	mov  	r11, qword [rsp + 72]
-	mov  	r11, qword [rsp + 40]
-	mov  	qword [ler8 + 0], r11
-	mov  	r11, qword [rsp + 168]
-	mov  	r11, qword [ler8 + 0]
-	mov  	qword [rsp + 32], r11
-	mov  	r11, qword [rsp + 184]
-	sub  	qword [rsp + 32], r11
-	mov  	r11, qword [rsp + 32]
-	mov  	qword [rsp + 24], r11
-	sub  	qword [rsp + 24], 1
-	mov  	rdi, qword [rsp + 24]
-	call  	adjustHeap
-	mov  	qword [rsp + 16], rax
-heapSort.forIncr.4:
-	mov  	r11, qword [rsp + 184]
-	mov  	qword [rsp + 8], r11
-	add  	qword [rsp + 8], 1
-	mov  	r11, qword [rsp + 8]
-	mov  	qword [rsp + 0], r11
-	mov  	r11, qword [rsp + 0]
-	mov  	qword [rsp + 184], r11
-	jmp  	heapSort.forHeader.2
-heapSort.forExit.5:
-	mov  	rax, 0
-heapSort.exit.6:
-	add  	rsp, 216
 	ret
 
 section .data

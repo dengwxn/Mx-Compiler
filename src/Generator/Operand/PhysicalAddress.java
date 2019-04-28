@@ -1,5 +1,7 @@
 package Generator.Operand;
 
+import static IR.Build.IR.translateRegister;
+
 public class PhysicalAddress extends PhysicalOperand {
     private String str;
     private int offset;
@@ -10,5 +12,5 @@ public class PhysicalAddress extends PhysicalOperand {
     }
 
     @Override
-    public String toNASM() { return "qword [" + str + " + " + offset + "]"; }
+    public String toNASM() { return "qword [" + translateRegister(str) + " + " + offset + "]"; }
 }

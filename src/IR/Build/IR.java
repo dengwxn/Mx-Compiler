@@ -78,7 +78,7 @@ public class IR {
 
     static final private boolean _DEBUG_TRANSLATE_ = false;
 
-    static private String translate(String op) {
+    static public String translateRegister(String op) {
         if (_DEBUG_TRANSLATE_)
             return op;
         switch (op) {
@@ -160,10 +160,10 @@ public class IR {
     }
 
     static public String formatInstr(String instr, String op) {
-        return String.format("\t%s  \t%s\n", instr, translate(op));
+        return String.format("\t%s  \t%s\n", instr, translateRegister(op));
     }
 
     static public String formatInstr(String instr, String lhs, String rhs) {
-        return String.format("\t%s  \t%s, %s\n", instr, translate(lhs), translate(rhs));
+        return String.format("\t%s  \t%s, %s\n", instr, translateRegister(lhs), translateRegister(rhs));
     }
 }
