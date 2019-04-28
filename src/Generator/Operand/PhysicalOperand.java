@@ -2,7 +2,7 @@ package Generator.Operand;
 
 import IR.Operand.*;
 
-import static IR.Build.BlockList.getSpillPos;
+import static IR.Build.FunctionIR.getSpillPos;
 import static IR.Build.IR.formatInstr;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 

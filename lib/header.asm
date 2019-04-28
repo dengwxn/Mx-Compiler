@@ -1,4 +1,4 @@
-    global  main
+	global  main
 	extern 	printf
 	extern 	malloc
 	extern 	strcpy

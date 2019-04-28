@@ -2,7 +2,7 @@ package IR.Operand;
 
 import AST.Table.Symbol;
 
-import static IR.Build.BlockList.spillPool;
+import static IR.Build.FunctionIR.addSpill;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
 public class VirtualRegister extends Operand {
@@ -15,7 +15,7 @@ public class VirtualRegister extends Operand {
     @Override
     public void putSpill() {
         if (getPhysicalRegister(this) == null)
-            spillPool.add(this);
+            addSpill(this);
     }
 
     @Override

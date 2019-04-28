@@ -29,9 +29,9 @@ public class VarDeclStmtNode extends StmtNode {
 
     @Override
     public void generateIR(BlockList blockList) {
+        symbol.setOperand();
         if (expr != null) {
             expr.generateIR(blockList);
-            symbol.setOperand();
             Operand dst = symbol.getOperand();
             Instruction mov = new MoveInstruction(dst, expr.getOperand());
             blockList.add(mov);

@@ -2,7 +2,9 @@ package IR.Operand;
 
 import java.util.HashMap;
 
+import static IR.Build.FunctionIR.addSpill;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
+import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
 public class Address extends Operand {
     static private HashMap<String, Integer> offsetTable = new HashMap<>();
@@ -17,6 +19,12 @@ public class Address extends Operand {
     public Address(String base, int offset) {
         this.base = getVirtualRegister(base);
         this.offset = new Immediate(offset);
+    }
+
+    @Override
+    public void putSpill() {
+        if (getPhysicalRegister(base) == null)
+            addSpill(base);
     }
 
     public VirtualRegister getBase() {

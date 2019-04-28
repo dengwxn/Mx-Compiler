@@ -1,4 +1,4 @@
-    global  main
+	global  main
 	extern 	printf
 	extern 	malloc
 	extern 	strcpy
@@ -11,28 +11,317 @@
 	extern 	puts
 
 section .text
+main:
+	sub  	rsp, 360
+main.entry.1:
+	call  	@global_var_decl
+main.new.body.2:
+	mov  	qword [rsp + 352], 100
+	add  	qword [rsp + 352], 1
+	sal  	qword [rsp + 352], 3
+	mov  	rdi, qword [rsp + 352]
+	call  	malloc
+	mov  	qword [rsp + 344], rax
+	mov  	r11, qword [rsp + 344]
+	mov  	qword [ler8 + 0], 100
+	mov  	r11, qword [rsp + 344]
+	mov  	qword [rsp + 336], r11
+	add  	qword [rsp + 336], 8
+	mov  	r11, qword [rsp + 336]
+	mov  	qword [rsp + 328], r11
+	mov  	r11, qword [rsp + 344]
+	mov  	qword [rsp + 320], r11
+	mov  	r11, qword [rsp + 352]
+	add  	qword [rsp + 320], r11
+main.new.cond.3:
+	mov  	r11, qword [rsp + 336]
+	cmp  	r11, qword [rsp + 320]
+	jl  	main.new.body.4
+	jmp  	main.new.exit.9
+main.new.body.4:
+	mov  	qword [rsp + 312], 200
+	add  	qword [rsp + 312], 1
+	sal  	qword [rsp + 312], 3
+	mov  	rdi, qword [rsp + 312]
+	call  	malloc
+	mov  	qword [rsp + 304], rax
+	mov  	r11, qword [rsp + 304]
+	mov  	qword [ler8 + 0], 200
+	mov  	r11, qword [rsp + 304]
+	mov  	qword [rsp + 296], r11
+	add  	qword [rsp + 296], 8
+	mov  	r11, qword [rsp + 336]
+	mov  	r11, qword [rsp + 296]
+	mov  	qword [ler8 + 0], r11
+	mov  	r11, qword [rsp + 304]
+	mov  	qword [rsp + 288], r11
+	mov  	r11, qword [rsp + 312]
+	add  	qword [rsp + 288], r11
+main.new.cond.5:
+	mov  	r11, qword [rsp + 296]
+	cmp  	r11, qword [rsp + 288]
+	jl  	main.new.body.6
+	add  	qword [rsp + 336], 8
+	jmp  	main.new.cond.3
+main.new.body.6:
+	mov  	qword [rsp + 280], 300
+	add  	qword [rsp + 280], 1
+	sal  	qword [rsp + 280], 3
+	mov  	rdi, qword [rsp + 280]
+	call  	malloc
+	mov  	qword [rsp + 272], rax
+	mov  	r11, qword [rsp + 272]
+	mov  	qword [ler8 + 0], 300
+	mov  	r11, qword [rsp + 272]
+	mov  	qword [rsp + 264], r11
+	add  	qword [rsp + 264], 8
+	mov  	r11, qword [rsp + 296]
+	mov  	r11, qword [rsp + 264]
+	mov  	qword [ler8 + 0], r11
+	mov  	r11, qword [rsp + 272]
+	mov  	qword [rsp + 256], r11
+	mov  	r11, qword [rsp + 280]
+	add  	qword [rsp + 256], r11
+main.new.cond.7:
+	mov  	r11, qword [rsp + 264]
+	cmp  	r11, qword [rsp + 256]
+	jl  	main.new.body.8
+	add  	qword [rsp + 296], 8
+	jmp  	main.new.cond.5
+main.new.body.8:
+	mov  	qword [rsp + 248], 500
+	add  	qword [rsp + 248], 1
+	sal  	qword [rsp + 248], 3
+	mov  	rdi, qword [rsp + 248]
+	call  	malloc
+	mov  	qword [rsp + 240], rax
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [ler8 + 0], 500
+	mov  	r11, qword [rsp + 240]
+	mov  	qword [rsp + 232], r11
+	add  	qword [rsp + 232], 8
+	mov  	r11, qword [rsp + 264]
+	mov  	r11, qword [rsp + 232]
+	mov  	qword [ler8 + 0], r11
+	add  	qword [rsp + 264], 8
+	jmp  	main.new.cond.7
+main.new.exit.9:
+	mov  	r11, qword [rsp + 328]
+	mov  	qword [rsp + 224], r11
+	mov  	r11, qword [rsp + 224]
+	mov  	qword [rsp + 216], r11
+	mov  	qword [rsp + 208], 3
+	sal  	qword [rsp + 208], 3
+	mov  	r11, qword [rsp + 208]
+	add  	qword [rsp + 216], r11
+	mov  	r11, qword [rsp + 216]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 200], r11
+	mov  	r11, qword [rsp + 200]
+	mov  	qword [rsp + 192], r11
+	mov  	qword [rsp + 184], 7
+	sal  	qword [rsp + 184], 3
+	mov  	r11, qword [rsp + 184]
+	add  	qword [rsp + 192], r11
+	mov  	r11, qword [rsp + 192]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 176], r11
+	mov  	r11, qword [rsp + 200]
+	mov  	qword [rsp + 168], r11
+	mov  	qword [rsp + 160], 7
+	sal  	qword [rsp + 160], 3
+	mov  	r11, qword [rsp + 160]
+	add  	qword [rsp + 168], r11
+	mov  	r11, qword [rsp + 168]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 168], r11
+	mov  	qword [rsp + 160], 8
+	sal  	qword [rsp + 160], 3
+	mov  	r11, qword [rsp + 160]
+	add  	qword [rsp + 168], r11
+	mov  	r11, qword [rsp + 168]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 168], r11
+	mov  	qword [rsp + 160], 9
+	sal  	qword [rsp + 160], 3
+	mov  	r11, qword [rsp + 160]
+	add  	qword [rsp + 168], r11
+	mov  	r11, qword [rsp + 168]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 152], r11
+	mov  	r11, qword [rsp + 176]
+	mov  	qword [rsp + 144], r11
+	mov  	qword [rsp + 136], 2
+	sal  	qword [rsp + 136], 3
+	mov  	r11, qword [rsp + 136]
+	add  	qword [rsp + 144], r11
+	mov  	r11, qword [rsp + 144]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 144], r11
+	mov  	qword [rsp + 136], 1
+	sal  	qword [rsp + 136], 3
+	mov  	r11, qword [rsp + 136]
+	add  	qword [rsp + 144], r11
+	mov  	r11, qword [rsp + 200]
+	mov  	qword [rsp + 128], r11
+	mov  	qword [rsp + 120], 1
+	sal  	qword [rsp + 120], 3
+	mov  	r11, qword [rsp + 120]
+	add  	qword [rsp + 128], r11
+	mov  	r11, qword [rsp + 128]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 128], r11
+	mov  	qword [rsp + 120], 2
+	sal  	qword [rsp + 120], 3
+	mov  	r11, qword [rsp + 120]
+	add  	qword [rsp + 128], r11
+	mov  	r11, qword [rsp + 128]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 128], r11
+	mov  	qword [rsp + 120], 3
+	sal  	qword [rsp + 120], 3
+	mov  	r11, qword [rsp + 120]
+	add  	qword [rsp + 128], r11
+	mov  	r11, qword [rsp + 144]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 112], r11
+	mov  	r11, qword [rsp + 128]
+	mov  	r11, qword [rsp + 112]
+	cmp  	r11, qword [ler8 + 0]
+	mov  	r11, 0
+	sete  	r11b
+	mov  	qword [rsp + 112], r11
+	cmp  	qword [rsp + 112], 1
+	je  	main.lhsTrue.10
+	jmp  	main.lhsFalse.11
+main.lhsTrue.10:
+	mov  	r11, qword [rsp + 176]
+	mov  	qword [rsp + 104], r11
+	mov  	qword [rsp + 96], 2
+	sal  	qword [rsp + 96], 3
+	mov  	r11, qword [rsp + 96]
+	add  	qword [rsp + 104], r11
+	mov  	r11, qword [rsp + 104]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 104], r11
+	mov  	qword [rsp + 96], 2
+	sal  	qword [rsp + 96], 3
+	mov  	r11, qword [rsp + 96]
+	add  	qword [rsp + 104], r11
+	mov  	r11, qword [rsp + 224]
+	mov  	qword [rsp + 88], r11
+	mov  	qword [rsp + 80], 1
+	sal  	qword [rsp + 80], 3
+	mov  	r11, qword [rsp + 80]
+	add  	qword [rsp + 88], r11
+	mov  	r11, qword [rsp + 88]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 88], r11
+	mov  	qword [rsp + 80], 2
+	sal  	qword [rsp + 80], 3
+	mov  	r11, qword [rsp + 80]
+	add  	qword [rsp + 88], r11
+	mov  	r11, qword [rsp + 88]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 88], r11
+	mov  	qword [rsp + 80], 3
+	sal  	qword [rsp + 80], 3
+	mov  	r11, qword [rsp + 80]
+	add  	qword [rsp + 88], r11
+	mov  	r11, qword [rsp + 88]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 88], r11
+	mov  	qword [rsp + 80], 4
+	sal  	qword [rsp + 80], 3
+	mov  	r11, qword [rsp + 80]
+	add  	qword [rsp + 88], r11
+	mov  	r11, qword [rsp + 104]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 72], r11
+	mov  	r11, qword [rsp + 88]
+	mov  	r11, qword [rsp + 72]
+	cmp  	r11, qword [ler8 + 0]
+	mov  	r11, 0
+	sete  	r11b
+	mov  	qword [rsp + 72], r11
+	cmp  	qword [rsp + 72], 1
+	mov  	r11, 0
+	sete  	r11b
+	mov  	qword [rsp + 64], r11
+	jmp  	main.logicExit.12
+main.lhsFalse.11:
+	mov  	qword [rsp + 64], 0
+main.logicExit.12:
+	cmp  	qword [rsp + 64], 1
+	je  	main.lhsTrue.13
+	jmp  	main.lhsFalse.14
+main.lhsTrue.13:
+	mov  	r11, qword [rsp + 176]
+	mov  	qword [rsp + 56], r11
+	mov  	qword [rsp + 48], 2
+	sal  	qword [rsp + 48], 3
+	mov  	r11, qword [rsp + 48]
+	add  	qword [rsp + 56], r11
+	mov  	r11, qword [rsp + 56]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 56], r11
+	mov  	qword [rsp + 48], 3
+	sal  	qword [rsp + 48], 3
+	mov  	r11, qword [rsp + 48]
+	add  	qword [rsp + 56], r11
+	mov  	r11, qword [rsp + 56]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 40], r11
+	mov  	r11, qword [rsp + 40]
+	cmp  	r11, qword [rsp + 32]
+	mov  	r11, 0
+	sete  	r11b
+	mov  	qword [rsp + 40], r11
+	cmp  	qword [rsp + 40], 1
+	mov  	r11, 0
+	sete  	r11b
+	mov  	qword [rsp + 24], r11
+	jmp  	main.logicExit.15
+main.lhsFalse.14:
+	mov  	qword [rsp + 24], 0
+main.logicExit.15:
+	cmp  	qword [rsp + 24], 1
+	je  	main.ifTrue.16
+	jmp  	main.ifFalse.17
+main.ifTrue.16:
+	mov  	r11, qword [rsp + 200]
+	mov  	qword [rsp + 16], r11
+	mov  	qword [rsp + 8], 1
+	sal  	qword [rsp + 8], 3
+	mov  	r11, qword [rsp + 8]
+	add  	qword [rsp + 16], r11
+	mov  	r11, qword [rsp + 16]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 16], r11
+	mov  	qword [rsp + 8], 2
+	sal  	qword [rsp + 8], 3
+	mov  	r11, qword [rsp + 8]
+	add  	qword [rsp + 16], r11
+	mov  	r11, qword [rsp + 16]
+	mov  	r11, qword [ler8 + 0]
+	mov  	qword [rsp + 16], r11
+	mov  	qword [rsp + 8], 3
+	sal  	qword [rsp + 8], 3
+	mov  	r11, qword [rsp + 8]
+	add  	qword [rsp + 16], r11
+	mov  	r11, qword [rsp + 16]
+	inc  	qword [ler8 + 0]
+	jmp  	main.ifExit.18
+main.ifFalse.17:
+main.ifExit.18:
+main.exit.19:
+	add  	rsp, 360
+	ret
 @global_var_decl:
 	sub  	rsp, 8
 @global_var_decl.entry.1:
 @global_var_decl.exit.2:
 	add  	rsp, 8
-	ret
-main:
-	sub  	rsp, 24
-main.entry.1:
-	call  	@global_var_decl
-	mov  	qword [rsp + 16], 1
-	add  	qword [rsp + 16], 2
-	mov  	r11, qword [rsp + 16]
-	mov  	qword [rsp + 8], r11
-	mov  	rdi, qword [rsp + 8]
-	call  	toString
-	mov  	qword [rsp + 0], rax
-	mov  	rdi, qword [rsp + 0]
-	call  	println
-	mov  	rax, 0
-main.exit.2:
-	add  	rsp, 24
 	ret
 
 section .data

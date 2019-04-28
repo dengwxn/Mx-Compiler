@@ -7,9 +7,8 @@ import IR.Operand.Operand;
 import java.util.ArrayList;
 
 import static Generator.Operand.PhysicalOperand.convertOperand;
-import static IR.Build.BlockList.maxParamSize;
+import static IR.Build.FunctionIR.setMaxParamSize;
 import static IR.Build.IR.formatInstr;
-import static java.lang.Math.max;
 
 public class FuncCallInstruction extends Instruction {
     private String name;
@@ -23,7 +22,7 @@ public class FuncCallInstruction extends Instruction {
     @Override
     public void putSpill() {
         param.forEach(p -> p.putSpill());
-        maxParamSize = max(maxParamSize, param.size());
+        setMaxParamSize(param.size());
     }
 
     @Override
@@ -38,8 +37,7 @@ public class FuncCallInstruction extends Instruction {
             PhysicalOperand param = convertOperand(str, this.param.get(i));
             if (i < 6) {
                 str.append(formatInstr("mov", "arg" + (i + 1), param.toNASM()));
-            }
-            else {
+            } else {
                 PhysicalAddress pos = new PhysicalAddress("rsp", (i - 5) * 8);
                 if (param instanceof PhysicalAddress) {
                     str.append(formatInstr("mov", "ler8", param.toNASM()));
