@@ -47,12 +47,13 @@ public class NewArrayExprNode extends ExprNode {
 
         for (int i = 0; i < paramSize; ++i) {
             VirtualRegister len = getTemporaryRegister();
+            VirtualRegister size = getTemporaryRegister();
             Block newBody = newBodyList[i];
             Block newCond = newCondList[i];
-            Operand size = param.get(i).getOperand();
 
             // newBody
             blockList.add(newBody);
+            blockList.add(new MoveInstruction(size, param.get(i).getOperand()));
             blockList.add(new MoveInstruction(len, size));
             blockList.add(new BinaryInstruction(ADD, len, 1));
             blockList.add(new BinaryInstruction(SHL, len, 3));

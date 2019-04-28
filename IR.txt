@@ -1,24 +1,419 @@
-@global_var_decl():
+exchange(x, y):
 
-@global_var_decl:
-@global_var_decl.entry.1:
-	mov  	t1, [@b]
-	mov  	t2, [t1]
-	mov  	[@c], t2
-@global_var_decl.exit.2:
-
-A.fun(this):
-
-A.fun:
-A.fun.entry.1:
-	mov  	t3, [@c]
-	mov  	[this], t3
-A.fun.exit.2:
+exchange:
+exchange.entry.1:
+	mov  	t1, [@a]
+	mov  	t2, x
+	shl  	t2, 3
+	add  	t1, t2
+	mov  	t3, [t1]
+	mov  	t, t3
+	mov  	t4, [@a]
+	mov  	t5, x
+	shl  	t5, 3
+	add  	t4, t5
+	mov  	t6, [@a]
+	mov  	t7, y
+	shl  	t7, 3
+	add  	t6, t7
+	mov  	t8, [t6]
+	mov  	[t4], t8
+	mov  	t9, [@a]
+	mov  	t10, y
+	shl  	t10, 3
+	add  	t9, t10
+	mov  	t11, t
+	mov  	[t9], t11
+exchange.exit.2:
 
 main():
 
 main:
 main.entry.1:
 	call  	@global_var_decl()
-main.exit.2:
+	call  	string.parseInt()
+	mov  	t104, rax
+	mov  	t105, t104
+	mov  	[@n], t105
+	jmp  	main.new.body.2
+main.new.body.2:
+	mov  	t109, [@n]
+	mov  	t108, t109
+	add  	t108, 1
+	shl  	t108, 3
+	call  	malloc(t108)
+	mov  	t110, rax
+	mov  	[t110], t109
+	mov  	t107, t110
+	add  	t107, 8
+	mov  	t106, t107
+	jmp  	main.new.exit.3
+main.new.exit.3:
+	mov  	t111, t106
+	mov  	[@a], t111
+	mov  	t112, 0
+	mov  	i, t112
+	jmp  	main.forHeader.4
+main.forHeader.4:
+	call  	_.size()
+	mov  	t114, rax
+	mov  	t113, i
+	cmp  	t113, t114
+	setl  	t113
+	cmp  	t113, 1
+	je  	main.forBlock.5
+	jmp  	main.forExit.7
+main.forBlock.5:
+	mov  	t115, [@a]
+	mov  	t116, i
+	shl  	t116, 3
+	add  	t115, t116
+	mov  	t117, i
+	mov  	[t115], t117
+	jmp  	main.forIncr.6
+main.forIncr.6:
+	mov  	t118, i
+	add  	t118, 1
+	mov  	t119, t118
+	mov  	i, t119
+	jmp  	main.forHeader.4
+main.forExit.7:
+	call  	makeHeap()
+	mov  	t120, rax
+	call  	heapSort()
+	mov  	t121, rax
+	mov  	t122, 0
+	mov  	i, t122
+	jmp  	main.forHeader.8
+main.forHeader.8:
+	call  	_.size()
+	mov  	t124, rax
+	mov  	t123, i
+	cmp  	t123, t124
+	setl  	t123
+	cmp  	t123, 1
+	je  	main.forBlock.9
+	jmp  	main.forExit.11
+main.forBlock.9:
+	mov  	t126, [@a]
+	mov  	t127, i
+	shl  	t127, 3
+	add  	t126, t127
+	call  	toString([t126])
+	mov  	t128, rax
+	call  	string.add(t128, _string_constant_0)
+	mov  	t125, rax
+	call  	print(t125)
+	jmp  	main.forIncr.10
+main.forIncr.10:
+	mov  	t129, i
+	add  	t129, 1
+	mov  	t130, t129
+	mov  	i, t130
+	jmp  	main.forHeader.8
+main.forExit.11:
+	call  	print(_string_constant_1)
+	mov  	rax, 0
+	jmp  	main.exit.12
+main.exit.12:
+
+adjustHeap(n):
+
+adjustHeap:
+adjustHeap.entry.1:
+	mov  	t42, 0
+	mov  	i, t42
+	mov  	t43, 0
+	mov  	j, t43
+	mov  	t44, 0
+	mov  	t, t44
+	jmp  	adjustHeap.whileHeader.2
+adjustHeap.whileHeader.2:
+	mov  	t46, i
+	mul  	t46, 2
+	mov  	t45, t46
+	cmp  	t45, n
+	setl  	t45
+	cmp  	t45, 1
+	je  	adjustHeap.whileBlock.3
+	jmp  	adjustHeap.whileExit.13
+adjustHeap.whileBlock.3:
+	mov  	t47, i
+	mul  	t47, 2
+	mov  	t48, t47
+	mov  	j, t48
+	mov  	t52, i
+	mul  	t52, 2
+	mov  	t51, t52
+	add  	t51, 1
+	mov  	t50, t51
+	cmp  	t50, n
+	setl  	t50
+	cmp  	t50, 1
+	je  	adjustHeap.lhsTrue.4
+	jmp  	adjustHeap.lhsFalse.5
+adjustHeap.lhsTrue.4:
+	mov  	t54, [@a]
+	mov  	t57, i
+	mul  	t57, 2
+	mov  	t56, t57
+	add  	t56, 1
+	mov  	t55, t56
+	shl  	t55, 3
+	add  	t54, t55
+	mov  	t58, [@a]
+	mov  	t60, i
+	mul  	t60, 2
+	mov  	t59, t60
+	shl  	t59, 3
+	add  	t58, t59
+	mov  	t53, [t54]
+	cmp  	t53, [t58]
+	setl  	t53
+	cmp  	t53, 1
+	sete  	t49
+	jmp  	adjustHeap.logicExit.6
+adjustHeap.lhsFalse.5:
+	mov  	t49, 0
+	jmp  	adjustHeap.logicExit.6
+adjustHeap.logicExit.6:
+	cmp  	t49, 1
+	je  	adjustHeap.ifTrue.7
+	jmp  	adjustHeap.ifFalse.8
+adjustHeap.ifTrue.7:
+	mov  	t62, i
+	mul  	t62, 2
+	mov  	t61, t62
+	add  	t61, 1
+	mov  	t63, t61
+	mov  	j, t63
+	jmp  	adjustHeap.ifExit.9
+adjustHeap.ifFalse.8:
+	jmp  	adjustHeap.ifExit.9
+adjustHeap.ifExit.9:
+	mov  	t65, [@a]
+	mov  	t66, i
+	shl  	t66, 3
+	add  	t65, t66
+	mov  	t67, [@a]
+	mov  	t68, j
+	shl  	t68, 3
+	add  	t67, t68
+	mov  	t64, [t65]
+	cmp  	t64, [t67]
+	setg  	t64
+	cmp  	t64, 1
+	je  	adjustHeap.ifTrue.10
+	jmp  	adjustHeap.ifFalse.11
+adjustHeap.ifTrue.10:
+	mov  	t69, [@a]
+	mov  	t70, i
+	shl  	t70, 3
+	add  	t69, t70
+	mov  	t71, [t69]
+	mov  	t, t71
+	mov  	t72, [@a]
+	mov  	t73, i
+	shl  	t73, 3
+	add  	t72, t73
+	mov  	t74, [@a]
+	mov  	t75, j
+	shl  	t75, 3
+	add  	t74, t75
+	mov  	t76, [t74]
+	mov  	[t72], t76
+	mov  	t77, [@a]
+	mov  	t78, j
+	shl  	t78, 3
+	add  	t77, t78
+	mov  	t79, t
+	mov  	[t77], t79
+	mov  	t80, j
+	mov  	i, t80
+	jmp  	adjustHeap.ifExit.12
+adjustHeap.ifFalse.11:
+	jmp  	adjustHeap.whileExit.13
+adjustHeap.ifExit.12:
+	jmp  	adjustHeap.whileHeader.2
+adjustHeap.whileExit.13:
+	mov  	rax, 0
+	jmp  	adjustHeap.exit.14
+adjustHeap.exit.14:
+
+@global_var_decl():
+
+@global_var_decl:
+@global_var_decl.entry.1:
+@global_var_decl.exit.2:
+
+makeHeap():
+
+makeHeap:
+makeHeap.entry.1:
+	mov  	t13, [@n]
+	sub  	t13, 1
+	mov  	t12, t13
+	div  	t12, 2
+	mov  	t14, t12
+	mov  	i, t14
+	mov  	t15, 0
+	mov  	t, t15
+	mov  	t16, 0
+	mov  	j, t16
+	jmp  	makeHeap.whileHeader.2
+makeHeap.whileHeader.2:
+	mov  	t17, i
+	cmp  	t17, 0
+	setge  	t17
+	cmp  	t17, 1
+	je  	makeHeap.whileBlock.3
+	jmp  	makeHeap.whileExit.13
+makeHeap.whileBlock.3:
+	mov  	t18, i
+	mul  	t18, 2
+	mov  	t19, t18
+	mov  	j, t19
+	mov  	t23, i
+	mul  	t23, 2
+	mov  	t22, t23
+	add  	t22, 1
+	mov  	t21, t22
+	cmp  	t21, [@n]
+	setl  	t21
+	cmp  	t21, 1
+	je  	makeHeap.lhsTrue.4
+	jmp  	makeHeap.lhsFalse.5
+makeHeap.lhsTrue.4:
+	mov  	t25, [@a]
+	mov  	t28, i
+	mul  	t28, 2
+	mov  	t27, t28
+	add  	t27, 1
+	mov  	t26, t27
+	shl  	t26, 3
+	add  	t25, t26
+	mov  	t29, [@a]
+	mov  	t31, i
+	mul  	t31, 2
+	mov  	t30, t31
+	shl  	t30, 3
+	add  	t29, t30
+	mov  	t24, [t25]
+	cmp  	t24, [t29]
+	setl  	t24
+	cmp  	t24, 1
+	sete  	t20
+	jmp  	makeHeap.logicExit.6
+makeHeap.lhsFalse.5:
+	mov  	t20, 0
+	jmp  	makeHeap.logicExit.6
+makeHeap.logicExit.6:
+	cmp  	t20, 1
+	je  	makeHeap.ifTrue.7
+	jmp  	makeHeap.ifFalse.8
+makeHeap.ifTrue.7:
+	mov  	t33, i
+	mul  	t33, 2
+	mov  	t32, t33
+	add  	t32, 1
+	mov  	t34, t32
+	mov  	j, t34
+	jmp  	makeHeap.ifExit.9
+makeHeap.ifFalse.8:
+	jmp  	makeHeap.ifExit.9
+makeHeap.ifExit.9:
+	mov  	t36, [@a]
+	mov  	t37, i
+	shl  	t37, 3
+	add  	t36, t37
+	mov  	t38, [@a]
+	mov  	t39, j
+	shl  	t39, 3
+	add  	t38, t39
+	mov  	t35, [t36]
+	cmp  	t35, [t38]
+	setg  	t35
+	cmp  	t35, 1
+	je  	makeHeap.ifTrue.10
+	jmp  	makeHeap.ifFalse.11
+makeHeap.ifTrue.10:
+	call  	exchange(i, j)
+	jmp  	makeHeap.ifExit.12
+makeHeap.ifFalse.11:
+	jmp  	makeHeap.ifExit.12
+makeHeap.ifExit.12:
+	mov  	t40, i
+	sub  	t40, 1
+	mov  	t41, t40
+	mov  	i, t41
+	jmp  	makeHeap.whileHeader.2
+makeHeap.whileExit.13:
+	mov  	rax, 0
+	jmp  	makeHeap.exit.14
+makeHeap.exit.14:
+
+heapSort():
+
+heapSort:
+heapSort.entry.1:
+	mov  	t81, 0
+	mov  	t, t81
+	mov  	t82, 0
+	mov  	k, t82
+	jmp  	heapSort.forHeader.2
+heapSort.forHeader.2:
+	mov  	t83, k
+	cmp  	t83, [@n]
+	setl  	t83
+	cmp  	t83, 1
+	je  	heapSort.forBlock.3
+	jmp  	heapSort.forExit.5
+heapSort.forBlock.3:
+	mov  	t84, [@a]
+	mov  	t85, 0
+	shl  	t85, 3
+	add  	t84, t85
+	mov  	t86, [t84]
+	mov  	t, t86
+	mov  	t87, [@a]
+	mov  	t88, 0
+	shl  	t88, 3
+	add  	t87, t88
+	mov  	t89, [@a]
+	mov  	t92, [@n]
+	sub  	t92, k
+	mov  	t91, t92
+	sub  	t91, 1
+	mov  	t90, t91
+	shl  	t90, 3
+	add  	t89, t90
+	mov  	t93, [t89]
+	mov  	[t87], t93
+	mov  	t94, [@a]
+	mov  	t97, [@n]
+	sub  	t97, k
+	mov  	t96, t97
+	sub  	t96, 1
+	mov  	t95, t96
+	shl  	t95, 3
+	add  	t94, t95
+	mov  	t98, t
+	mov  	[t94], t98
+	mov  	t100, [@n]
+	sub  	t100, k
+	mov  	t99, t100
+	sub  	t99, 1
+	call  	adjustHeap(t99)
+	mov  	t101, rax
+	jmp  	heapSort.forIncr.4
+heapSort.forIncr.4:
+	mov  	t102, k
+	add  	t102, 1
+	mov  	t103, t102
+	mov  	k, t103
+	jmp  	heapSort.forHeader.2
+heapSort.forExit.5:
+	mov  	rax, 0
+	jmp  	heapSort.exit.6
+heapSort.exit.6:
 
