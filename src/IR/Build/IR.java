@@ -19,8 +19,8 @@ import static IR.Operand.VirtualRegisterTable.precolor;
 
 public class IR {
     static private FuncDeclNode globalVarDecl;
-    static public HashMap<FuncDeclNode, FunctionIR> functionIRMap;
-    static public HashMap<String, Integer> stringConst;
+    static public HashMap<FuncDeclNode, FunctionIR> functionIRMap = new HashMap<>();
+    static public HashMap<String, Integer> stringConst = new HashMap<>();
 
     static public int putStringConst(String str) {
         if (!stringConst.containsKey(str))
@@ -45,8 +45,6 @@ public class IR {
     static public void generate() {
         setGlobalVarDecl();
         precolor();
-        functionIRMap = new HashMap<>();
-        stringConst = new HashMap<>();
         functionIRMap.put(globalVarDecl, new FunctionIR(globalVarDecl));
         for (Node decl : Tree.prog.getDecl()) {
             if (decl instanceof FuncDeclNode) {

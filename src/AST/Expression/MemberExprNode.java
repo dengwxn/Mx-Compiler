@@ -25,13 +25,17 @@ public class MemberExprNode extends ExprNode {
         ls.generateIR(blockList);
         Operand base = ls.getOperand();
         int offset = getOffset(getPrevTypeName() + "." + ident);
-        if (base instanceof VirtualRegister) {
-            operand = new Address((VirtualRegister) base, offset);
+        if (offset != -1) {
+            if (base instanceof VirtualRegister) {
+                operand = new Address((VirtualRegister) base, offset);
+            } else {
+                VirtualRegister lsAddr = getTemporaryRegister();
+                Instruction movBase = new MoveInstruction(lsAddr, base);
+                blockList.add(movBase);
+                operand = new Address(lsAddr, offset);
+            }
         } else {
-            VirtualRegister lsAddr = getTemporaryRegister();
-            Instruction movBase = new MoveInstruction(lsAddr, base);
-            blockList.add(movBase);
-            operand = new Address(lsAddr, offset);
+            operand = base;
         }
     }
 
@@ -41,12 +45,11 @@ public class MemberExprNode extends ExprNode {
 
     public String getPrevTypeName() {
         if (ls.getType() != null) {
-            if (ls.getType() instanceof ArrayType)
-                return "_";
-            else
-                return ls.getType().getTypeName();
-        } else
+            if (ls.getType() instanceof ArrayType) return "_";
+            else return ls.getType().getTypeName();
+        } else {
             return null;
+        }
     }
 
     @Override

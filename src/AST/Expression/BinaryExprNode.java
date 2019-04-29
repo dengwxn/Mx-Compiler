@@ -6,6 +6,7 @@ import IR.Build.Block;
 import IR.Build.BlockList;
 import IR.Instruction.*;
 import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,8 +84,9 @@ public class BinaryExprNode extends ExprNode {
                 Instruction binary = new BinaryInstruction(convertBinaryOp(), operand, rhs.getOperand());
                 blockList.add(mov, binary);
             } else {
-                Instruction mov = new MoveInstruction(operand, lhs.getOperand());
-                Instruction cmp = new CompareInstruction(operand, rhs.getOperand());
+                VirtualRegister tmp = getTemporaryRegister();
+                Instruction mov = new MoveInstruction(tmp, lhs.getOperand());
+                Instruction cmp = new CompareInstruction(tmp, rhs.getOperand());
                 Instruction cset = new CondSetInstruction(convertCompareOp(), operand);
                 blockList.add(mov, cmp, cset);
             }

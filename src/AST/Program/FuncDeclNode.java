@@ -30,6 +30,10 @@ public class FuncDeclNode extends Node {
         blockStmt.generateIR(blockList);
     }
 
+    public ArrayList<Symbol> getParamSymbol() {
+        return paramSymbol;
+    }
+
     public void setParamSymbol(ArrayList<Symbol> paramSymbol) {
         this.paramSymbol = paramSymbol;
     }

@@ -38,7 +38,7 @@ public class Generator {
         str.append("section .data\n");
         for (Map.Entry<String, Integer> entry : stringConst.entrySet()) {
             String key = entry.getKey();
-            str.append(formatInstr("dq", String.valueOf(convertLiteralEscape(key).length())));
+            str.append(formatInstr("dq", String.valueOf(convertLiteralEscape(key).length() - 2)));
             str.append("_string_constant_" + entry.getValue() + ":\n");
             key = convertEscapeToNumber(key);
             str.append(formatInstr("db", key + ", 0"));

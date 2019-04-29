@@ -82,7 +82,12 @@ public class BinaryInstruction extends Instruction {
                 // rdx arg3
                 str.append(formatInstr("mov", "res0", dst.toNASM()));
                 str.append(formatInstr("cqo"));
-                str.append(formatInstr("idiv", src.toNASM()));
+                if (src instanceof PhysicalImmediate) {
+                    str.append(formatInstr("mov", "ler8", src.toNASM()));
+                    str.append(formatInstr("idiv", "ler8"));
+                } else {
+                    str.append(formatInstr("idiv", src.toNASM()));
+                }
                 str.append(formatInstr("mov", dst.toNASM(), op == DIV ? "res0" : "arg3"));
                 break;
             default:

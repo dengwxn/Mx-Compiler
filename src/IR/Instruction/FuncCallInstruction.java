@@ -38,7 +38,7 @@ public class FuncCallInstruction extends Instruction {
             if (i < 6) {
                 str.append(formatInstr("mov", "arg" + (i + 1), param.toNASM()));
             } else {
-                PhysicalAddress pos = new PhysicalAddress("rsp", (i - 5) * 8);
+                PhysicalAddress pos = new PhysicalAddress("rsp", (i - 6) * 8);
                 if (param instanceof PhysicalAddress) {
                     str.append(formatInstr("mov", "ler8", param.toNASM()));
                     str.append(formatInstr("mov", pos.toNASM(), "ler8"));

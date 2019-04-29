@@ -23,7 +23,7 @@ public class IdentExprNode extends ExprNode {
             Operand base = classThis.getOperand();
             int offset = getOffset(symbol.getPrevTypeName() + "." + ident);
             operand = new Address((VirtualRegister) base, offset);
-        } else {
+        } else if (symbol != null) {
             operand = symbol.getOperand();
         }
     }

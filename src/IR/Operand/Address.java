@@ -36,7 +36,9 @@ public class Address extends Operand {
     }
 
     static public int getOffset(String name) {
-        return offsetTable.get(name);
+        if (offsetTable.containsKey(name))
+            return offsetTable.get(name);
+        return -1;
     }
 
     static public void putOffset(String name, Integer offset) {

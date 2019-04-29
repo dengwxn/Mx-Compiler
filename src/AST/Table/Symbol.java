@@ -5,6 +5,7 @@ import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
+import static Optimizer.RegisterAllocation.putPhysicalRegister;
 
 public class Symbol {
     private String name, prevTypeName;
@@ -28,10 +29,12 @@ public class Symbol {
         if (isGlobal) {
             name = "@" + name;
             VirtualRegister base = getVirtualRegister(this);
+            putPhysicalRegister(base, name);
             operand = new Address(base, 0);
         }
-        else
+        else {
             operand = getVirtualRegister(this);
+        }
     }
 
     public void setGlobal() {

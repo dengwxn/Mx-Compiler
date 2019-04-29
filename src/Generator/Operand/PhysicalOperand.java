@@ -27,8 +27,8 @@ abstract public class PhysicalOperand {
                 return new PhysicalAddress(base, offset);
             } else {
                 PhysicalAddress base = new PhysicalAddress("rsp", getSpillPos(addr.getBase()));
-                str.append(formatInstr("mov", "ler8", base.toNASM()));
-                return new PhysicalAddress("ler8", addr.getOffset());
+                str.append(formatInstr("mov", "ler7", base.toNASM()));
+                return new PhysicalAddress("ler7", addr.getOffset());
             }
         }
     }

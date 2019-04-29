@@ -1,17 +1,17 @@
 package IR.Build;
 
 import AST.Program.FuncDeclNode;
-import IR.Instruction.BinaryInstruction;
-import IR.Instruction.FuncCallInstruction;
-import IR.Instruction.Instruction;
-import IR.Instruction.JumpInstruction;
+import AST.Table.Symbol;
+import Generator.Operand.PhysicalAddress;
+import IR.Instruction.*;
+import IR.Operand.Address;
+import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
-import static IR.Build.IR.formatInstr;
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SUB;
 import static java.lang.Math.max;
@@ -77,11 +77,25 @@ public class FunctionIR {
             cnt += maxParamSize - 6;
         if (cnt % 2 == 0)
             ++cnt;
-        int pos = cnt;
+        int ptr = cnt;
         for (VirtualRegister i : spillPool)
-            spillPos.put(i, (--pos) * 8);
-        blockList.getHead().add(new BinaryInstruction(SUB, "rsp", cnt * 8));
-        blockList.getTail().add(new BinaryInstruction(ADD, "rsp", cnt * 8));
+            spillPos.put(i, (--ptr) * 8);
+
+        Block head = blockList.getHead();
+        Block tail = blockList.getTail();
+        head.add(new BinaryInstruction(SUB, "rsp", cnt * 8));
+        tail.add(new BinaryInstruction(ADD, "rsp", cnt * 8));
+
+        ArrayList<Symbol> param = funcDecl.getParamSymbol();
+        for (int i = 0; i < param.size(); ++i) {
+            Operand operand = param.get(i).getOperand();
+            if (i < 6) {
+                head.add(new MoveInstruction(operand, "arg" + (i + 1)));
+            } else {
+                Address pos = new Address("rsp", (cnt + (i - 5)) * 8);
+                head.add(new MoveInstruction(operand, pos));
+            }
+        }
 
         return blockList.toNASM();
     }

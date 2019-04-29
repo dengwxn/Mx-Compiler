@@ -62,24 +62,24 @@ public class Block {
             if (jump != null) break;
             if (i instanceof JumpInstruction) jump = (JumpInstruction) i;
             else instr.add(i);
-        }
 
-        if (instr.size() >= 4) {
-            if (instr.get(instr.size() - 4) instanceof CondSetInstruction
-                    && instr.get(instr.size() - 3) instanceof CompareInstruction
-                    && instr.get(instr.size() - 2) instanceof CondInstruction) {
+            if (instr.size() >= 3) {
+                if (instr.get(instr.size() - 3) instanceof CondSetInstruction
+                        && instr.get(instr.size() - 2) instanceof CompareInstruction
+                        && instr.get(instr.size() - 1) instanceof CondInstruction) {
 
-                CondSetInstruction condSet = (CondSetInstruction) instr.get(instr.size() - 4);
-                CompareInstruction cmp = (CompareInstruction) instr.get(instr.size() - 3);
+                    CondSetInstruction condSet = (CondSetInstruction) instr.get(instr.size() - 3);
+                    CompareInstruction cmp = (CompareInstruction) instr.get(instr.size() - 2);
 
-                if (condSet.getDst() == cmp.getLhs()
-                        && cmp.getRhs() instanceof Immediate
-                        && ((Immediate) cmp.getRhs()).getVal() == 1) {
+                    if (condSet.getDst() == cmp.getLhs()
+                            && cmp.getRhs() instanceof Immediate
+                            && ((Immediate) cmp.getRhs()).getVal() == 1) {
 
-                    CondInstruction cond = (CondInstruction) instr.get(instr.size() - 2);
-                    cond.setOp(condSet.getOp());
-                    instr.remove(instr.size() - 3);
-                    instr.remove(instr.size() - 3);
+                        CondInstruction cond = (CondInstruction) instr.get(instr.size() - 1);
+                        cond.setOp(condSet.getOp());
+                        instr.remove(instr.size() - 2);
+                        instr.remove(instr.size() - 2);
+                    }
                 }
             }
         }
