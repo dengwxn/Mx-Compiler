@@ -27,8 +27,11 @@ public class FuncCallExprNode extends ExprNode {
         func.generateIR(blockList);
         param.forEach(p -> p.generateIR(blockList));
         ArrayList<Operand> paramOp = new ArrayList<>();
-        if (getFuncName().contains("."))
-            paramOp.add(func.getOperand());
+        if (getFuncName().contains(".")) {
+            Operand thisOp = func.getOperand();
+            if (thisOp == null) thisOp = blockList.getClassThis();
+            paramOp.add(thisOp);
+        }
         param.forEach(p -> paramOp.add(p.getOperand()));
         Instruction call = new FuncCallInstruction(getFuncName(), paramOp);
         FuncType funcType = (FuncType) getFuncType();

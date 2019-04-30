@@ -24,6 +24,10 @@ public class ArrayExprNode extends ExprNode {
         this.param = new ArrayList<>();
     }
 
+    public ArrayList<ExprNode> getParam() {
+        return param;
+    }
+
     @Override
     public void generateIR(BlockList blockList) {
         name.generateIR(blockList);

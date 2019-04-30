@@ -70,8 +70,10 @@ public class FunctionIR {
         spillPool.clear();
         spillPos.clear();
         maxParamSize = 0;
+        ArrayList<Symbol> param = funcDecl.getParamSymbol();
 
         blockList.putSpill();
+        param.forEach(p -> p.getOperand().putSpill());
         int cnt = spillPool.size();
         if (maxParamSize > 6)
             cnt += maxParamSize - 6;
@@ -86,7 +88,6 @@ public class FunctionIR {
         head.add(new BinaryInstruction(SUB, "rsp", cnt * 8));
         tail.add(new BinaryInstruction(ADD, "rsp", cnt * 8));
 
-        ArrayList<Symbol> param = funcDecl.getParamSymbol();
         for (int i = 0; i < param.size(); ++i) {
             Operand operand = param.get(i).getOperand();
             if (i < 6) {

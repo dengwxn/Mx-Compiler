@@ -20,7 +20,7 @@ public class ThisExprNode extends ExprNode {
 
     @Override
     public boolean isLeftValue() {
-        return true;
+        return false;
     }
 
     @Override

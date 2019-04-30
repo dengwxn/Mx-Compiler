@@ -124,7 +124,7 @@ public class ParseListener extends Listener {
         map.put(ctx, new ExprStmtNode(expr));
     }
 
-    boolean isLegalNewArray(String s) {
+    private boolean isLegalNewArray(String s) {
         boolean emptyParam = false;
         for (int i = 0; i < s.length(); ++i) {
             if (s.charAt(i) == '[') {

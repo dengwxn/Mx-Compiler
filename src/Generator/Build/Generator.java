@@ -38,10 +38,10 @@ public class Generator {
         str.append("section .data\n");
         for (Map.Entry<String, Integer> entry : stringConst.entrySet()) {
             String key = entry.getKey();
-            str.append(formatInstr("dq", String.valueOf(convertLiteralEscape(key).length() - 2)));
+            key = key.substring(1, key.length() - 1);
+            str.append(formatInstr("dq", String.valueOf(convertLiteralEscape(key).length())));
             str.append("_string_constant_" + entry.getValue() + ":\n");
-            key = convertEscapeToNumber(key);
-            str.append(formatInstr("db", key + ", 0"));
+            str.append(formatInstr("db", convertEscapeToNumber(key) + ", 0"));
         }
         return str.toString();
     }
@@ -54,6 +54,9 @@ public class Generator {
         t = t.replace("\\r", "\", 13, \"");
         t = t.replace("\\\"", "\", 34, \"");
         t = t.replace("\\\\", "\", 92, \"");
+
+        t = "\"" + t + "\"";
+        t = t.replace("\"\", ", "");
         t = t.replace(", \"\"", "");
         return t;
     }

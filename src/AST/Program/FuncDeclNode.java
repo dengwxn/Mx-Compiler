@@ -27,6 +27,8 @@ public class FuncDeclNode extends Node {
     @Override
     public void generateIR(BlockList blockList) {
         paramSymbol.forEach(param -> param.setOperand());
+        if (paramSymbol.size() > 0)
+            blockList.setClassThis(paramSymbol.get(0).getOperand());
         blockStmt.generateIR(blockList);
     }
 

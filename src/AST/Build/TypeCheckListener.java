@@ -31,11 +31,15 @@ public class TypeCheckListener extends Listener {
             VarDeclStmtNode varDeclStmt = (VarDeclStmtNode) map.get(ctx);
             Type defType = typeTable.getType(varDeclStmt.getType());
             if (defType != null) {
-                if (defType instanceof VoidType)
+                if (defType instanceof VoidType
+                        || (defType instanceof ArrayType
+                        && ((ArrayType) defType).getBase() instanceof VoidType)) {
                     addCompileError("'void' type must not be the type of a variable.");
-                else if (defType instanceof NullType)
+                } else if ((defType instanceof NullType
+                        || (defType instanceof ArrayType
+                        && ((ArrayType) defType).getBase() instanceof NullType))) {
                     addCompileError("'null' type must not be the type of a variable.");
-                else {
+                } else {
                     symbolTable.putType(varDeclStmt.getName(), defType);
                     symbolTable.putSymbol(varDeclStmt.getName());
                     varDeclStmt.setSymbol(symbolTable.getSymbol(varDeclStmt.getName()));
@@ -113,6 +117,18 @@ public class TypeCheckListener extends Listener {
     @Override
     public void exitFunctionDeclaration(MxParser.FunctionDeclarationContext ctx) {
         exitScope();
+    }
+
+    @Override
+    public void enterStatement(MxParser.StatementContext ctx) {
+        if (ctx.getParent() instanceof MxParser.IfStatementContext)
+            enterScope();
+    }
+
+    @Override
+    public void exitStatement(MxParser.StatementContext ctx) {
+        if (ctx.getParent() instanceof MxParser.IfStatementContext)
+            exitScope();
     }
 
     @Override
@@ -197,10 +213,14 @@ public class TypeCheckListener extends Listener {
     public void exitNewArray(MxParser.NewArrayContext ctx) {
         NewArrayExprNode newArrayExpr = (NewArrayExprNode) map.get(ctx);
         Type baseType = symbolTable.getType(newArrayExpr.getBase());
-        if (!(baseType instanceof ArrayType))
-            newArrayExpr.setType(new ArrayType(baseType, newArrayExpr.getDim()));
+        if (baseType instanceof VoidType)
+            addCompileError("'void' type must not be the type of a variable.");
+        else if (baseType instanceof NullType)
+            addCompileError("'null' type must not be the type of a variable.");
+        else if (baseType instanceof ArrayType)
+            addCompileError("array type must not be the type of a variable.");
         else
-            addCompileError("expect a valid type to new an array.");
+            newArrayExpr.setType(new ArrayType(baseType, newArrayExpr.getDim()));
     }
 
     @Override
@@ -218,14 +238,18 @@ public class TypeCheckListener extends Listener {
     @Override
     public void exitArray(MxParser.ArrayContext ctx) {
         ArrayExprNode arrayExpr = (ArrayExprNode) map.get(ctx);
+        ArrayList<ExprNode> param = arrayExpr.getParam();
+        for (ExprNode p : param) {
+            if (!(p.getType() instanceof IntType))
+                addCompileError("expect an int type param.");
+        }
+
         Type arrayType = arrayExpr.getNameType();
         if (arrayType instanceof ArrayType) {
             Type base = ((ArrayType) arrayType).getBase();
             int dim = ((ArrayType) arrayType).getDim() - arrayExpr.getDim();
-            if (dim > 0)
-                arrayExpr.setType(new ArrayType(base, dim));
-            else
-                arrayExpr.setType(base);
+            if (dim > 0) arrayExpr.setType(new ArrayType(base, dim));
+            else arrayExpr.setType(base);
         } else
             addCompileError("expect an array type.");
     }

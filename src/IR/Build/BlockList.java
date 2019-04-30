@@ -1,6 +1,7 @@
 package IR.Build;
 
 import IR.Instruction.Instruction;
+import IR.Operand.Operand;
 
 import java.util.ArrayList;
 
@@ -9,6 +10,7 @@ import static IR.Build.IR.formatInstr;
 public class BlockList {
     private ArrayList<Block> blockList;
     private String funcName;
+    private Operand classThis;
 
     BlockList() {
         blockList = new ArrayList<>();
@@ -16,6 +18,14 @@ public class BlockList {
 
     void putSpill() {
         blockList.forEach(block -> block.putSpill());
+    }
+
+    public Operand getClassThis() {
+        return classThis;
+    }
+
+    public void setClassThis(Operand classThis) {
+        this.classThis = classThis;
     }
 
     Block getHead() {
