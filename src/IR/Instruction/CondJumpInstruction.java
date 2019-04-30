@@ -12,6 +12,10 @@ public class CondJumpInstruction extends CondInstruction implements JumpInterfac
         this.dst = dst;
     }
 
+    public void setDst(Block dst) {
+        this.dst = dst;
+    }
+
     public Block getDst() {
         return dst;
     }

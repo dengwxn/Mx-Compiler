@@ -5,6 +5,8 @@ import IR.Operand.Immediate;
 
 import java.util.ArrayList;
 
+import static IR.Instruction.Operator.CompareOp.*;
+
 public class Block {
     private String label;
     private ArrayList<Instruction> instr;
@@ -91,11 +93,22 @@ public class Block {
     }
 
     public String toNASM(Block nextBlock) {
+        if (instr.size() > 0 && instr.get(instr.size() - 1) instanceof CondJumpInstruction) {
+            CondJumpInstruction cjump = (CondJumpInstruction) instr.get(instr.size() - 1);
+            if (cjump.getDst() == nextBlock) {
+                cjump.setOp(getNot(cjump.getOp()));
+                cjump.setDst(jump.getDst());
+                jump = null;
+            }
+        }
+
         StringBuilder str = new StringBuilder();
         str.append(getLabel() + ":\n");
         instr.forEach(i -> str.append(i.toNASM()));
+
         if (jump != null && jump.getDst() != nextBlock)
             str.append(jump.toNASM());
+
         return str.toString();
     }
 
@@ -105,5 +118,24 @@ public class Block {
         instr.forEach(i -> str.append(i.toString()));
         if (jump != null) str.append(jump.toString());
         return str.toString();
+    }
+
+    static private Operator.CompareOp getNot(Operator.CompareOp op) {
+        switch (op) {
+            case L:
+                return NL;
+            case LE:
+                return NLE;
+            case G:
+                return NG;
+            case GE:
+                return NGE;
+            case E:
+                return NE;
+            case NE:
+                return E;
+            default:
+                throw new Error("unexpected CompareOp.");
+        }
     }
 }
