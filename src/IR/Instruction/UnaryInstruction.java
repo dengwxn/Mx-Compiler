@@ -16,20 +16,24 @@ public class UnaryInstruction extends Instruction {
     }
 
     @Override
-    public void putSpill() {
-        dst.putSpill();
+    public void convertVirtualOperand() {
+        dst.convertVirtualOperand();
     }
 
     @Override
-    public void livenessAnalysis() {
-        putDef(dst);
+    public void putUse() {
         putUse(dst);
+    }
+
+    @Override
+    public void putDef() {
+        putDef(dst);
     }
 
     @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand dst = convertOperand(str, this.dst);
+        PhysicalOperand dst = convertOperand(str, this.dst, false);
         str.append(formatInstr(op.toString().toLowerCase(), dst.toNASM()));
         return str.toString();
     }

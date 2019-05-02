@@ -5,6 +5,8 @@ import Generator.Operand.PhysicalOperand;
 import IR.Operand.Address;
 import IR.Operand.Immediate;
 import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
+import Optimizer.RegisterAllocation;
 
 import static Generator.Operand.PhysicalOperand.convertOperand;
 import static IR.Build.IR.formatInstr;
@@ -36,22 +38,40 @@ public class MoveInstruction extends Instruction {
     }
 
     @Override
-    public void putSpill() {
-        dst.putSpill();
-        src.putSpill();
+    public void buildIntrfGraph() {
+        for (VirtualRegister u : def) {
+            for (VirtualRegister v : live) {
+                if (u != v) {
+                    if (u == dst && v == src) continue;
+                    RegisterAllocation.buildIntrfGraph(u, v);
+                }
+            }
+        }
     }
 
     @Override
-    public void livenessAnalysis() {
-        putDef(dst);
+    public void convertVirtualOperand() {
+        dst.convertVirtualOperand();
+        src.convertVirtualOperand();
+    }
+
+    @Override
+    public void putUse() {
         putUse(src);
+    }
+
+    @Override
+    public void putDef() {
+        if (dst instanceof Address)
+            putDef("ler7");
+        putDef(dst);
     }
 
     @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand dst = convertOperand(str, this.dst);
-        PhysicalOperand src = convertOperand(str, this.src);
+        PhysicalOperand dst = convertOperand(str, this.dst, true);
+        PhysicalOperand src = convertOperand(str, this.src, false);
         if (dst instanceof PhysicalAddress && src instanceof PhysicalAddress) {
             str.append(formatInstr("mov", "ler8", src.toNASM()));
             str.append(formatInstr("mov", dst.toNASM(), "ler8"));

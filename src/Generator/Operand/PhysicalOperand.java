@@ -7,7 +7,7 @@ import static IR.Build.IR.formatInstr;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
 abstract public class PhysicalOperand {
-    static public PhysicalOperand convertOperand(StringBuilder str, Operand operand) {
+    static public PhysicalOperand convertOperand(StringBuilder str, Operand operand, boolean lhs) {
         if (operand instanceof Immediate) {
             return new PhysicalImmediate(((Immediate) operand).getVal());
         } else if (operand instanceof StringConstant) {
@@ -27,8 +27,9 @@ abstract public class PhysicalOperand {
                 return new PhysicalAddress(base, offset);
             } else {
                 PhysicalAddress base = new PhysicalAddress("rsp", getSpillPos(addr.getBase()));
-                str.append(formatInstr("mov", "ler7", base.toNASM()));
-                return new PhysicalAddress("ler7", addr.getOffset());
+                String ler = lhs ? "ler7" : "ler8";
+                str.append(formatInstr("mov", ler, base.toNASM()));
+                return new PhysicalAddress(ler, addr.getOffset());
             }
         }
     }

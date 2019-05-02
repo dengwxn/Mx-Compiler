@@ -8,5 +8,7 @@ public class PhysicalStringConstant extends PhysicalOperand {
     }
 
     @Override
-    public String toNASM() { return str; }
+    public String toNASM() {
+        return str;
+    }
 }

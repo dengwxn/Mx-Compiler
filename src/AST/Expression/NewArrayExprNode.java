@@ -14,7 +14,6 @@ import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SHL;
 import static IR.Instruction.Operator.CompareOp.L;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
-import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class NewArrayExprNode extends ExprNode {
     private String base;
@@ -58,6 +57,7 @@ public class NewArrayExprNode extends ExprNode {
             blockList.add(new BinaryInstruction(ADD, len, 1));
             blockList.add(new BinaryInstruction(SHL, len, 3));
             ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(len));
+            FuncCallInstruction.moveArg(blockList, paramOp);
             blockList.add(new FuncCallInstruction("malloc", paramOp));
             VirtualRegister ptr = getTemporaryRegister();
             blockList.add(new MoveInstruction(ptr, "res0"));

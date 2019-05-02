@@ -4,7 +4,8 @@ import AST.Table.Symbol;
 
 import java.util.HashMap;
 
-import static Optimizer.RegisterAllocation.putPhysicalRegister;
+import static Optimizer.RegisterAllocation.addVertex;
+import static Optimizer.RegisterAllocation.regList;
 
 public class VirtualRegisterTable {
     static private int tmpCnt;
@@ -29,28 +30,11 @@ public class VirtualRegisterTable {
     static private void precolor(String reg) {
         Symbol symbol = new Symbol(reg);
         register.put(reg, symbol);
-        putPhysicalRegister(getVirtualRegister(reg), reg);
+        // putPhysicalRegister(getVirtualRegister(reg), reg);
     }
 
     static public void precolor() {
-        precolor("res0");
-
-        precolor("arg1");
-        precolor("arg2");
-        precolor("arg3");
-        precolor("arg4");
-        precolor("arg5");
-        precolor("arg6");
-        precolor("ler7");
-        precolor("ler8");
-
-        precolor("lee9");
-        precolor("lee10");
-        precolor("lee11");
-        precolor("lee12");
-        precolor("lee13");
-        precolor("lee14");
-
-        precolor("rsp");
+        regList.forEach(reg -> precolor(reg));
+        regList.forEach(reg -> addVertex(getVirtualRegister(reg)));
     }
 }

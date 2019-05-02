@@ -56,13 +56,13 @@ public class BinaryExprNode extends ExprNode {
 
                 // lhsFalse
                 blockList.add(lhsFalse);
-                Instruction moveFalse = new MoveInstruction(operand, 0);
-                blockList.add(moveFalse, jumpLogicExit);
+                Instruction movFalse = new MoveInstruction(operand, 0);
+                blockList.add(movFalse, jumpLogicExit);
             } else {
                 // lhsTrue
                 blockList.add(lhsTrue);
-                Instruction moveTrue = new MoveInstruction(operand, 1);
-                blockList.add(moveTrue, jumpLogicExit);
+                Instruction movTrue = new MoveInstruction(operand, 1);
+                blockList.add(movTrue, jumpLogicExit);
 
                 // lhsFalse
                 blockList.add(lhsFalse);
@@ -77,6 +77,7 @@ public class BinaryExprNode extends ExprNode {
             rhs.generateIR(blockList);
             if (lhs.getType() instanceof StringType) {
                 ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(lhs.getOperand(), rhs.getOperand()));
+                FuncCallInstruction.moveArg(blockList, paramOp);
                 blockList.add(new FuncCallInstruction("string." + convertStringOp(), paramOp));
                 blockList.add(new MoveInstruction(operand, "res0"));
             } else if (convertBinaryOp() != null) {

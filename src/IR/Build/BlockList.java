@@ -16,8 +16,8 @@ public class BlockList {
         blockList = new ArrayList<>();
     }
 
-    void putSpill() {
-        blockList.forEach(block -> block.putSpill());
+    void convertVirtualOperand() {
+        blockList.forEach(block -> block.convertVirtualOperand());
     }
 
     public Operand getClassThis() {

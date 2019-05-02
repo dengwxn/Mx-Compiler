@@ -21,6 +21,10 @@ public class Symbol {
         this.prevTypeName = prevTypeName;
     }
 
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+
     public Operand getOperand() {
         return operand;
     }
@@ -31,8 +35,7 @@ public class Symbol {
             VirtualRegister base = getVirtualRegister(this);
             putPhysicalRegister(base, name);
             operand = new Address(base, 0);
-        }
-        else {
+        } else {
             operand = getVirtualRegister(this);
         }
     }

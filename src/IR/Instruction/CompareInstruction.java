@@ -26,15 +26,21 @@ public class CompareInstruction extends Instruction {
     }
 
     @Override
-    public void putSpill() {
-        lhs.putSpill();
-        rhs.putSpill();
+    public void convertVirtualOperand() {
+        lhs.convertVirtualOperand();
+        rhs.convertVirtualOperand();
     }
 
     @Override
-    public void livenessAnalysis() {
+    public void putUse() {
         putUse(lhs);
         putUse(rhs);
+    }
+
+    @Override
+    public void putDef() {
+        if (lhs instanceof Address || rhs instanceof Address)
+            putDef("ler7");
     }
 
     public Operand getLhs() {
@@ -48,8 +54,8 @@ public class CompareInstruction extends Instruction {
     @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand lhs = convertOperand(str, this.lhs);
-        PhysicalOperand rhs = convertOperand(str, this.rhs);
+        PhysicalOperand lhs = convertOperand(str, this.lhs, true);
+        PhysicalOperand rhs = convertOperand(str, this.rhs, true);
         if (lhs instanceof PhysicalImmediate || (lhs instanceof PhysicalAddress && rhs instanceof PhysicalAddress)) {
             str.append(formatInstr("mov", "ler8", lhs.toNASM()));
             str.append(formatInstr("cmp", "ler8", rhs.toNASM()));

@@ -8,5 +8,7 @@ public class PhysicalImmediate extends PhysicalOperand {
     }
 
     @Override
-    public String toNASM() { return String.valueOf(str); }
+    public String toNASM() {
+        return String.valueOf(str);
+    }
 }

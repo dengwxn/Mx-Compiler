@@ -18,32 +18,67 @@ public class Block {
         this.instr = new ArrayList<>();
     }
 
-    void putSpill() {
-        instr.forEach(i -> i.putSpill());
+    static private Operator.CompareOp getNot(Operator.CompareOp op) {
+        switch (op) {
+            case L:
+                return NL;
+            case LE:
+                return NLE;
+            case G:
+                return NG;
+            case GE:
+                return NGE;
+            case E:
+                return NE;
+            case NE:
+                return E;
+            default:
+                throw new Error("unexpected CompareOp.");
+        }
+    }
+
+    void convertVirtualOperand() {
+        instr.forEach(i -> i.convertVirtualOperand());
+    }
+
+    private void link(Instruction u, Instruction v) {
+        if (u != null && v != null) {
+            u.linkSuc(v);
+            v.linkPre(u);
+        }
     }
 
     void linkPreSuc() {
         for (int i = 0; i < instr.size(); ++i) {
             Instruction u = instr.get(i);
-
-            if (i < instr.size() - 1) {
-                Instruction v = instr.get(i + 1);
-                u.linkSuc(v);
-                v.linkPre(u);
-            }
-
-            if (u instanceof JumpInterface) {
-                Instruction v = ((JumpInterface) u).getDst().getHead();
-                if (v != null) {
-                    u.linkSuc(v);
-                    v.linkPre(u);
-                }
-            }
+            if (i < instr.size() - 1) link(u, instr.get(i + 1));
+            if (u instanceof JumpInterface)
+                link(u, ((JumpInterface) u).getDst().getHead());
         }
     }
 
     void livenessAnalysis() {
-        instr.forEach(i -> i.livenessAnalysis());
+        instr.forEach(i -> i.putDef());
+        instr.forEach(i -> i.putUse());
+        instr.forEach(i -> i.addVertex());
+    }
+
+    void buildIntrfGraph() {
+        instr.forEach(i -> i.buildIntrfGraph());
+    }
+
+    String dumpLivenessAnalysis() {
+        StringBuilder str = new StringBuilder();
+        str.append(getLabel() + ":\n");
+        for (Instruction i : instr) {
+            str.append(i.toString());
+            str.append(i.toDisplayLive());
+        }
+        return str.toString();
+    }
+
+    private Instruction getHead() {
+        return instr.size() > 0 ? instr.get(0) : null;
     }
 
     void setFuncName(String funcName) {
@@ -51,19 +86,24 @@ public class Block {
         else label = funcName + "." + label;
     }
 
-    private Instruction getHead() {
-        return instr.size() > 0 ? instr.get(0) : null;
-    }
-
     void setId(int id) {
         this.id = id;
+    }
+
+    void set(int id, Instruction instr) {
+        this.instr.set(id, instr);
+    }
+
+    void add(int id, Instruction instr) {
+        this.instr.add(id, instr);
     }
 
     public void add(Instruction... il) {
         for (Instruction i : il) {
             if (jump != null) break;
-            if (i instanceof JumpInstruction) jump = (JumpInstruction) i;
-            else instr.add(i);
+            instr.add(i);
+            if (i instanceof JumpInstruction)
+                jump = (JumpInstruction) i;
 
             if (instr.size() >= 3) {
                 if (instr.get(instr.size() - 3) instanceof CondSetInstruction
@@ -93,22 +133,21 @@ public class Block {
     }
 
     public String toNASM(Block nextBlock) {
-        if (instr.size() > 0 && instr.get(instr.size() - 1) instanceof CondJumpInstruction) {
-            CondJumpInstruction cjump = (CondJumpInstruction) instr.get(instr.size() - 1);
+        if (instr.size() > 1 && instr.get(instr.size() - 2) instanceof CondJumpInstruction) {
+            CondJumpInstruction cjump = (CondJumpInstruction) instr.get(instr.size() - 2);
             if (cjump.getDst() == nextBlock) {
                 cjump.setOp(getNot(cjump.getOp()));
                 cjump.setDst(jump.getDst());
+                instr.remove(instr.size() - 1);
                 jump = null;
             }
         }
+        if (jump != null && jump.getDst() == nextBlock)
+            instr.remove(instr.size() - 1);
 
         StringBuilder str = new StringBuilder();
         str.append(getLabel() + ":\n");
         instr.forEach(i -> str.append(i.toNASM()));
-
-        if (jump != null && jump.getDst() != nextBlock)
-            str.append(jump.toNASM());
-
         return str.toString();
     }
 
@@ -116,26 +155,6 @@ public class Block {
         StringBuilder str = new StringBuilder();
         str.append(getLabel() + ":\n");
         instr.forEach(i -> str.append(i.toString()));
-        if (jump != null) str.append(jump.toString());
         return str.toString();
-    }
-
-    static private Operator.CompareOp getNot(Operator.CompareOp op) {
-        switch (op) {
-            case L:
-                return NL;
-            case LE:
-                return NLE;
-            case G:
-                return NG;
-            case GE:
-                return NGE;
-            case E:
-                return NE;
-            case NE:
-                return E;
-            default:
-                throw new Error("unexpected CompareOp.");
-        }
     }
 }

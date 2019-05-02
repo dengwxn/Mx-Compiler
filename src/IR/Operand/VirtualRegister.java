@@ -2,6 +2,7 @@ package IR.Operand;
 
 import AST.Table.Symbol;
 
+import static IR.Build.FunctionIR.addLee;
 import static IR.Build.FunctionIR.addSpill;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
@@ -12,10 +13,15 @@ public class VirtualRegister extends Operand {
         this.symbol = symbol;
     }
 
+    public Symbol getSymbol() {
+        return symbol;
+    }
+
     @Override
-    public void putSpill() {
-        if (getPhysicalRegister(this) == null)
-            addSpill(this);
+    public void convertVirtualOperand() {
+        String var = getPhysicalRegister(this);
+        if (var == null) addSpill(this);
+        else if (var.contains("lee")) addLee(var);
     }
 
     @Override

@@ -39,23 +39,43 @@ public class BinaryInstruction extends Instruction {
     }
 
     @Override
-    public void putSpill() {
-        dst.putSpill();
-        src.putSpill();
+    public void convertVirtualOperand() {
+        dst.convertVirtualOperand();
+        src.convertVirtualOperand();
     }
 
     @Override
-    public void livenessAnalysis() {
-        putDef(dst);
+    public void putUse() {
         putUse(dst);
         putUse(src);
     }
 
     @Override
+    public void putDef() {
+        if (dst instanceof Address || src instanceof Address)
+            putDef("ler7");
+        putDef(dst);
+        switch (op) {
+            case SHL:
+            case SHR:
+                // rcx arg4
+                if (!(src instanceof Immediate))
+                    putDef("arg4");
+                break;
+            case DIV:
+            case MOD:
+                // rax res0
+                // rdx arg3
+                putDef("res0");
+                putDef("arg3");
+        }
+    }
+
+    @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand dst = convertOperand(str, this.dst);
-        PhysicalOperand src = convertOperand(str, this.src);
+        PhysicalOperand dst = convertOperand(str, this.dst, true);
+        PhysicalOperand src = convertOperand(str, this.src, true);
         switch (op) {
             case SHL:
             case SHR:

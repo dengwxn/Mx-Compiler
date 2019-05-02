@@ -32,7 +32,7 @@ public class Main {
         IR.dump();
     }
 
-    static private void optimize() {
+    static private void optimize() throws Exception {
         LivenessAnalysis.optimize();
         RegisterAllocation.optimize();
     }

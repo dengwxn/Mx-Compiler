@@ -2,8 +2,6 @@
 /out/
 /.idea/
 *.iml
-prog
-prog.o
-prog.asm
-IR.txt
+prog*
+*.txt
 __*

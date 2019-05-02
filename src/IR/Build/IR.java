@@ -18,9 +18,11 @@ import java.util.HashMap;
 import static IR.Operand.VirtualRegisterTable.precolor;
 
 public class IR {
-    static private FuncDeclNode globalVarDecl;
+    static final private boolean _DEBUG_TRANSLATE_ = false;
+    static final private boolean _DEBUG_MOVE_ = false;
     static public HashMap<FuncDeclNode, FunctionIR> functionIRMap = new HashMap<>();
     static public HashMap<String, Integer> stringConst = new HashMap<>();
+    static private FuncDeclNode globalVarDecl;
 
     static public int putStringConst(String str) {
         if (!stringConst.containsKey(str))
@@ -73,8 +75,6 @@ public class IR {
         PrintStream fprint = new PrintStream(fout);
         fprint.print(str.toString());
     }
-
-    static final private boolean _DEBUG_TRANSLATE_ = false;
 
     static public String translateRegister(String op) {
         if (_DEBUG_TRANSLATE_)
@@ -152,7 +152,6 @@ public class IR {
         }
     }
 
-
     static public String formatInstr(String instr) {
         return String.format("\t%s\n", instr);
     }
@@ -162,6 +161,8 @@ public class IR {
     }
 
     static public String formatInstr(String instr, String lhs, String rhs) {
+        if (!_DEBUG_MOVE_ && instr.equals("mov") && translateRegister(lhs).equals(translateRegister(rhs)))
+            return "";
         return String.format("\t%s  \t%s, %s\n", instr, translateRegister(lhs), translateRegister(rhs));
     }
 }

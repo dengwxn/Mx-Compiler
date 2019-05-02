@@ -2,6 +2,7 @@ package IR.Operand;
 
 import java.util.HashMap;
 
+import static IR.Build.FunctionIR.addLee;
 import static IR.Build.FunctionIR.addSpill;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
@@ -21,20 +22,6 @@ public class Address extends Operand {
         this.offset = new Immediate(offset);
     }
 
-    @Override
-    public void putSpill() {
-        if (getPhysicalRegister(base) == null)
-            addSpill(base);
-    }
-
-    public VirtualRegister getBase() {
-        return base;
-    }
-
-    public int getOffset() {
-        return offset.getVal();
-    }
-
     static public int getOffset(String name) {
         if (offsetTable.containsKey(name))
             return offsetTable.get(name);
@@ -43,6 +30,21 @@ public class Address extends Operand {
 
     static public void putOffset(String name, Integer offset) {
         offsetTable.put(name, offset);
+    }
+
+    @Override
+    public void convertVirtualOperand() {
+        String var = getPhysicalRegister(base);
+        if (var == null) addSpill(base);
+        else if (var.contains("lee")) addLee(var);
+    }
+
+    public VirtualRegister getBase() {
+        return base;
+    }
+
+    public int getOffset() {
+        return offset.getVal();
     }
 
     @Override

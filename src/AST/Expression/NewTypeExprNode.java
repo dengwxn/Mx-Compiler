@@ -13,7 +13,6 @@ import java.util.Arrays;
 import static AST.Build.Tree.symbolTable;
 import static IR.Operand.Address.getOffset;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
-import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class NewTypeExprNode extends ExprNode {
     private String base;
@@ -25,6 +24,7 @@ public class NewTypeExprNode extends ExprNode {
     @Override
     public void generateIR(BlockList blockList) {
         ArrayList<Operand> paramOpMem = new ArrayList<>(Arrays.asList(new Immediate(getOffset(base))));
+        FuncCallInstruction.moveArg(blockList, paramOpMem);
         Instruction mallocMem = new FuncCallInstruction("malloc", paramOpMem);
         operand = getTemporaryRegister();
         Instruction mov = new MoveInstruction(operand, "res0");
@@ -33,6 +33,7 @@ public class NewTypeExprNode extends ExprNode {
         String newType = base + ".null";
         if (symbolTable.getType(newType) != null) {
             ArrayList<Operand> paramOpNew = new ArrayList<>(Arrays.asList(operand));
+            FuncCallInstruction.moveArg(blockList, paramOpNew);
             Instruction callNew = new FuncCallInstruction(newType, paramOpNew);
             blockList.add(callNew);
         }

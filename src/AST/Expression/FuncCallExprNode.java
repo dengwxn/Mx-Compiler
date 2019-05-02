@@ -12,7 +12,6 @@ import IR.Operand.Operand;
 import java.util.ArrayList;
 
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
-import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class FuncCallExprNode extends ExprNode {
     private ExprNode func;
@@ -33,6 +32,7 @@ public class FuncCallExprNode extends ExprNode {
             paramOp.add(thisOp);
         }
         param.forEach(p -> paramOp.add(p.getOperand()));
+        FuncCallInstruction.moveArg(blockList, paramOp);
         Instruction call = new FuncCallInstruction(getFuncName(), paramOp);
         FuncType funcType = (FuncType) getFuncType();
         blockList.add(call);
