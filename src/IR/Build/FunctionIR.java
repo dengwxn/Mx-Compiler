@@ -150,7 +150,7 @@ public class FunctionIR {
         spillPos.clear();
         maxParamSize = 0;
 
-        blockList.getInstrList().forEach(instr -> instr.convertVirtualOperand());
+        blockList.getInstrList().forEach(instr -> instr.assignPhysicalOperand());
         int cnt = leePool.size();
         cnt += spillPool.size();
         cnt += maxParamSize;

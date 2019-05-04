@@ -33,7 +33,7 @@ public class Address extends Operand {
     }
 
     @Override
-    public void convertVirtualOperand() {
+    public void assignPhysicalOperand() {
         String var = getPhysicalRegister(base);
         if (var == null) addSpill(base);
         else if (var.contains("lee")) addLee(var);

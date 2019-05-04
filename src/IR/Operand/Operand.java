@@ -1,7 +1,7 @@
 package IR.Operand;
 
 abstract public class Operand {
-    public void convertVirtualOperand() {
+    public void assignPhysicalOperand() {
     }
 
     abstract public String toString();

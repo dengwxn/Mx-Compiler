@@ -6,12 +6,14 @@ import Generator.Operand.PhysicalOperand;
 import IR.Operand.Address;
 import IR.Operand.Immediate;
 import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
 
-import static Generator.Operand.PhysicalOperand.convertOperand;
+import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 
-public class CompareInstruction extends Instruction {
+public class CompareInstruction extends Instruction implements ConstantFolding {
     private Operand lhs, rhs;
+    private Integer cstLhs, cstRhs;
 
     public CompareInstruction(Operand lhs, Operand rhs) {
         if (lhs instanceof Address && rhs instanceof Address)
@@ -26,9 +28,40 @@ public class CompareInstruction extends Instruction {
     }
 
     @Override
-    public void convertVirtualOperand() {
-        lhs.convertVirtualOperand();
-        rhs.convertVirtualOperand();
+    public boolean receiveConstant(VirtualRegister reg, int val) {
+        if (reg == lhs)
+            cstLhs = val;
+        if (reg == rhs)
+            cstRhs = val;
+        if (lhs instanceof Immediate)
+            cstLhs = ((Immediate) lhs).getVal();
+        if (rhs instanceof Immediate)
+            cstRhs = ((Immediate) rhs).getVal();
+        return false;
+    }
+
+    public Integer getCstLhs() {
+        return cstLhs;
+    }
+
+    public Integer getCstRhs() {
+        return cstRhs;
+    }
+
+    @Override
+    public Operand getDst() {
+        return null;
+    }
+
+    @Override
+    public Integer getCstVal() {
+        return null;
+    }
+
+    @Override
+    public void assignPhysicalOperand() {
+        lhs.assignPhysicalOperand();
+        rhs.assignPhysicalOperand();
     }
 
     @Override
@@ -54,8 +87,8 @@ public class CompareInstruction extends Instruction {
     @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand lhs = convertOperand(str, this.lhs, true);
-        PhysicalOperand rhs = convertOperand(str, this.rhs, true);
+        PhysicalOperand lhs = convertVirtualOperand(str, this.lhs, true);
+        PhysicalOperand rhs = convertVirtualOperand(str, this.rhs, true);
         if (lhs instanceof PhysicalImmediate || (lhs instanceof PhysicalAddress && rhs instanceof PhysicalAddress)) {
             str.append(formatInstr("mov", "ler8", lhs.toNASM()));
             str.append(formatInstr("cmp", "ler8", rhs.toNASM()));

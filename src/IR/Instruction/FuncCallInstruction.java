@@ -8,7 +8,7 @@ import IR.Operand.Operand;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static Generator.Operand.PhysicalOperand.convertOperand;
+import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.FunctionIR.setMaxParamSize;
 import static IR.Build.IR.formatInstr;
 
@@ -36,8 +36,8 @@ public class FuncCallInstruction extends Instruction {
     }
 
     @Override
-    public void convertVirtualOperand() {
-        param.forEach(p -> p.convertVirtualOperand());
+    public void assignPhysicalOperand() {
+        param.forEach(p -> p.assignPhysicalOperand());
         setMaxParamSize(param.size());
     }
 
@@ -56,7 +56,7 @@ public class FuncCallInstruction extends Instruction {
     public String toNASM() {
         StringBuilder str = new StringBuilder();
         for (int i = 0; i < param.size(); ++i) {
-            PhysicalOperand param = convertOperand(str, this.param.get(i), false);
+            PhysicalOperand param = convertVirtualOperand(str, this.param.get(i), false);
             PhysicalAddress pos = new PhysicalAddress("rsp", i * 8);
             if (param instanceof PhysicalAddress) {
                 str.append(formatInstr("mov", "ler8", param.toNASM()));

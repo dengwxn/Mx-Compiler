@@ -7,6 +7,7 @@ import IR.Operand.Operand;
 import java.util.ArrayList;
 
 import static IR.Instruction.Operator.CompareOp.*;
+import static IR.Instruction.Operator.getCompare;
 
 public class Block {
     static final private boolean _DEBUG_REDUNDANT_ADJACENT_MOVE = false;
@@ -22,34 +23,42 @@ public class Block {
         this.instr = new ArrayList<>();
     }
 
-    static private Operator.CompareOp getNot(Operator.CompareOp op) {
-        switch (op) {
-            case L:
-                return NL;
-            case LE:
-                return NLE;
-            case G:
-                return NG;
-            case GE:
-                return NGE;
-            case E:
-                return NE;
-            case NE:
-                return E;
-            default:
-                throw new Error("unexpected CompareOp.");
+    private void foldCmp(CompareInstruction cmp, int id) {
+        Integer cstLhs = cmp.getCstLhs();
+        Integer cstRhs = cmp.getCstRhs();
+        if (cstLhs != null && cstRhs != null) {
+            if (instr.get(id + 1) instanceof CondInstruction) {
+                CondInstruction v = (CondInstruction) instr.get(id + 1);
+                Operator.CompareOp op = v.getOp();
+                boolean res = getCompare(op, cstLhs, cstRhs);
+                if (v instanceof CondSetInstruction) {
+                    Operand dst = ((CondSetInstruction) v).getDst();
+                    instr.set(id, new MoveInstruction(dst, res ? 1 : 0));
+                    instr.remove(id + 1);
+                } else if (v instanceof CondJumpInstruction && res) {
+                    Block dst = ((CondJumpInstruction) v).getDst();
+                    instr.set(id, new JumpInstruction(dst));
+                    while (instr.size() > id + 1)
+                        instr.remove(instr.size() - 1);
+                }
+            }
         }
+    }
+
+    private void foldArith(ConstantFolding arith, int id) {
+        Operand dst = arith.getDst();
+        Integer cstVal = arith.getCstVal();
+        if (cstVal != null)
+            instr.set(id, new MoveInstruction(dst, cstVal));
     }
 
     void constantFolding() {
         for (int i = 0; i < instr.size(); ++i) {
             Instruction u = instr.get(i);
-            if (u instanceof ConstantFolding) {
-                Operand dst = ((ConstantFolding) u).getDst();
-                Integer cstVal = ((ConstantFolding) u).getCstVal();
-                if (cstVal != null)
-                    instr.set(i, new MoveInstruction(dst, cstVal));
-            }
+            if (u instanceof CompareInstruction)
+                foldCmp((CompareInstruction) u, i);
+            else if (u instanceof ConstantFolding)
+                foldArith((ConstantFolding) u, i);
         }
     }
 
@@ -190,6 +199,25 @@ public class Block {
             }
         }
         return false;
+    }
+
+    static private Operator.CompareOp getNot(Operator.CompareOp op) {
+        switch (op) {
+            case L:
+                return NL;
+            case LE:
+                return NLE;
+            case G:
+                return NG;
+            case GE:
+                return NGE;
+            case E:
+                return NE;
+            case NE:
+                return E;
+            default:
+                throw new Error("unexpected CompareOp.");
+        }
     }
 
     public String toString() {

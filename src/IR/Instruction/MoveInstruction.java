@@ -10,7 +10,7 @@ import Optimizer.RegisterAllocation;
 
 import java.util.ArrayList;
 
-import static Generator.Operand.PhysicalOperand.convertOperand;
+import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
@@ -73,7 +73,9 @@ public class MoveInstruction extends Instruction implements ConstantFolding {
 
     @Override
     public boolean receiveConstant(VirtualRegister reg, int val) {
-        if (reg == src && cstSrc == null) {
+        if (cstVal != null)
+            return false;
+        if (reg == src) {
             cstVal = cstSrc = val;
             return true;
         }
@@ -115,9 +117,9 @@ public class MoveInstruction extends Instruction implements ConstantFolding {
     }
 
     @Override
-    public void convertVirtualOperand() {
-        dst.convertVirtualOperand();
-        src.convertVirtualOperand();
+    public void assignPhysicalOperand() {
+        dst.assignPhysicalOperand();
+        src.assignPhysicalOperand();
     }
 
     @Override
@@ -135,8 +137,8 @@ public class MoveInstruction extends Instruction implements ConstantFolding {
     @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand dst = convertOperand(str, this.dst, true);
-        PhysicalOperand src = convertOperand(str, this.src, false);
+        PhysicalOperand dst = convertVirtualOperand(str, this.dst, true);
+        PhysicalOperand src = convertVirtualOperand(str, this.src, false);
         if (dst instanceof PhysicalAddress && src instanceof PhysicalAddress) {
             str.append(formatInstr("mov", "ler8", src.toNASM()));
             str.append(formatInstr("mov", dst.toNASM(), "ler8"));

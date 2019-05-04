@@ -5,7 +5,7 @@ import Generator.Operand.PhysicalOperand;
 import IR.Operand.Address;
 import IR.Operand.Operand;
 
-import static Generator.Operand.PhysicalOperand.convertOperand;
+import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 
 public class CondSetInstruction extends CondInstruction {
@@ -17,8 +17,8 @@ public class CondSetInstruction extends CondInstruction {
     }
 
     @Override
-    public void convertVirtualOperand() {
-        dst.convertVirtualOperand();
+    public void assignPhysicalOperand() {
+        dst.assignPhysicalOperand();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class CondSetInstruction extends CondInstruction {
     @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand dst = convertOperand(str, this.dst, true);
+        PhysicalOperand dst = convertVirtualOperand(str, this.dst, true);
         if (dst instanceof PhysicalAddress) {
             str.append(formatInstr("mov", "ler8", "0"));
             str.append(formatInstr("set" + op.toString().toLowerCase(), "ler8_l8"));

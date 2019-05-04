@@ -9,7 +9,7 @@ import IR.Operand.Immediate;
 import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
-import static Generator.Operand.PhysicalOperand.convertOperand;
+import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 import static IR.Instruction.Operator.BinaryOp.DIV;
 import static IR.Instruction.Operator.BinaryOp.SHL;
@@ -101,9 +101,9 @@ public class BinaryInstruction extends Instruction implements ConstantFolding {
     }
 
     @Override
-    public void convertVirtualOperand() {
-        dst.convertVirtualOperand();
-        src.convertVirtualOperand();
+    public void assignPhysicalOperand() {
+        dst.assignPhysicalOperand();
+        src.assignPhysicalOperand();
     }
 
     @Override
@@ -136,8 +136,8 @@ public class BinaryInstruction extends Instruction implements ConstantFolding {
     @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand dst = convertOperand(str, this.dst, true);
-        PhysicalOperand src = convertOperand(str, this.src, true);
+        PhysicalOperand dst = convertVirtualOperand(str, this.dst, true);
+        PhysicalOperand src = convertVirtualOperand(str, this.src, true);
         switch (op) {
             case SHL:
             case SHR:

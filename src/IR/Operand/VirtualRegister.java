@@ -18,7 +18,7 @@ public class VirtualRegister extends Operand {
     }
 
     @Override
-    public void convertVirtualOperand() {
+    public void assignPhysicalOperand() {
         String var = getPhysicalRegister(this);
         if (var == null) addSpill(this);
         else if (var.contains("lee")) addLee(var);

@@ -4,7 +4,7 @@ import Generator.Operand.PhysicalOperand;
 import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
-import static Generator.Operand.PhysicalOperand.convertOperand;
+import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 
 public class UnaryInstruction extends Instruction implements ConstantFolding {
@@ -17,10 +17,11 @@ public class UnaryInstruction extends Instruction implements ConstantFolding {
         this.dst = dst;
     }
 
-
     @Override
     public boolean receiveConstant(VirtualRegister reg, int val) {
-        if (reg == dst && cstDst == null) {
+        if (cstVal != null)
+            return false;
+        if (reg == dst) {
             cstDst = val;
             switch (op) {
                 case INC:
@@ -51,8 +52,8 @@ public class UnaryInstruction extends Instruction implements ConstantFolding {
     }
 
     @Override
-    public void convertVirtualOperand() {
-        dst.convertVirtualOperand();
+    public void assignPhysicalOperand() {
+        dst.assignPhysicalOperand();
     }
 
     @Override
@@ -68,7 +69,7 @@ public class UnaryInstruction extends Instruction implements ConstantFolding {
     @Override
     public String toNASM() {
         StringBuilder str = new StringBuilder();
-        PhysicalOperand dst = convertOperand(str, this.dst, false);
+        PhysicalOperand dst = convertVirtualOperand(str, this.dst, false);
         str.append(formatInstr(op.toString().toLowerCase(), dst.toNASM()));
         return str.toString();
     }

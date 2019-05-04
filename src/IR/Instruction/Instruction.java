@@ -125,7 +125,7 @@ abstract public class Instruction {
         return var;
     }
 
-    public void convertVirtualOperand() {
+    public void assignPhysicalOperand() {
     }
 
     public void addVertex() {

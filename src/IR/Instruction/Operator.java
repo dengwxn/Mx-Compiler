@@ -13,4 +13,30 @@ public class Operator {
     public enum UnaryOp {
         INC, DEC, NEG, NOT
     }
+
+    static public boolean getCompare(CompareOp op, int lhs, int rhs) {
+        switch (op) {
+            case E:
+                return lhs == rhs;
+            case NE:
+                return lhs != rhs;
+            case L:
+                return lhs < rhs;
+            case LE:
+                return lhs <= rhs;
+            case G:
+                return lhs > rhs;
+            case GE:
+                return lhs >= rhs;
+            case NL:
+                return !(lhs < rhs);
+            case NG:
+                return !(lhs > rhs);
+            case NLE:
+                return !(lhs <= rhs);
+            case NGE:
+                return !(lhs >= rhs);
+        }
+        throw new Error("CompareOp undefined.");
+    }
 }
