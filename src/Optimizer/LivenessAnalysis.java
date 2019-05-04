@@ -12,7 +12,7 @@ import static IR.Build.IR.functionIRMap;
 public class LivenessAnalysis {
     static public void optimize() throws Exception {
         for (FunctionIR functionIR : functionIRMap.values())
-            functionIR.livenessAnalysis();
+            functionIR.analyzeLiveness();
         dumpLivenessAnalysis();
     }
 
@@ -25,5 +25,4 @@ public class LivenessAnalysis {
         PrintStream fprint = new PrintStream(fout);
         fprint.print(str.toString());
     }
-
 }

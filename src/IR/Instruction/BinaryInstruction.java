@@ -7,6 +7,7 @@ import Generator.Operand.PhysicalRegister;
 import IR.Operand.Address;
 import IR.Operand.Immediate;
 import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
 
 import static Generator.Operand.PhysicalOperand.convertOperand;
 import static IR.Build.IR.formatInstr;
@@ -14,9 +15,10 @@ import static IR.Instruction.Operator.BinaryOp.DIV;
 import static IR.Instruction.Operator.BinaryOp.SHL;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
-public class BinaryInstruction extends Instruction {
+public class BinaryInstruction extends Instruction implements ConstantFolding {
     private Operator.BinaryOp op;
     private Operand dst, src;
+    private Integer cstVal, cstDst, cstSrc;
 
     public BinaryInstruction(Operator.BinaryOp op, Operand dst, Operand src) {
         if (dst instanceof Address && src instanceof Address)
@@ -36,6 +38,66 @@ public class BinaryInstruction extends Instruction {
         this.op = op;
         this.dst = getVirtualRegister(dst);
         this.src = new Immediate(src);
+    }
+
+    @Override
+    public boolean receiveConstant(VirtualRegister reg, int val) {
+        if (cstVal != null)
+            return false;
+        if (src instanceof Immediate)
+            cstSrc = ((Immediate) src).getVal();
+        if (reg == dst)
+            cstDst = val;
+        if (reg == src)
+            cstSrc = val;
+        if (cstDst != null && cstSrc != null) {
+            switch (op) {
+                case ADD:
+                    cstVal = cstDst + cstSrc;
+                    break;
+                case SUB:
+                    cstVal = cstDst - cstSrc;
+                    break;
+                case MUL:
+                    cstVal = cstDst * cstSrc;
+                    break;
+                case DIV:
+                    if (cstSrc == 0) return false;
+                    cstVal = cstDst / cstSrc;
+                    break;
+                case MOD:
+                    if (cstSrc == 0) return false;
+                    cstVal = cstDst % cstSrc;
+                    break;
+                case AND:
+                    cstVal = cstDst & cstSrc;
+                    break;
+                case OR:
+                    cstVal = cstDst | cstSrc;
+                    break;
+                case XOR:
+                    cstVal = cstDst ^ cstSrc;
+                    break;
+                case SHR:
+                    cstVal = cstDst >> cstSrc;
+                    break;
+                case SHL:
+                    cstVal = cstDst << cstSrc;
+                    break;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Operand getDst() {
+        return dst;
+    }
+
+    @Override
+    public Integer getCstVal() {
+        return cstVal;
     }
 
     @Override

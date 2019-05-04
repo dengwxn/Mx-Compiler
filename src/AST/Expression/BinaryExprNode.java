@@ -76,15 +76,18 @@ public class BinaryExprNode extends ExprNode {
             lhs.generateIR(blockList);
             rhs.generateIR(blockList);
             if (lhs.getType() instanceof StringType) {
+                // string
                 ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(lhs.getOperand(), rhs.getOperand()));
-                FuncCallInstruction.moveArg(blockList, paramOp);
-                blockList.add(new FuncCallInstruction("string." + convertStringOp(), paramOp));
+                int argCnt = FuncCallInstruction.moveArg(blockList, paramOp);
+                blockList.add(new FuncCallInstruction("string." + convertStringOp(), paramOp, argCnt));
                 blockList.add(new MoveInstruction(operand, "res0"));
             } else if (convertBinaryOp() != null) {
+                // arithmetic
                 Instruction mov = new MoveInstruction(operand, lhs.getOperand());
                 Instruction binary = new BinaryInstruction(convertBinaryOp(), operand, rhs.getOperand());
                 blockList.add(mov, binary);
             } else {
+                // relation
                 VirtualRegister tmp = getTemporaryRegister();
                 Instruction mov = new MoveInstruction(tmp, lhs.getOperand());
                 Instruction cmp = new CompareInstruction(tmp, rhs.getOperand());

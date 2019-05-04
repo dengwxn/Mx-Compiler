@@ -32,8 +32,8 @@ public class FuncCallExprNode extends ExprNode {
             paramOp.add(thisOp);
         }
         param.forEach(p -> paramOp.add(p.getOperand()));
-        FuncCallInstruction.moveArg(blockList, paramOp);
-        Instruction call = new FuncCallInstruction(getFuncName(), paramOp);
+        int argCnt = FuncCallInstruction.moveArg(blockList, paramOp);
+        Instruction call = new FuncCallInstruction(getFuncName(), paramOp, argCnt);
         FuncType funcType = (FuncType) getFuncType();
         blockList.add(call);
         if (!(funcType.getRetType() instanceof VoidType)) {

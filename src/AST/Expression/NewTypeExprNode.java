@@ -25,7 +25,7 @@ public class NewTypeExprNode extends ExprNode {
     public void generateIR(BlockList blockList) {
         ArrayList<Operand> paramOpMem = new ArrayList<>(Arrays.asList(new Immediate(getOffset(base))));
         FuncCallInstruction.moveArg(blockList, paramOpMem);
-        Instruction mallocMem = new FuncCallInstruction("malloc", paramOpMem);
+        Instruction mallocMem = new FuncCallInstruction("malloc", paramOpMem, 1);
         operand = getTemporaryRegister();
         Instruction mov = new MoveInstruction(operand, "res0");
         blockList.add(mallocMem, mov);
@@ -34,7 +34,7 @@ public class NewTypeExprNode extends ExprNode {
         if (symbolTable.getType(newType) != null) {
             ArrayList<Operand> paramOpNew = new ArrayList<>(Arrays.asList(operand));
             FuncCallInstruction.moveArg(blockList, paramOpNew);
-            Instruction callNew = new FuncCallInstruction(newType, paramOpNew);
+            Instruction callNew = new FuncCallInstruction(newType, paramOpNew, 1);
             blockList.add(callNew);
         }
     }

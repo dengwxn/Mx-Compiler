@@ -4,6 +4,7 @@ import AST.Build.ParseListener;
 import AST.Build.TypeCheckListener;
 import Generator.Build.Generator;
 import IR.Build.IR;
+import Optimizer.ConstantPropagation;
 import Optimizer.LivenessAnalysis;
 import Optimizer.RegisterAllocation;
 import Parser.MxLexer;
@@ -33,6 +34,8 @@ public class Main {
     }
 
     static private void optimize() throws Exception {
+        ConstantPropagation.optimize();
+        IR.dump();
         LivenessAnalysis.optimize();
         RegisterAllocation.optimize();
     }

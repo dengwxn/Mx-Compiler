@@ -4,7 +4,7 @@ import IR.Build.Block;
 
 import static IR.Build.IR.formatInstr;
 
-public class JumpInstruction extends Instruction implements JumpInterface {
+public class JumpInstruction extends Instruction implements Jump {
     private Block dst;
 
     public JumpInstruction(Block dst) {

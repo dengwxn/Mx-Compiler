@@ -19,9 +19,9 @@ import static IR.Operand.VirtualRegisterTable.precolor;
 
 public class IR {
     static final private boolean _DEBUG_TRANSLATE_ = false;
-    static final private boolean _DEBUG_MOVE_ = false;
     static public HashMap<FuncDeclNode, FunctionIR> functionIRMap = new HashMap<>();
     static public HashMap<String, Integer> stringConst = new HashMap<>();
+    static private int _DEBUG_IR_CNT_;
     static private FuncDeclNode globalVarDecl;
 
     static public int putStringConst(String str) {
@@ -70,10 +70,22 @@ public class IR {
         StringBuilder str = new StringBuilder();
         for (FunctionIR functionIR : functionIRMap.values())
             str.append(functionIR.toString());
-        File file = new File("IR.txt");
+        File file = new File("IR" + _DEBUG_IR_CNT_++ + ".txt");
         OutputStream fout = new FileOutputStream(file);
         PrintStream fprint = new PrintStream(fout);
         fprint.print(str.toString());
+    }
+
+    static public String formatInstr(String instr) {
+        return String.format("\t%s\n", instr);
+    }
+
+    static public String formatInstr(String instr, String op) {
+        return String.format("\t%s  \t%s\n", instr, translateRegister(op));
+    }
+
+    static public String formatInstr(String instr, String lhs, String rhs) {
+        return String.format("\t%s  \t%s, %s\n", instr, translateRegister(lhs), translateRegister(rhs));
     }
 
     static public String translateRegister(String op) {
@@ -150,19 +162,5 @@ public class IR {
             default:
                 return op;
         }
-    }
-
-    static public String formatInstr(String instr) {
-        return String.format("\t%s\n", instr);
-    }
-
-    static public String formatInstr(String instr, String op) {
-        return String.format("\t%s  \t%s\n", instr, translateRegister(op));
-    }
-
-    static public String formatInstr(String instr, String lhs, String rhs) {
-        if (!_DEBUG_MOVE_ && instr.equals("mov") && translateRegister(lhs).equals(translateRegister(rhs)))
-            return "";
-        return String.format("\t%s  \t%s, %s\n", instr, translateRegister(lhs), translateRegister(rhs));
     }
 }

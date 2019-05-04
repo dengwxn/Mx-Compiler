@@ -58,7 +58,7 @@ public class NewArrayExprNode extends ExprNode {
             blockList.add(new BinaryInstruction(SHL, len, 3));
             ArrayList<Operand> paramOp = new ArrayList<>(Arrays.asList(len));
             FuncCallInstruction.moveArg(blockList, paramOp);
-            blockList.add(new FuncCallInstruction("malloc", paramOp));
+            blockList.add(new FuncCallInstruction("malloc", paramOp, 1));
             VirtualRegister ptr = getTemporaryRegister();
             blockList.add(new MoveInstruction(ptr, "res0"));
 

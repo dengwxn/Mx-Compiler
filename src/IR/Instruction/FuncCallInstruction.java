@@ -17,17 +17,22 @@ public class FuncCallInstruction extends Instruction {
             "res0", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "ler7"));
     private String name;
     private ArrayList<Operand> param;
+    private int argCnt;
 
-    public FuncCallInstruction(String name, ArrayList<Operand> param) {
+    public FuncCallInstruction(String name, ArrayList<Operand> param, int argCnt) {
         this.name = name;
         this.param = param;
+        this.argCnt = argCnt;
     }
 
-    static public void moveArg(BlockList blockList, ArrayList<Operand> operand) {
+    static public int moveArg(BlockList blockList, ArrayList<Operand> operand) {
+        int argCnt = 0;
         for (int i = 0; i < 6 && operand.size() > 0; ++i) {
             blockList.add(new MoveInstruction("arg" + (i + 1), operand.get(0)));
             operand.remove(0);
+            ++argCnt;
         }
+        return argCnt;
     }
 
     @Override
@@ -38,7 +43,7 @@ public class FuncCallInstruction extends Instruction {
 
     @Override
     public void putUse() {
-        for (int i = 0; i < param.size() && i < 6; ++i)
+        for (int i = 0; i < argCnt; ++i)
             putUse("arg" + (i + 1));
     }
 

@@ -4,7 +4,7 @@ import IR.Build.Block;
 
 import static IR.Build.IR.formatInstr;
 
-public class CondJumpInstruction extends CondInstruction implements JumpInterface {
+public class CondJumpInstruction extends CondInstruction implements Jump {
     private Block dst;
 
     public CondJumpInstruction(Operator.CompareOp op, Block dst) {

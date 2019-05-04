@@ -2,17 +2,52 @@ package IR.Instruction;
 
 import Generator.Operand.PhysicalOperand;
 import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
 
 import static Generator.Operand.PhysicalOperand.convertOperand;
 import static IR.Build.IR.formatInstr;
 
-public class UnaryInstruction extends Instruction {
+public class UnaryInstruction extends Instruction implements ConstantFolding {
     private Operator.UnaryOp op;
     private Operand dst;
+    private Integer cstVal, cstDst;
 
     public UnaryInstruction(Operator.UnaryOp op, Operand dst) {
         this.op = op;
         this.dst = dst;
+    }
+
+
+    @Override
+    public boolean receiveConstant(VirtualRegister reg, int val) {
+        if (reg == dst && cstDst == null) {
+            cstDst = val;
+            switch (op) {
+                case INC:
+                    cstVal = val + 1;
+                    break;
+                case DEC:
+                    cstVal = val - 1;
+                    break;
+                case NEG:
+                    cstVal = -val;
+                    break;
+                case NOT:
+                    cstVal = ~val;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Operand getDst() {
+        return dst;
+    }
+
+    @Override
+    public Integer getCstVal() {
+        return cstVal;
     }
 
     @Override

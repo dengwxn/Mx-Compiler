@@ -2,12 +2,16 @@ package IR.Build;
 
 import IR.Instruction.*;
 import IR.Operand.Immediate;
+import IR.Operand.Operand;
 
 import java.util.ArrayList;
 
 import static IR.Instruction.Operator.CompareOp.*;
 
 public class Block {
+    static final private boolean _DEBUG_REDUNDANT_ADJACENT_MOVE = false;
+    static final private boolean _DEBUG_REDUNDANT_SELF_MOVE_ = false;
+
     private String label;
     private ArrayList<Instruction> instr;
     private int id;
@@ -37,8 +41,20 @@ public class Block {
         }
     }
 
-    void convertVirtualOperand() {
-        instr.forEach(i -> i.convertVirtualOperand());
+    void constantFolding() {
+        for (int i = 0; i < instr.size(); ++i) {
+            Instruction u = instr.get(i);
+            if (u instanceof ConstantFolding) {
+                Operand dst = ((ConstantFolding) u).getDst();
+                Integer cstVal = ((ConstantFolding) u).getCstVal();
+                if (cstVal != null)
+                    instr.set(i, new MoveInstruction(dst, cstVal));
+            }
+        }
+    }
+
+    ArrayList<Instruction> getInstr() {
+        return instr;
     }
 
     private void link(Instruction u, Instruction v) {
@@ -52,19 +68,9 @@ public class Block {
         for (int i = 0; i < instr.size(); ++i) {
             Instruction u = instr.get(i);
             if (i < instr.size() - 1) link(u, instr.get(i + 1));
-            if (u instanceof JumpInterface)
-                link(u, ((JumpInterface) u).getDst().getHead());
+            if (u instanceof Jump)
+                link(u, ((Jump) u).getDst().getHead());
         }
-    }
-
-    void livenessAnalysis() {
-        instr.forEach(i -> i.putDef());
-        instr.forEach(i -> i.putUse());
-        instr.forEach(i -> i.addVertex());
-    }
-
-    void buildIntrfGraph() {
-        instr.forEach(i -> i.buildIntrfGraph());
     }
 
     String dumpLivenessAnalysis() {
@@ -72,7 +78,7 @@ public class Block {
         str.append(getLabel() + ":\n");
         for (Instruction i : instr) {
             str.append(i.toString());
-            str.append(i.toDisplayLive());
+            str.append(i.dumpLive());
         }
         return str.toString();
     }
@@ -133,6 +139,18 @@ public class Block {
     }
 
     public String toNASM(Block nextBlock) {
+        detectRedundantJump(nextBlock);
+        StringBuilder str = new StringBuilder();
+        str.append(getLabel() + ":\n");
+        for (int i = 0; i < instr.size(); ++i) {
+            if (detectRedundantAdjacentMove(i)) continue;
+            if (detectRedundantSelfMove(i)) continue;
+            str.append(instr.get(i).toNASM());
+        }
+        return str.toString();
+    }
+
+    private void detectRedundantJump(Block nextBlock) {
         if (instr.size() > 1 && instr.get(instr.size() - 2) instanceof CondJumpInstruction) {
             CondJumpInstruction cjump = (CondJumpInstruction) instr.get(instr.size() - 2);
             if (cjump.getDst() == nextBlock) {
@@ -144,11 +162,34 @@ public class Block {
         }
         if (jump != null && jump.getDst() == nextBlock)
             instr.remove(instr.size() - 1);
+    }
 
-        StringBuilder str = new StringBuilder();
-        str.append(getLabel() + ":\n");
-        instr.forEach(i -> str.append(i.toNASM()));
-        return str.toString();
+    private boolean detectRedundantAdjacentMove(int id) {
+        if (!_DEBUG_REDUNDANT_ADJACENT_MOVE) {
+            if (id < instr.size() - 1) {
+                if (instr.get(id) instanceof MoveInstruction
+                        && instr.get(id + 1) instanceof MoveInstruction) {
+                    String x = ((MoveInstruction) instr.get(id)).getPhyDst();
+                    String y = ((MoveInstruction) instr.get(id + 1)).getPhyDst();
+                    String z = ((MoveInstruction) instr.get(id + 1)).getPhySrc();
+                    if (x != null && x.equals(y))
+                        return !x.equals(z);
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean detectRedundantSelfMove(int id) {
+        if (!_DEBUG_REDUNDANT_SELF_MOVE_) {
+            if (instr.get(id) instanceof MoveInstruction) {
+                String x = ((MoveInstruction) instr.get(id)).getPhyDst();
+                String y = ((MoveInstruction) instr.get(id)).getPhySrc();
+                if (x != null)
+                    return x.equals(y);
+            }
+        }
+        return false;
     }
 
     public String toString() {

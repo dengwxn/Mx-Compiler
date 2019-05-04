@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
+import static IR.Build.IR.formatInstr;
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SUB;
 import static java.lang.Math.max;
@@ -37,7 +38,7 @@ public class FunctionIR {
         blockList.add(new JumpInstruction(funcEntry));
         blockList.add(funcEntry);
         if (funcDecl.getFuncName().equals("main"))
-            blockList.add(new FuncCallInstruction("@global_var_decl", new ArrayList<>()));
+            blockList.add(new FuncCallInstruction("@global_var_decl", new ArrayList<>(), 0));
         funcDecl.generateIR(blockList);
         blockList.add(funcExit);
 
@@ -60,17 +61,37 @@ public class FunctionIR {
         FunctionIR.maxParamSize = max(FunctionIR.maxParamSize, maxParamSize);
     }
 
-    public void livenessAnalysis() {
-        blockList.getBlockList().forEach(block -> block.linkPreSuc());
-        blockList.getBlockList().forEach(block -> block.livenessAnalysis());
-        blockList.getBlockList().forEach(block -> block.buildIntrfGraph());
+    public void propagateConstant() {
+        ArrayList<Instruction> instrList = this.blockList.getInstrList();
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        instrList.forEach(instr -> instr.clearAnalysis());
+        blockList.forEach(block -> block.linkPreSuc());
+        instrList.forEach(instr -> instr.putDef());
+        instrList.forEach(instr -> instr.putUse());
+        instrList.forEach(instr -> instr.putReach());
+        instrList.forEach(instr -> instr.buildSingleDefReach());
+        for (Instruction instr : instrList) {
+            if (instr instanceof MoveInstruction)
+                ((MoveInstruction) instr).propagateConstant();
+        }
+        blockList.forEach(block -> block.constantFolding());
+    }
+
+    public void analyzeLiveness() {
+        ArrayList<Instruction> instrList = this.blockList.getInstrList();
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        instrList.forEach(instr -> instr.clearAnalysis());
+        blockList.forEach(block -> block.linkPreSuc());
+        instrList.forEach(instr -> instr.putDef());
+        instrList.forEach(instr -> instr.putUse());
+        instrList.forEach(instr -> instr.putLive());
+        instrList.forEach(instr -> instr.addVertex());
+        instrList.forEach(instr -> instr.buildIntrfGraph());
     }
 
     public String dumpLivenessAnalysis() {
         StringBuilder str = new StringBuilder();
-        for (Block block : blockList.getBlockList()) {
-            str.append(block.dumpLivenessAnalysis());
-        }
+        blockList.getBlockList().forEach(block -> str.append(block.dumpLivenessAnalysis()));
         return str.toString();
     }
 
@@ -125,7 +146,7 @@ public class FunctionIR {
         spillPos.clear();
         maxParamSize = 0;
 
-        blockList.convertVirtualOperand();
+        blockList.getInstrList().forEach(instr -> instr.convertVirtualOperand());
         int cnt = leePool.size();
         cnt += spillPool.size();
         cnt += maxParamSize;
@@ -133,9 +154,17 @@ public class FunctionIR {
         int ptr = cnt - leePool.size();
         for (VirtualRegister i : spillPool)
             spillPos.put(i, (--ptr) * 8);
-
         updateCalling(cnt);
-        return blockList.toNASM();
+
+        StringBuilder str = new StringBuilder();
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        for (int i = 0; i < blockList.size(); ++i) {
+            Block block = blockList.get(i);
+            Block nextBlock = i < blockList.size() - 1 ? blockList.get(i + 1) : null;
+            str.append(block.toNASM(nextBlock));
+        }
+        str.append(formatInstr("ret"));
+        return str.toString();
     }
 
     public String toString() {
@@ -151,7 +180,7 @@ public class FunctionIR {
             }
         }
         str.append("):\n\n");
-        str.append(blockList.toString());
+        blockList.getBlockList().forEach(block -> str.append(block.toString()));
         str.append("\n");
         return str.toString();
     }
