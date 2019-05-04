@@ -7,7 +7,6 @@ import Generator.Operand.PhysicalRegister;
 import IR.Operand.Address;
 import IR.Operand.Immediate;
 import IR.Operand.Operand;
-import IR.Operand.VirtualRegister;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
@@ -18,7 +17,7 @@ import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 public class BinaryInstruction extends Instruction implements ConstantFolding {
     private Operator.BinaryOp op;
     private Operand dst, src;
-    private Integer cstVal, cstDst, cstSrc;
+    private Integer cstVal;
 
     public BinaryInstruction(Operator.BinaryOp op, Operand dst, Operand src) {
         if (dst instanceof Address && src instanceof Address)
@@ -41,15 +40,11 @@ public class BinaryInstruction extends Instruction implements ConstantFolding {
     }
 
     @Override
-    public boolean receiveConstant(VirtualRegister reg, int val) {
+    public boolean foldToConstant() {
         if (cstVal != null)
             return false;
-        if (src instanceof Immediate)
-            cstSrc = ((Immediate) src).getVal();
-        if (reg == dst)
-            cstDst = val;
-        if (reg == src)
-            cstSrc = val;
+        Integer cstDst = getConstant(dst);
+        Integer cstSrc = getConstant(src);
         if (cstDst != null && cstSrc != null) {
             switch (op) {
                 case ADD:

@@ -17,7 +17,7 @@ import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
 public class MoveInstruction extends Instruction implements ConstantFolding {
     private Operand dst, src;
-    private Integer cstVal, cstSrc;
+    private Integer cstVal;
 
     public MoveInstruction(Operand dst, Operand src) {
         if (dst instanceof Address && src instanceof Address)
@@ -43,7 +43,7 @@ public class MoveInstruction extends Instruction implements ConstantFolding {
 
     public void propagateConstant() {
         if (dst instanceof VirtualRegister && src instanceof Immediate) {
-            cstVal = cstSrc = ((Immediate) src).getVal();
+            cstVal = ((Immediate) src).getVal();
             ArrayList<VirtualRegister> regQueue = new ArrayList<>();
             ArrayList<Integer> cstQueue = new ArrayList<>();
             ArrayList<Instruction> instrQueue = new ArrayList<>();
@@ -55,10 +55,11 @@ public class MoveInstruction extends Instruction implements ConstantFolding {
                 VirtualRegister reg = regQueue.get(i);
                 Integer cst = cstQueue.get(i);
                 Instruction u = instrQueue.get(i);
-                for (Instruction v : u.singleDefReach) {
+                for (Instruction v : u.defReach) {
+                    v.receiveConstant(reg, cst);
                     if (v instanceof ConstantFolding) {
                         ConstantFolding w = (ConstantFolding) v;
-                        if (w.receiveConstant(reg, cst)) {
+                        if (w.foldToConstant()) {
                             if (w.getDst() instanceof VirtualRegister) {
                                 regQueue.add((VirtualRegister) w.getDst());
                                 cstQueue.add(w.getCstVal());
@@ -72,14 +73,11 @@ public class MoveInstruction extends Instruction implements ConstantFolding {
     }
 
     @Override
-    public boolean receiveConstant(VirtualRegister reg, int val) {
+    public boolean foldToConstant() {
         if (cstVal != null)
             return false;
-        if (reg == src) {
-            cstVal = cstSrc = val;
-            return true;
-        }
-        return false;
+        cstVal = getConstant(src);
+        return cstVal != null;
     }
 
     @Override

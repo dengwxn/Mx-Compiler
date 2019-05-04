@@ -1,11 +1,13 @@
 package IR.Instruction;
 
 import IR.Operand.Address;
+import IR.Operand.Immediate;
 import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 import Optimizer.RegisterAllocation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
@@ -14,16 +16,48 @@ import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 abstract public class Instruction {
     LinkedHashSet<VirtualRegister> live = new LinkedHashSet<>();
     LinkedHashSet<VirtualRegister> def = new LinkedHashSet<>();
-    HashSet<Instruction> singleDefReach = new HashSet<>();
+    HashSet<Instruction> defReach = new HashSet<>();
+    private HashMap<VirtualRegister, Integer> reachCnt = new HashMap<>();
+    private HashMap<VirtualRegister, Integer> receiveCnt = new HashMap<>();
+    private HashMap<VirtualRegister, Integer> receiveVal = new HashMap<>();
     private ArrayList<Instruction> pre = new ArrayList<>();
     private ArrayList<Instruction> suc = new ArrayList<>();
     private HashSet<VirtualRegister> use = new HashSet<>();
     private HashSet<Instruction> reach = new HashSet<>();
 
-    public void buildSingleDefReach(VirtualRegister reg) {
+    Integer getConstant(Operand operand) {
+        if (operand instanceof Immediate) {
+            return ((Immediate) operand).getVal();
+        } else if (operand instanceof VirtualRegister) {
+            VirtualRegister reg = (VirtualRegister) operand;
+            if (reachCnt.get(reg).equals(receiveCnt.get(reg)))
+                return receiveVal.get(reg);
+        }
+        return null;
+    }
+
+    void receiveConstant(VirtualRegister reg, int val) {
         if (use.contains(reg)) {
-            if (reach != null && reach.size() == 1)
-                reach.iterator().next().singleDefReach.add(this);
+            if (receiveCnt.get(reg) != -1) {
+                if (receiveVal.get(reg) == null) {
+                    receiveVal.put(reg, val);
+                    receiveCnt.put(reg, 1);
+                } else {
+                    if (receiveVal.get(reg) != val) receiveCnt.put(reg, -1);
+                    else receiveCnt.put(reg, receiveCnt.get(reg) + 1);
+                }
+            }
+        }
+    }
+
+    public void buildDefReach(VirtualRegister reg) {
+        if (use.contains(reg)) {
+            reachCnt.put(reg, 0);
+            receiveCnt.put(reg, 0);
+            for (Instruction u : reach) {
+                u.defReach.add(this);
+                reachCnt.put(reg, reachCnt.get(reg) + 1);
+            }
         }
     }
 
@@ -43,21 +77,21 @@ abstract public class Instruction {
         }
     }
 
-    private boolean propLive(VirtualRegister var) {
-        if (!def.contains(var))
-            return live.add(var);
+    private boolean propLive(VirtualRegister reg) {
+        if (!def.contains(reg))
+            return live.add(reg);
         return false;
     }
 
     public void putLive() {
-        for (VirtualRegister var : use) {
-            live.add(var);
+        for (VirtualRegister reg : use) {
+            live.add(reg);
             ArrayList<Instruction> queue = new ArrayList<>();
             queue.add(this);
             for (int i = 0; i < queue.size(); ++i) {
                 Instruction u = queue.get(i);
                 for (Instruction v : u.pre) {
-                    if (v.propLive(var))
+                    if (v.propLive(reg))
                         queue.add(v);
                 }
             }
@@ -65,15 +99,15 @@ abstract public class Instruction {
     }
 
     void putUse(Operand op) {
-        VirtualRegister var = extractVirtualRegister(op);
-        if (var != null)
-            use.add(var);
+        VirtualRegister reg = extractVirtualRegister(op);
+        if (reg != null)
+            use.add(reg);
     }
 
     void putDef(Operand op) {
         if (op instanceof VirtualRegister) {
-            VirtualRegister var = (VirtualRegister) op;
-            def.add(var);
+            VirtualRegister reg = (VirtualRegister) op;
+            def.add(reg);
         } else if (op instanceof Address)
             putUse(op);
     }
@@ -110,19 +144,21 @@ abstract public class Instruction {
         live.clear();
         def.clear();
         use.clear();
-        singleDefReach.clear();
+        defReach.clear();
+        reachCnt.clear();
+        receiveCnt.clear();
     }
 
     private VirtualRegister extractVirtualRegister(Operand op) {
-        VirtualRegister var = null;
+        VirtualRegister reg = null;
         if (op instanceof VirtualRegister) {
-            var = (VirtualRegister) op;
+            reg = (VirtualRegister) op;
         } else if (op instanceof Address) {
-            var = ((Address) op).getBase();
-            if (var.getSymbol().isGlobal())
-                var = null;
+            reg = ((Address) op).getBase();
+            if (reg.getSymbol().isGlobal())
+                reg = null;
         }
-        return var;
+        return reg;
     }
 
     public void assignPhysicalOperand() {
@@ -149,9 +185,9 @@ abstract public class Instruction {
     public String dumpLive() {
         StringBuilder str = new StringBuilder();
         str.append("\t\t\t<def>: ");
-        def.forEach(var -> str.append(var.toString() + ", "));
+        def.forEach(reg -> str.append(reg.toString() + ", "));
         str.append("\n\t\t\t<live>: ");
-        live.forEach(var -> str.append(var.toString() + ", "));
+        live.forEach(reg -> str.append(reg.toString() + ", "));
         str.append("\n");
         return str.toString();
     }

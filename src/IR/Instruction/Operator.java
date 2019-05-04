@@ -1,19 +1,6 @@
 package IR.Instruction;
 
 public class Operator {
-    public enum BinaryOp {
-        ADD, SUB, MUL, DIV, MOD, SHL, SHR, AND, OR, XOR,
-    }
-
-    public enum CompareOp {
-        E, NE, L, LE, G, GE,
-        NL, NLE, NG, NGE
-    }
-
-    public enum UnaryOp {
-        INC, DEC, NEG, NOT
-    }
-
     static public boolean getCompare(CompareOp op, int lhs, int rhs) {
         switch (op) {
             case E:
@@ -38,5 +25,18 @@ public class Operator {
                 return !(lhs >= rhs);
         }
         throw new Error("CompareOp undefined.");
+    }
+
+    public enum BinaryOp {
+        ADD, SUB, MUL, DIV, MOD, SHL, SHR, AND, OR, XOR,
+    }
+
+    public enum CompareOp {
+        E, NE, L, LE, G, GE,
+        NL, NLE, NG, NGE
+    }
+
+    public enum UnaryOp {
+        INC, DEC, NEG, NOT
     }
 }

@@ -72,7 +72,7 @@ public class FunctionIR {
         for (VirtualRegister reg : virtualRegisterTable.values()) {
             instrList.forEach(instr -> instr.clearReach());
             instrList.forEach(instr -> instr.putReach(reg));
-            instrList.forEach(instr -> instr.buildSingleDefReach(reg));
+            instrList.forEach(instr -> instr.buildDefReach(reg));
         }
         for (Instruction instr : instrList) {
             if (instr instanceof MoveInstruction)

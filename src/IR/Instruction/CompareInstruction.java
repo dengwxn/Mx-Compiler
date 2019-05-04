@@ -6,14 +6,12 @@ import Generator.Operand.PhysicalOperand;
 import IR.Operand.Address;
 import IR.Operand.Immediate;
 import IR.Operand.Operand;
-import IR.Operand.VirtualRegister;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 
-public class CompareInstruction extends Instruction implements ConstantFolding {
+public class CompareInstruction extends Instruction {
     private Operand lhs, rhs;
-    private Integer cstLhs, cstRhs;
 
     public CompareInstruction(Operand lhs, Operand rhs) {
         if (lhs instanceof Address && rhs instanceof Address)
@@ -27,35 +25,12 @@ public class CompareInstruction extends Instruction implements ConstantFolding {
         this.rhs = new Immediate(rhs);
     }
 
-    @Override
-    public boolean receiveConstant(VirtualRegister reg, int val) {
-        if (reg == lhs)
-            cstLhs = val;
-        if (reg == rhs)
-            cstRhs = val;
-        if (lhs instanceof Immediate)
-            cstLhs = ((Immediate) lhs).getVal();
-        if (rhs instanceof Immediate)
-            cstRhs = ((Immediate) rhs).getVal();
-        return false;
-    }
-
     public Integer getCstLhs() {
-        return cstLhs;
+        return getConstant(lhs);
     }
 
     public Integer getCstRhs() {
-        return cstRhs;
-    }
-
-    @Override
-    public Operand getDst() {
-        return null;
-    }
-
-    @Override
-    public Integer getCstVal() {
-        return null;
+        return getConstant(rhs);
     }
 
     @Override
