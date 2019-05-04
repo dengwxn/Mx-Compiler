@@ -9,13 +9,13 @@ import static Optimizer.RegisterAllocation.regList;
 
 public class VirtualRegisterTable {
     static private int tmpCnt;
-    static private HashMap<Symbol, VirtualRegister> table = new HashMap<>();
+    static public HashMap<Symbol, VirtualRegister> virtualRegisterTable = new HashMap<>();
     static private HashMap<String, Symbol> register = new HashMap<>();
 
     static public VirtualRegister getVirtualRegister(Symbol symbol) {
-        if (!table.containsKey(symbol))
-            table.put(symbol, new VirtualRegister(symbol));
-        return table.get(symbol);
+        if (!virtualRegisterTable.containsKey(symbol))
+            virtualRegisterTable.put(symbol, new VirtualRegister(symbol));
+        return virtualRegisterTable.get(symbol);
     }
 
     static public VirtualRegister getVirtualRegister(String symbol) {
@@ -24,7 +24,10 @@ public class VirtualRegisterTable {
 
     static public VirtualRegister getTemporaryRegister() {
         ++tmpCnt;
-        return new VirtualRegister(new Symbol("t" + tmpCnt));
+        Symbol symbol = new Symbol("t" + tmpCnt);
+        VirtualRegister reg = new VirtualRegister(symbol);
+        virtualRegisterTable.put(symbol, reg);
+        return reg;
     }
 
     static private void precolor(String reg) {

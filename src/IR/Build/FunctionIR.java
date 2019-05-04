@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import static IR.Build.IR.formatInstr;
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SUB;
+import static IR.Operand.VirtualRegisterTable.virtualRegisterTable;
 import static java.lang.Math.max;
 
 public class FunctionIR {
@@ -68,8 +69,11 @@ public class FunctionIR {
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
         instrList.forEach(instr -> instr.putUse());
-        instrList.forEach(instr -> instr.putReach());
-        instrList.forEach(instr -> instr.buildSingleDefReach());
+        for (VirtualRegister reg : virtualRegisterTable.values()) {
+            instrList.forEach(instr -> instr.clearReach());
+            instrList.forEach(instr -> instr.putReach(reg));
+            instrList.forEach(instr -> instr.buildSingleDefReach(reg));
+        }
         for (Instruction instr : instrList) {
             if (instr instanceof MoveInstruction)
                 ((MoveInstruction) instr).propagateConstant();
