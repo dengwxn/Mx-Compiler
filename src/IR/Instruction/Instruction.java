@@ -25,7 +25,7 @@ abstract public class Instruction {
     private HashSet<VirtualRegister> use = new HashSet<>();
     private HashSet<Instruction> reach = new HashSet<>();
 
-    Integer getConstant(Operand operand) {
+    public Integer getConstant(Operand operand) {
         if (operand instanceof Immediate) {
             return ((Immediate) operand).getVal();
         } else if (operand instanceof VirtualRegister) {

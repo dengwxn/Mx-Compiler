@@ -85,6 +85,14 @@ public class BinaryInstruction extends Instruction implements ConstantFolding {
         return false;
     }
 
+    public Operator.BinaryOp getOp() {
+        return op;
+    }
+
+    public Operand getSrc() {
+        return src;
+    }
+
     @Override
     public Operand getDst() {
         return dst;

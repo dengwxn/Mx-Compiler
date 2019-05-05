@@ -6,6 +6,7 @@ import IR.Operand.Operand;
 
 import java.util.ArrayList;
 
+import static IR.Instruction.Operator.BinaryOp.SHL;
 import static IR.Instruction.Operator.CompareOp.*;
 import static IR.Instruction.Operator.getCompare;
 
@@ -46,10 +47,37 @@ public class Block {
     }
 
     private void foldArith(ConstantFolding arith, int id) {
-        Operand dst = arith.getDst();
-        Integer cstVal = arith.getCstVal();
-        if (cstVal != null)
-            instr.set(id, new MoveInstruction(dst, cstVal));
+        if (arith.getCstVal() != null) {
+            instr.set(id, new MoveInstruction(arith.getDst(), arith.getCstVal()));
+        } else if (instr.get(id) instanceof BinaryInstruction) {
+            BinaryInstruction x = (BinaryInstruction) instr.get(id);
+            Operand dst = x.getDst();
+            Operand src = x.getSrc();
+            Integer val = x.getConstant(src);
+            if (val != null) {
+                switch (x.getOp()) {
+                    case ADD:
+                    case SUB:
+                        if (val == 0)
+                            instr.set(id, new MoveInstruction(dst, dst));
+                        break;
+                    case MUL:
+                        if (val == 0)
+                            instr.set(id, new MoveInstruction(dst, 0));
+                        else if (val == 1)
+                            instr.set(id, new MoveInstruction(dst, dst));
+                        else {
+                            for (int k = 0; k < 64; ++k) {
+                                if ((1 << k) == val) {
+                                    instr.set(id, new BinaryInstruction(SHL, dst, k));
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     void constantFolding() {
@@ -178,11 +206,14 @@ public class Block {
             if (id < instr.size() - 1) {
                 if (instr.get(id) instanceof MoveInstruction
                         && instr.get(id + 1) instanceof MoveInstruction) {
-                    String x = ((MoveInstruction) instr.get(id)).getPhyDst();
-                    String y = ((MoveInstruction) instr.get(id + 1)).getPhyDst();
-                    String z = ((MoveInstruction) instr.get(id + 1)).getPhySrc();
-                    if (x != null && x.equals(y))
-                        return !x.equals(z);
+                    String a = ((MoveInstruction) instr.get(id)).getPhyDst();
+                    String b = ((MoveInstruction) instr.get(id)).getPhySrc();
+                    String c = ((MoveInstruction) instr.get(id + 1)).getPhyDst();
+                    String d = ((MoveInstruction) instr.get(id + 1)).getPhySrc();
+                    if (a != null && a.equals(c) && !a.equals(d))
+                        return true;
+                    if (a != null && b != null && a.equals(d) && b.equals(c))
+                        instr.remove(id + 1);
                 }
             }
         }
