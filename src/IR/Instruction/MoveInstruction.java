@@ -9,9 +9,11 @@ import IR.Operand.VirtualRegister;
 import Optimizer.RegisterAllocation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
+import static IR.Operand.Operand.convertCopyOperand;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
@@ -39,6 +41,45 @@ public class MoveInstruction extends Instruction implements ConstantFolding {
     public MoveInstruction(String dst, Operand src) {
         this.dst = getVirtualRegister(dst);
         this.src = src;
+    }
+
+    @Override
+    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
+        if (src == cpy) {
+            src = convertCopyOperand(src, cpy, reg);
+            return true;
+        }
+        return false;
+    }
+
+    public void propagateCopy(VirtualRegister reg) {
+        ArrayList<VirtualRegister> cpyQueue = new ArrayList<>();
+        ArrayList<Instruction> instrQueue = new ArrayList<>();
+        if (dst instanceof VirtualRegister && src == reg) {
+            cpyQueue.add((VirtualRegister) dst);
+            instrQueue.add(this);
+
+            for (int i = 0; i < cpyQueue.size(); ++i) {
+                VirtualRegister cpy = cpyQueue.get(i);
+                Instruction u = instrQueue.get(i);
+                HashSet<Instruction> del = new HashSet<>();
+                for (Instruction v : u.singleDefReach) {
+                    if (this.reach.equals(v.reach)) {
+                        del.add(v);
+                        if (v.receiveCopy(cpy, reg)) {
+                            if (v instanceof MoveInstruction) {
+                                MoveInstruction w = (MoveInstruction) v;
+                                if (w.getDst() instanceof VirtualRegister) {
+                                    cpyQueue.add((VirtualRegister) w.getDst());
+                                    instrQueue.add(v);
+                                }
+                            }
+                        }
+                    }
+                }
+                u.singleDefReach.removeAll(del);
+            }
+        }
     }
 
     public void propagateConstant() {

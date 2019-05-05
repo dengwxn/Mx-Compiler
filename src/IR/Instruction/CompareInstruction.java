@@ -6,9 +6,11 @@ import Generator.Operand.PhysicalOperand;
 import IR.Operand.Address;
 import IR.Operand.Immediate;
 import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
+import static IR.Operand.Operand.convertCopyOperand;
 
 public class CompareInstruction extends Instruction {
     private Operand lhs, rhs;
@@ -23,6 +25,13 @@ public class CompareInstruction extends Instruction {
     public CompareInstruction(Operand lhs, int rhs) {
         this.lhs = lhs;
         this.rhs = new Immediate(rhs);
+    }
+
+    @Override
+    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
+        lhs = convertCopyOperand(lhs, cpy, reg);
+        rhs = convertCopyOperand(rhs, cpy, reg);
+        return false;
     }
 
     public Integer getCstLhs() {

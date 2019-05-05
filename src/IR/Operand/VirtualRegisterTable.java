@@ -31,9 +31,8 @@ public class VirtualRegisterTable {
     }
 
     static private void precolor(String reg) {
-        Symbol symbol = new Symbol(reg);
+        Symbol symbol = new Symbol(reg, true);
         register.put(reg, symbol);
-        // putPhysicalRegister(getVirtualRegister(reg), reg);
     }
 
     static public void precolor() {

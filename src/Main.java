@@ -4,8 +4,8 @@ import AST.Build.ParseListener;
 import AST.Build.TypeCheckListener;
 import Generator.Build.Generator;
 import IR.Build.IR;
-import Optimizer.ConstantPropagation;
 import Optimizer.LivenessAnalysis;
+import Optimizer.Propagation;
 import Optimizer.RegisterAllocation;
 import Parser.MxLexer;
 import Parser.MxParser;
@@ -34,8 +34,7 @@ public class Main {
     }
 
     static private void optimize() throws Exception {
-        ConstantPropagation.optimize();
-        IR.dump();
+        Propagation.optimize();
         LivenessAnalysis.optimize();
         RegisterAllocation.optimize();
     }
@@ -60,6 +59,5 @@ public class Main {
         walker.walk(new ClassListener(), tree);
         walker.walk(new DeclarationListener(), tree);
         walker.walk(new TypeCheckListener(), tree);
-        // Tree.toString();
     }
 }

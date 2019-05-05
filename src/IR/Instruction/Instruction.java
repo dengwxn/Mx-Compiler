@@ -16,14 +16,19 @@ import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 abstract public class Instruction {
     LinkedHashSet<VirtualRegister> live = new LinkedHashSet<>();
     LinkedHashSet<VirtualRegister> def = new LinkedHashSet<>();
+    HashSet<Instruction> singleDefReach = new HashSet<>();
     HashSet<Instruction> defReach = new HashSet<>();
+    HashSet<Instruction> reach = new HashSet<>();
     private HashMap<VirtualRegister, Integer> reachCnt = new HashMap<>();
     private HashMap<VirtualRegister, Integer> receiveCnt = new HashMap<>();
     private HashMap<VirtualRegister, Integer> receiveVal = new HashMap<>();
     private ArrayList<Instruction> pre = new ArrayList<>();
     private ArrayList<Instruction> suc = new ArrayList<>();
     private HashSet<VirtualRegister> use = new HashSet<>();
-    private HashSet<Instruction> reach = new HashSet<>();
+
+    boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
+        return false;
+    }
 
     public Integer getConstant(Operand operand) {
         if (operand instanceof Immediate) {
@@ -58,6 +63,8 @@ abstract public class Instruction {
                 u.defReach.add(this);
                 reachCnt.put(reg, reachCnt.get(reg) + 1);
             }
+            if (reach.size() == 1)
+                reach.iterator().next().singleDefReach.add(this);
         }
     }
 
@@ -138,12 +145,17 @@ abstract public class Instruction {
         reach.clear();
     }
 
+    public void clearUse() {
+        use.clear();
+    }
+
     public void clearAnalysis() {
         pre.clear();
         suc.clear();
         live.clear();
         def.clear();
         use.clear();
+        singleDefReach.clear();
         defReach.clear();
         reachCnt.clear();
         receiveCnt.clear();

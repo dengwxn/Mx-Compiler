@@ -11,6 +11,12 @@ public class Symbol {
     private String name, prevTypeName;
     private boolean isGlobal;
     private Operand operand;
+    private boolean isPrecolor;
+
+    public Symbol(String name, boolean isPrecolor) {
+        this.name = name;
+        this.isPrecolor = isPrecolor;
+    }
 
     public Symbol(String name) {
         this.name = name;
@@ -19,6 +25,10 @@ public class Symbol {
     Symbol(String name, String prevTypeName) {
         this.name = name;
         this.prevTypeName = prevTypeName;
+    }
+
+    public boolean isPrecolor() {
+        return isPrecolor;
     }
 
     public boolean isGlobal() {

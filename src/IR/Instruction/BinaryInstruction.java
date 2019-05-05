@@ -7,11 +7,13 @@ import Generator.Operand.PhysicalRegister;
 import IR.Operand.Address;
 import IR.Operand.Immediate;
 import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 import static IR.Instruction.Operator.BinaryOp.DIV;
 import static IR.Instruction.Operator.BinaryOp.SHL;
+import static IR.Operand.Operand.convertCopyOperand;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class BinaryInstruction extends Instruction implements ConstantFolding {
@@ -37,6 +39,12 @@ public class BinaryInstruction extends Instruction implements ConstantFolding {
         this.op = op;
         this.dst = getVirtualRegister(dst);
         this.src = new Immediate(src);
+    }
+
+    @Override
+    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
+        src = convertCopyOperand(src, cpy, reg);
+        return false;
     }
 
     @Override

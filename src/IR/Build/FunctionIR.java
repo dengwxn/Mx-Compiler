@@ -81,6 +81,38 @@ public class FunctionIR {
         blockList.forEach(block -> block.constantFolding());
     }
 
+    public void propagateCopy() {
+        ArrayList<Instruction> instrList = this.blockList.getInstrList();
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        instrList.forEach(instr -> instr.clearAnalysis());
+        blockList.forEach(block -> block.linkPreSuc());
+        instrList.forEach(instr -> instr.putDef());
+        instrList.forEach(instr -> instr.putUse());
+        for (VirtualRegister reg : virtualRegisterTable.values()) {
+            instrList.forEach(instr -> instr.clearReach());
+            instrList.forEach(instr -> instr.putReach(reg));
+            instrList.forEach(instr -> instr.buildDefReach(reg));
+        }
+        for (VirtualRegister reg : virtualRegisterTable.values()) {
+            // should not propagate precolor registers!
+            if (reg.getSymbol().isPrecolor()) continue;
+            // propagate reg one by one
+            instrList.forEach(instr -> instr.clearReach());
+            instrList.forEach(instr -> instr.putReach(reg));
+            for (Instruction instr : instrList) {
+                if (instr instanceof MoveInstruction)
+                    ((MoveInstruction) instr).propagateCopy(reg);
+            }
+            // update use
+            instrList.forEach(instr -> instr.clearUse());
+            instrList.forEach(instr -> instr.putUse());
+            // update defReach
+            instrList.forEach(instr -> instr.clearReach());
+            instrList.forEach(instr -> instr.putReach(reg));
+            instrList.forEach(instr -> instr.buildDefReach(reg));
+        }
+    }
+
     public void analyzeLiveness() {
         ArrayList<Instruction> instrList = this.blockList.getInstrList();
         ArrayList<Block> blockList = this.blockList.getBlockList();

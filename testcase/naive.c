@@ -1,5 +1,9 @@
-int main(){
+int main() {
     int a = getInt();
-    a = a;
-    return 0;
+    int b = a;
+    int c = a;
+    int d = b;
+    c = 666;
+    int e = c;
+    int f = d;
 }
