@@ -19,7 +19,7 @@ import static IR.Operand.VirtualRegisterTable.precolor;
 
 public class IR {
     static final private boolean _DEBUG_TRANSLATE_ = false;
-    static public HashMap<FuncDeclNode, FunctionIR> functionIRMap = new HashMap<>();
+    static public HashMap<String, FunctionIR> functionIRMap = new HashMap<>();
     static public HashMap<String, Integer> stringConst = new HashMap<>();
     static private int _DEBUG_IR_CNT_;
     static private FuncDeclNode globalVarDecl;
@@ -47,13 +47,13 @@ public class IR {
     static public void generate() {
         setGlobalVarDecl();
         precolor();
-        functionIRMap.put(globalVarDecl, new FunctionIR(globalVarDecl));
+        functionIRMap.put(globalVarDecl.getFuncName(), new FunctionIR(globalVarDecl));
         for (Node decl : Tree.prog.getDecl()) {
             if (decl instanceof FuncDeclNode) {
-                functionIRMap.put((FuncDeclNode) decl, new FunctionIR((FuncDeclNode) decl));
+                functionIRMap.put(((FuncDeclNode) decl).getFuncName(), new FunctionIR((FuncDeclNode) decl));
             } else if (decl instanceof ClassDeclNode) {
                 for (FuncDeclNode funcDecl : ((ClassDeclNode) decl).getFuncDecl())
-                    functionIRMap.put(funcDecl, new FunctionIR(funcDecl));
+                    functionIRMap.put(funcDecl.getFuncName(), new FunctionIR(funcDecl));
             }
         }
     }

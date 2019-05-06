@@ -6,7 +6,7 @@ abstract public class Operand {
             return old == cpy ? reg : old;
         } else if (old instanceof Address) {
             if (((Address) old).getBase() == cpy)
-                ((Address) old).setBase(reg);
+                return new Address(reg, ((Address) old).getOffset());
             return old;
         } else
             return old;

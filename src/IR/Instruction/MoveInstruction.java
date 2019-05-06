@@ -44,6 +44,11 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Dea
     }
 
     @Override
+    public Instruction makeCopy() {
+        return new MoveInstruction(dst, src);
+    }
+
+    @Override
     public boolean isDeadCode() {
         if (dst == getVirtualRegister("res0"))
             return false;
@@ -143,6 +148,10 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Dea
     @Override
     public Operand getDst() {
         return dst;
+    }
+
+    public Operand getSrc() {
+        return src;
     }
 
     @Override

@@ -19,7 +19,6 @@ abstract public class Instruction {
     HashSet<Instruction> singleDefReach = new HashSet<>();
     HashSet<Instruction> defReach = new HashSet<>();
     HashSet<Instruction> reach = new HashSet<>();
-    HashSet<VirtualRegister> needed = new HashSet<>();
     private HashMap<VirtualRegister, Integer> reachCnt = new HashMap<>();
     private HashMap<VirtualRegister, Integer> receiveCnt = new HashMap<>();
     private HashMap<VirtualRegister, Integer> receiveVal = new HashMap<>();
@@ -27,6 +26,7 @@ abstract public class Instruction {
     private ArrayList<Instruction> suc = new ArrayList<>();
     private HashSet<VirtualRegister> use = new HashSet<>();
     private HashSet<VirtualRegister> nec = new HashSet<>();
+    private HashSet<VirtualRegister> needed = new HashSet<>();
 
     boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
         return false;
@@ -241,6 +241,8 @@ abstract public class Instruction {
             }
         }
     }
+
+    abstract public Instruction makeCopy();
 
     abstract public String toNASM();
 

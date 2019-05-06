@@ -17,6 +17,11 @@ public class CondSetInstruction extends CondInstruction {
     }
 
     @Override
+    public Instruction makeCopy() {
+        return new CondSetInstruction(op, dst);
+    }
+
+    @Override
     public void assignPhysicalOperand() {
         dst.assignPhysicalOperand();
     }

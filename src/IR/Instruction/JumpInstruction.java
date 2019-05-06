@@ -11,8 +11,19 @@ public class JumpInstruction extends Instruction implements Jump {
         this.dst = dst;
     }
 
+    @Override
+    public Instruction makeCopy() {
+        return new JumpInstruction(dst);
+    }
+
+    @Override
     public Block getDst() {
         return dst;
+    }
+
+    @Override
+    public void setDst(Block dst) {
+        this.dst = dst;
     }
 
     @Override

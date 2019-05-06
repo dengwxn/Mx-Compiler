@@ -42,6 +42,11 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, D
     }
 
     @Override
+    public Instruction makeCopy() {
+        return new BinaryInstruction(op, dst, src);
+    }
+
+    @Override
     public boolean isDeadCode() {
         if (dst instanceof VirtualRegister)
             return isDeadCode((VirtualRegister) dst);

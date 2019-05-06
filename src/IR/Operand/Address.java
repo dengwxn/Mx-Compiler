@@ -39,10 +39,6 @@ public class Address extends Operand {
         else if (var.contains("lee")) addLee(var);
     }
 
-    public void setBase(VirtualRegister base) {
-        this.base = base;
-    }
-
     public VirtualRegister getBase() {
         return base;
     }

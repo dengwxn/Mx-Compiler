@@ -19,6 +19,11 @@ public class UnaryInstruction extends Instruction implements ConstantFolding, De
     }
 
     @Override
+    public Instruction makeCopy() {
+        return new UnaryInstruction(op, dst);
+    }
+
+    @Override
     public boolean isDeadCode() {
         if (dst instanceof VirtualRegister)
             return isDeadCode((VirtualRegister) dst);

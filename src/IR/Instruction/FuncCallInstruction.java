@@ -36,6 +36,23 @@ public class FuncCallInstruction extends Instruction {
     }
 
     @Override
+    public Instruction makeCopy() {
+        return new FuncCallInstruction(name, param, argCnt);
+    }
+
+    public ArrayList<Operand> getParam() {
+        return param;
+    }
+
+    public int getArgCnt() {
+        return argCnt;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
     public void assignPhysicalOperand() {
         param.forEach(p -> p.assignPhysicalOperand());
         setMaxParamSize(param.size());

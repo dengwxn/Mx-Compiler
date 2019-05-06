@@ -14,6 +14,20 @@ public class BlockList {
         blockList = new ArrayList<>();
     }
 
+    void add(int id, Block block) {
+        block.setId(blockList.size());
+        block.setFuncName(funcName);
+        blockList.add(id, block);
+    }
+
+    Block get(int id) {
+        return blockList.get(id);
+    }
+
+    int size() {
+        return blockList.size();
+    }
+
     ArrayList<Instruction> getInstrList() {
         ArrayList<Instruction> instrList = new ArrayList<>();
         blockList.forEach(block -> instrList.addAll(block.getInstr()));

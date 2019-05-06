@@ -12,6 +12,11 @@ public class CondJumpInstruction extends CondInstruction implements Jump {
         this.dst = dst;
     }
 
+    @Override
+    public Instruction makeCopy() {
+        return new CondJumpInstruction(op, dst);
+    }
+
     public Block getDst() {
         return dst;
     }

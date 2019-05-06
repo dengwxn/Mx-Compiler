@@ -28,6 +28,11 @@ public class CompareInstruction extends Instruction {
     }
 
     @Override
+    public Instruction makeCopy() {
+        return new CompareInstruction(lhs, rhs);
+    }
+
+    @Override
     public void putNec() {
         putNec(lhs);
         putNec(rhs);

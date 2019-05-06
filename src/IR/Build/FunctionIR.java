@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 
 import static IR.Build.IR.formatInstr;
+import static IR.Build.IR.functionIRMap;
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SUB;
 import static IR.Operand.VirtualRegisterTable.virtualRegisterTable;
@@ -41,9 +42,8 @@ public class FunctionIR {
         if (funcDecl.getFuncName().equals("main"))
             blockList.add(new FuncCallInstruction("@global_var_decl", new ArrayList<>(), 0));
         funcDecl.generateIR(blockList);
+        blockList.add(new JumpInstruction(funcExit));
         blockList.add(funcExit);
-
-        setCalling();
     }
 
     static public int getSpillPos(VirtualRegister reg) {
@@ -60,6 +60,78 @@ public class FunctionIR {
 
     static public void setMaxParamSize(int maxParamSize) {
         FunctionIR.maxParamSize = max(FunctionIR.maxParamSize, maxParamSize);
+    }
+
+    public void inline() {
+        for (int i = 0; i < blockList.size(); ++i) {
+            Block block = blockList.get(i);
+            ArrayList<Instruction> instr = block.getInstr();
+            for (int j = 0; j < instr.size(); ++j) {
+                if (instr.get(j) instanceof FuncCallInstruction) {
+                    FuncCallInstruction call = (FuncCallInstruction) instr.get(j);
+                    FunctionIR func = functionIRMap.get(call.getName());
+                    if (func != null && func != this) {
+                        // remove previous move arg <- operand
+                        int argCnt = call.getArgCnt();
+                        ArrayList<Operand> operand = new ArrayList<>();
+                        while (argCnt-- > 0) {
+                            Instruction u = instr.get(--j);
+                            instr.remove(j);
+                            if (u instanceof MoveInstruction)
+                                operand.add(0, ((MoveInstruction) u).getSrc());
+                        }
+                        operand.addAll(call.getParam());
+
+                        // get inline function
+                        ArrayList<Block> inlineBlockList = copyBlockList(func.blockList.getBlockList());
+                        for (Block inlineBlock : inlineBlockList)
+                            blockList.add(++i, inlineBlock);
+                        --i;
+
+                        // inlineRest
+                        Block inlineRest = inlineBlockList.get(inlineBlockList.size() - 1);
+                        instr.remove(j);
+                        for (int k = j; k < instr.size(); ) {
+                            inlineRest.add(instr.get(k));
+                            instr.remove(k);
+                        }
+
+                        // pass param
+                        block.clearJump();
+                        ArrayList<Symbol> param = func.funcDecl.getParamSymbol();
+                        for (int k = 0; k < operand.size(); ++k)
+                            block.add(new MoveInstruction(param.get(k).getOperand(), operand.get(k)));
+                        block.add(new JumpInstruction(inlineBlockList.get(0)));
+                    }
+                }
+            }
+        }
+    }
+
+    private ArrayList<Block> copyBlockList(ArrayList<Block> blockList) {
+        ArrayList<Block> newBlockList = new ArrayList<>();
+        HashMap<Block, Block> label = new HashMap<>();
+        for (int i = 1; i < blockList.size(); ++i) {
+            Block block = blockList.get(i);
+            Block newBlock = new Block(block);
+            newBlockList.add(newBlock);
+            label.put(block, newBlock);
+        }
+        for (Block block : newBlockList) {
+            ArrayList<Instruction> instr = block.getInstr();
+            for (Instruction u : instr) {
+                if (u instanceof Jump) {
+                    Block oldDst = ((Jump) u).getDst();
+                    Block newDst = label.get(oldDst);
+                    if (newDst == null)
+                        throw new Error("fail to copy blockList.");
+                    ((Jump) u).setDst(newDst);
+                    if (u instanceof JumpInstruction)
+                        block.setJump((JumpInstruction) u);
+                }
+            }
+        }
+        return newBlockList;
     }
 
     public void propagateConstant() {
@@ -153,7 +225,7 @@ public class FunctionIR {
         return str.toString();
     }
 
-    private void setCalling() {
+    public void setCalling() {
         Block head = blockList.getHead();
         ArrayList<Symbol> param = funcDecl.getParamSymbol();
         for (int i = 0; i < param.size(); ++i) {

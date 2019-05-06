@@ -4,6 +4,7 @@ import AST.Build.ParseListener;
 import AST.Build.TypeCheckListener;
 import Generator.Build.Generator;
 import IR.Build.IR;
+import Optimizer.Inline;
 import Optimizer.NeedednessAnalysis;
 import Optimizer.Propagation;
 import Optimizer.RegisterAllocation;
@@ -34,6 +35,7 @@ public class Main {
     }
 
     static private void optimize() throws Exception {
+        Inline.optimize();
         Propagation.optimize();
         NeedednessAnalysis.optimize();
         RegisterAllocation.optimize();

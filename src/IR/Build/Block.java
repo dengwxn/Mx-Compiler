@@ -19,6 +19,14 @@ public class Block {
     private int id;
     private JumpInstruction jump;
 
+    public Block(Block cpy) {
+        this.label = cpy.label;
+        this.instr = new ArrayList<>();
+        cpy.instr.forEach(instr -> this.instr.add(instr.makeCopy()));
+        id = -cpy.id;
+        jump = null;
+    }
+
     public Block(String label) {
         this.label = label;
         this.instr = new ArrayList<>();
@@ -173,6 +181,14 @@ public class Block {
     void setFuncName(String funcName) {
         if (label.equals("")) label = funcName;
         else label = funcName + "." + label;
+    }
+
+    void setJump(JumpInstruction jump) {
+        this.jump = jump;
+    }
+
+    void clearJump() {
+        jump = null;
     }
 
     int size() {
