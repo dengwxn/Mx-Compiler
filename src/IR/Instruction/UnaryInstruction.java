@@ -1,12 +1,14 @@
 package IR.Instruction;
 
 import Generator.Operand.PhysicalOperand;
+import IR.Operand.Address;
 import IR.Operand.Operand;
+import IR.Operand.VirtualRegister;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 
-public class UnaryInstruction extends Instruction implements ConstantFolding {
+public class UnaryInstruction extends Instruction implements ConstantFolding, DeadCodeElimination {
     private Operator.UnaryOp op;
     private Operand dst;
     private Integer cstVal;
@@ -14,6 +16,19 @@ public class UnaryInstruction extends Instruction implements ConstantFolding {
     public UnaryInstruction(Operator.UnaryOp op, Operand dst) {
         this.op = op;
         this.dst = dst;
+    }
+
+    @Override
+    public boolean isDeadCode() {
+        if (dst instanceof VirtualRegister)
+            return isDeadCode((VirtualRegister) dst);
+        return false;
+    }
+
+    @Override
+    public void putNec() {
+        if (dst instanceof Address)
+            putNec(dst);
     }
 
     @Override

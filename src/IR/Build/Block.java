@@ -24,6 +24,25 @@ public class Block {
         this.instr = new ArrayList<>();
     }
 
+    static private Operator.CompareOp getNot(Operator.CompareOp op) {
+        switch (op) {
+            case L:
+                return NL;
+            case LE:
+                return NLE;
+            case G:
+                return NG;
+            case GE:
+                return NGE;
+            case E:
+                return NE;
+            case NE:
+                return E;
+            default:
+                throw new Error("unexpected CompareOp.");
+        }
+    }
+
     private void foldCmp(CompareInstruction cmp, int id) {
         Integer cstLhs = cmp.getCstLhs();
         Integer cstRhs = cmp.getCstRhs();
@@ -47,9 +66,12 @@ public class Block {
     }
 
     private void foldArith(ConstantFolding arith, int id) {
-        if (arith.getCstVal() != null) {
+        if (arith.getCstVal() != null)
             instr.set(id, new MoveInstruction(arith.getDst(), arith.getCstVal()));
-        } else if (instr.get(id) instanceof BinaryInstruction) {
+    }
+
+    private int reduceStrength(int id) {
+        if (instr.get(id) instanceof BinaryInstruction) {
             BinaryInstruction x = (BinaryInstruction) instr.get(id);
             Operand dst = x.getDst();
             Operand src = x.getSrc();
@@ -58,8 +80,10 @@ public class Block {
                 switch (x.getOp()) {
                     case ADD:
                     case SUB:
-                        if (val == 0)
-                            instr.set(id, new MoveInstruction(dst, dst));
+                        if (val == 0) {
+                            instr.remove(id);
+                            return id - 1;
+                        }
                         break;
                     case MUL:
                         if (val == 0)
@@ -78,15 +102,27 @@ public class Block {
                 }
             }
         }
+        return id;
     }
 
-    void constantFolding() {
+    void eliminateDeadCode() {
+        for (int i = 0; i < instr.size(); ++i) {
+            Instruction u = instr.get(i);
+            if (u instanceof DeadCodeElimination) {
+                if (((DeadCodeElimination) u).isDeadCode())
+                    instr.remove(i--);
+            }
+        }
+    }
+
+    void foldConstant() {
         for (int i = 0; i < instr.size(); ++i) {
             Instruction u = instr.get(i);
             if (u instanceof CompareInstruction)
                 foldCmp((CompareInstruction) u, i);
             else if (u instanceof ConstantFolding)
                 foldArith((ConstantFolding) u, i);
+            i = reduceStrength(i);
         }
     }
 
@@ -110,6 +146,16 @@ public class Block {
         }
     }
 
+    String dumpNeedednessAnalysis() {
+        StringBuilder str = new StringBuilder();
+        str.append(getLabel() + ":\n");
+        for (Instruction i : instr) {
+            str.append(i.toString());
+            str.append(i.dumpNeeded());
+        }
+        return str.toString();
+    }
+
     String dumpLivenessAnalysis() {
         StringBuilder str = new StringBuilder();
         str.append(getLabel() + ":\n");
@@ -127,6 +173,14 @@ public class Block {
     void setFuncName(String funcName) {
         if (label.equals("")) label = funcName;
         else label = funcName + "." + label;
+    }
+
+    int size() {
+        return instr.size();
+    }
+
+    Instruction get(int id) {
+        return instr.get(id);
     }
 
     void setId(int id) {
@@ -210,8 +264,6 @@ public class Block {
                     String b = ((MoveInstruction) instr.get(id)).getPhySrc();
                     String c = ((MoveInstruction) instr.get(id + 1)).getPhyDst();
                     String d = ((MoveInstruction) instr.get(id + 1)).getPhySrc();
-                    if (a != null && a.equals(c) && !a.equals(d))
-                        return true;
                     if (a != null && b != null && a.equals(d) && b.equals(c))
                         instr.remove(id + 1);
                 }
@@ -230,25 +282,6 @@ public class Block {
             }
         }
         return false;
-    }
-
-    static private Operator.CompareOp getNot(Operator.CompareOp op) {
-        switch (op) {
-            case L:
-                return NL;
-            case LE:
-                return NLE;
-            case G:
-                return NG;
-            case GE:
-                return NGE;
-            case E:
-                return NE;
-            case NE:
-                return E;
-            default:
-                throw new Error("unexpected CompareOp.");
-        }
     }
 
     public String toString() {

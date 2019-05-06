@@ -1,5 +1,6 @@
 package Optimizer;
 
+import IR.Build.FunctionIR;
 import IR.Operand.VirtualRegister;
 
 import java.io.File;
@@ -8,6 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 
+import static IR.Build.IR.functionIRMap;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static java.lang.Math.max;
 
@@ -20,6 +22,9 @@ public class RegisterAllocation {
     static private LinkedHashSet<VirtualRegister> vertex = new LinkedHashSet<>();
 
     static public void optimize() throws Exception {
+        for (FunctionIR functionIR : functionIRMap.values())
+            functionIR.analyzeLiveness();
+        dumpLivenessAnalysis();
         dumpIntrf();
         greedyColor(getOrder());
     }
@@ -140,6 +145,16 @@ public class RegisterAllocation {
             str.append("\n");
         }
         File file = new File("Intrf.txt");
+        OutputStream fout = new FileOutputStream(file);
+        PrintStream fprint = new PrintStream(fout);
+        fprint.print(str.toString());
+    }
+
+    static private void dumpLivenessAnalysis() throws Exception {
+        StringBuilder str = new StringBuilder();
+        for (FunctionIR functionIR : functionIRMap.values())
+            str.append(functionIR.dumpLivenessAnalysis());
+        File file = new File("livenessAnalysis.txt");
         OutputStream fout = new FileOutputStream(file);
         PrintStream fprint = new PrintStream(fout);
         fprint.print(str.toString());

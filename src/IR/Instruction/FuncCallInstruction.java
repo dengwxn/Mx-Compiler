@@ -42,6 +42,13 @@ public class FuncCallInstruction extends Instruction {
     }
 
     @Override
+    public void putNec() {
+        for (int i = 0; i < argCnt; ++i)
+            putNec("arg" + (i + 1));
+        param.forEach(p -> putNec(p));
+    }
+
+    @Override
     public void putUse() {
         for (int i = 0; i < argCnt; ++i)
             putUse("arg" + (i + 1));

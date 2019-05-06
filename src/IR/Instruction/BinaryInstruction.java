@@ -16,7 +16,7 @@ import static IR.Instruction.Operator.BinaryOp.SHL;
 import static IR.Operand.Operand.convertCopyOperand;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
-public class BinaryInstruction extends Instruction implements ConstantFolding {
+public class BinaryInstruction extends Instruction implements ConstantFolding, DeadCodeElimination {
     private Operator.BinaryOp op;
     private Operand dst, src;
     private Integer cstVal;
@@ -42,6 +42,21 @@ public class BinaryInstruction extends Instruction implements ConstantFolding {
     }
 
     @Override
+    public boolean isDeadCode() {
+        if (dst instanceof VirtualRegister)
+            return isDeadCode((VirtualRegister) dst);
+        return false;
+    }
+
+    @Override
+    public void putNec() {
+        if (dst instanceof Address) {
+            putNec(dst);
+            putNec(src);
+        }
+    }
+
+    @Override
     public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
         src = convertCopyOperand(src, cpy, reg);
         return false;
@@ -53,6 +68,8 @@ public class BinaryInstruction extends Instruction implements ConstantFolding {
             return false;
         Integer cstDst = getConstant(dst);
         Integer cstSrc = getConstant(src);
+        if (cstSrc != null)
+            src = new Immediate(cstSrc);
         if (cstDst != null && cstSrc != null) {
             switch (op) {
                 case ADD:

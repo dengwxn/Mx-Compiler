@@ -28,6 +28,12 @@ public class CompareInstruction extends Instruction {
     }
 
     @Override
+    public void putNec() {
+        putNec(lhs);
+        putNec(rhs);
+    }
+
+    @Override
     public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
         lhs = convertCopyOperand(lhs, cpy, reg);
         rhs = convertCopyOperand(rhs, cpy, reg);

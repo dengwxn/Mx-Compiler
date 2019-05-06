@@ -1,9 +1,8 @@
+int f(int a, int b, int c) {
+    return b + c;
+}
+
 int main() {
-    int a = getInt();
-    int b = a;
-    int c = a;
-    int d = b;
-    c = 666;
-    int e = c;
-    int f = d;
+    int a = f(1, 2, 3);
+    return a;
 }

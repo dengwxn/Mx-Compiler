@@ -19,12 +19,14 @@ abstract public class Instruction {
     HashSet<Instruction> singleDefReach = new HashSet<>();
     HashSet<Instruction> defReach = new HashSet<>();
     HashSet<Instruction> reach = new HashSet<>();
+    HashSet<VirtualRegister> needed = new HashSet<>();
     private HashMap<VirtualRegister, Integer> reachCnt = new HashMap<>();
     private HashMap<VirtualRegister, Integer> receiveCnt = new HashMap<>();
     private HashMap<VirtualRegister, Integer> receiveVal = new HashMap<>();
     private ArrayList<Instruction> pre = new ArrayList<>();
     private ArrayList<Instruction> suc = new ArrayList<>();
     private HashSet<VirtualRegister> use = new HashSet<>();
+    private HashSet<VirtualRegister> nec = new HashSet<>();
 
     boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
         return false;
@@ -84,12 +86,6 @@ abstract public class Instruction {
         }
     }
 
-    private boolean propLive(VirtualRegister reg) {
-        if (!def.contains(reg))
-            return live.add(reg);
-        return false;
-    }
-
     public void putLive() {
         for (VirtualRegister reg : use) {
             live.add(reg);
@@ -98,11 +94,63 @@ abstract public class Instruction {
             for (int i = 0; i < queue.size(); ++i) {
                 Instruction u = queue.get(i);
                 for (Instruction v : u.pre) {
-                    if (v.propLive(reg))
-                        queue.add(v);
+                    if (!v.def.contains(reg)) {
+                        if (v.live.add(reg))
+                            queue.add(v);
+                    }
                 }
             }
         }
+    }
+
+    boolean isDeadCode(VirtualRegister reg) {
+        for (Instruction u : suc) {
+            if (u.needed.contains(reg))
+                return false;
+        }
+        return true;
+    }
+
+    public void putNeeded() {
+        for (VirtualRegister reg : nec) {
+            needed.add(reg);
+            ArrayList<VirtualRegister> neededQueue = new ArrayList<>();
+            ArrayList<Instruction> instrQueue = new ArrayList<>();
+            neededQueue.add(reg);
+            instrQueue.add(this);
+            for (int i = 0; i < neededQueue.size(); ++i) {
+                VirtualRegister nec = neededQueue.get(i);
+                Instruction u = instrQueue.get(i);
+                for (Instruction v : u.pre) {
+                    if (!v.def.contains(nec)) {
+                        if (v.needed.add(nec)) {
+                            neededQueue.add(nec);
+                            instrQueue.add(v);
+                        }
+                    } else {
+                        for (VirtualRegister use : v.use) {
+                            if (v.needed.add(use)) {
+                                neededQueue.add(use);
+                                instrQueue.add(v);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void putNec(Operand op) {
+        VirtualRegister reg = extractVirtualRegister(op);
+        if (reg != null)
+            nec.add(reg);
+    }
+
+    void putNec(String op) {
+        putNec(getVirtualRegister(op));
+    }
+
+    public void putNec() {
     }
 
     void putUse(Operand op) {
@@ -119,12 +167,12 @@ abstract public class Instruction {
             putUse(op);
     }
 
-    public void linkSuc(Instruction suc) {
-        this.suc.add(suc);
+    void putUse(String op) {
+        putUse(getVirtualRegister(op));
     }
 
-    public void linkPre(Instruction pre) {
-        this.pre.add(pre);
+    void putDef(String op) {
+        putDef(getVirtualRegister(op));
     }
 
     public void putUse() {
@@ -133,12 +181,12 @@ abstract public class Instruction {
     public void putDef() {
     }
 
-    void putUse(String op) {
-        putUse(getVirtualRegister(op));
+    public void linkSuc(Instruction suc) {
+        this.suc.add(suc);
     }
 
-    void putDef(String op) {
-        putDef(getVirtualRegister(op));
+    public void linkPre(Instruction pre) {
+        this.pre.add(pre);
     }
 
     public void clearReach() {
@@ -155,10 +203,14 @@ abstract public class Instruction {
         live.clear();
         def.clear();
         use.clear();
+
         singleDefReach.clear();
         defReach.clear();
         reachCnt.clear();
         receiveCnt.clear();
+
+        nec.clear();
+        needed.clear();
     }
 
     private VirtualRegister extractVirtualRegister(Operand op) {
@@ -190,9 +242,17 @@ abstract public class Instruction {
         }
     }
 
+    abstract public String toNASM();
+
     abstract public String toString();
 
-    abstract public String toNASM();
+    public String dumpNeeded() {
+        StringBuilder str = new StringBuilder();
+        str.append("\t\t\t<needed>: ");
+        needed.forEach(reg -> str.append(reg.toString() + ", "));
+        str.append("\n");
+        return str.toString();
+    }
 
     public String dumpLive() {
         StringBuilder str = new StringBuilder();

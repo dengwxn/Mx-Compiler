@@ -78,7 +78,7 @@ public class FunctionIR {
             if (instr instanceof MoveInstruction)
                 ((MoveInstruction) instr).propagateConstant();
         }
-        blockList.forEach(block -> block.constantFolding());
+        blockList.forEach(block -> block.foldConstant());
     }
 
     public void propagateCopy() {
@@ -94,7 +94,7 @@ public class FunctionIR {
             instrList.forEach(instr -> instr.buildDefReach(reg));
         }
         for (VirtualRegister reg : virtualRegisterTable.values()) {
-            // should not propagate precolor registers!
+            // should not propagate precoloring registers!
             if (reg.getSymbol().isPrecolor()) continue;
             // propagate reg one by one
             instrList.forEach(instr -> instr.clearReach());
@@ -113,6 +113,22 @@ public class FunctionIR {
         }
     }
 
+    public void analyzeNeededness() {
+        ArrayList<Instruction> instrList = this.blockList.getInstrList();
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        instrList.forEach(instr -> instr.clearAnalysis());
+        blockList.forEach(block -> block.linkPreSuc());
+        instrList.forEach(instr -> instr.putDef());
+        instrList.forEach(instr -> instr.putUse());
+        instrList.forEach(instr -> instr.putNec());
+        instrList.forEach(instr -> instr.putNeeded());
+    }
+
+    public void eliminateDeadCode() {
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        blockList.forEach(block -> block.eliminateDeadCode());
+    }
+
     public void analyzeLiveness() {
         ArrayList<Instruction> instrList = this.blockList.getInstrList();
         ArrayList<Block> blockList = this.blockList.getBlockList();
@@ -123,6 +139,12 @@ public class FunctionIR {
         instrList.forEach(instr -> instr.putLive());
         instrList.forEach(instr -> instr.addVertex());
         instrList.forEach(instr -> instr.buildIntrfGraph());
+    }
+
+    public String dumpNeedednessAnalysis() {
+        StringBuilder str = new StringBuilder();
+        blockList.getBlockList().forEach(block -> str.append(block.dumpNeedednessAnalysis()));
+        return str.toString();
     }
 
     public String dumpLivenessAnalysis() {
@@ -151,10 +173,20 @@ public class FunctionIR {
         ArrayList<Symbol> param = funcDecl.getParamSymbol();
         for (int i = 6; i < param.size(); ++i) {
             Operand operand = param.get(i).getOperand();
+            int id = -1;
+            for (int j = 0; j < head.size(); ++j) {
+                Instruction u = head.get(j);
+                if (u instanceof MoveInstruction) {
+                    if (((MoveInstruction) u).getDst() == operand) {
+                        id = j;
+                        break;
+                    }
+                }
+            }
             // real address
             Address pos = new Address("rsp", (cnt + (i - 5)) * 8);
-            // can change another way to change the address offset to support propagation
-            head.set(i, new MoveInstruction(operand, pos));
+            if (id != -1)
+                head.set(id, new MoveInstruction(operand, pos));
         }
         int ptr = leePool.size();
         for (int i = 14; i > 8; --i) {

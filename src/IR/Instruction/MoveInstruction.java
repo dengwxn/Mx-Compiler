@@ -17,7 +17,7 @@ import static IR.Operand.Operand.convertCopyOperand;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
-public class MoveInstruction extends Instruction implements ConstantFolding {
+public class MoveInstruction extends Instruction implements ConstantFolding, DeadCodeElimination {
     private Operand dst, src;
     private Integer cstVal;
 
@@ -41,6 +41,25 @@ public class MoveInstruction extends Instruction implements ConstantFolding {
     public MoveInstruction(String dst, Operand src) {
         this.dst = getVirtualRegister(dst);
         this.src = src;
+    }
+
+    @Override
+    public boolean isDeadCode() {
+        if (dst == getVirtualRegister("res0"))
+            return false;
+        if (dst instanceof VirtualRegister)
+            return isDeadCode((VirtualRegister) dst);
+        return false;
+    }
+
+    @Override
+    public void putNec() {
+        if (dst == getVirtualRegister("res0")) {
+            putNec(src);
+        } else if (dst instanceof Address) {
+            putNec(dst);
+            putNec(src);
+        }
     }
 
     @Override
