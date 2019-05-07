@@ -70,7 +70,7 @@ public class FunctionIR {
                 if (instr.get(j) instanceof FuncCallInstruction) {
                     FuncCallInstruction call = (FuncCallInstruction) instr.get(j);
                     FunctionIR func = functionIRMap.get(call.getName());
-                    if (func != null && func != this) {
+                    if (func != null && func != this && func.blockList.getInstrList().size() < 100) {
                         // remove previous move arg <- operand
                         int argCnt = call.getArgCnt();
                         ArrayList<Operand> operand = new ArrayList<>();
@@ -156,8 +156,6 @@ public class FunctionIR {
     public void propagateCopy() {
         ArrayList<Instruction> instrList = this.blockList.getInstrList();
         ArrayList<Block> blockList = this.blockList.getBlockList();
-        // oj time limit
-        if (instrList.size() > 3500) return;
         instrList.forEach(instr -> instr.clearAnalysis());
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
@@ -177,13 +175,6 @@ public class FunctionIR {
                 if (instr instanceof MoveInstruction)
                     ((MoveInstruction) instr).propagateCopy(reg);
             }
-            // update use
-            instrList.forEach(instr -> instr.clearUse());
-            instrList.forEach(instr -> instr.putUse());
-            // update defReach
-            instrList.forEach(instr -> instr.clearReach());
-            instrList.forEach(instr -> instr.putReach(reg));
-            instrList.forEach(instr -> instr.buildDefReach(reg));
         }
     }
 

@@ -62,8 +62,14 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, D
     }
 
     @Override
-    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
+    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
         src = convertCopyOperand(src, cpy, reg);
+        clearUse();
+        putUse();
+        if (src == reg) {
+            if (from != null)
+                from.singleDefReach.add(this);
+        }
         return false;
     }
 

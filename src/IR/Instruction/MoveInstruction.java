@@ -68,9 +68,16 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Dea
     }
 
     @Override
-    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
-        if (src == cpy) {
-            src = convertCopyOperand(src, cpy, reg);
+    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
+        src = convertCopyOperand(src, cpy, reg);
+        clearUse();
+        putUse();
+        if (src == reg) {
+            singleDefFrom.clear();
+            if (from != null) {
+                from.singleDefReach.add(this);
+                singleDefFrom.add(from);
+            }
             return true;
         }
         return false;
@@ -87,10 +94,13 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Dea
                 VirtualRegister cpy = cpyQueue.get(i);
                 Instruction u = instrQueue.get(i);
                 HashSet<Instruction> del = new HashSet<>();
+                Instruction from = null;
+                if (u.singleDefFrom.size() == 1)
+                    from = u.singleDefFrom.iterator().next();
                 for (Instruction v : u.singleDefReach) {
                     if (this.reach.equals(v.reach)) {
                         del.add(v);
-                        if (v.receiveCopy(cpy, reg)) {
+                        if (v.receiveCopy(cpy, reg, from)) {
                             if (v instanceof MoveInstruction) {
                                 MoveInstruction w = (MoveInstruction) v;
                                 if (w.getDst() instanceof VirtualRegister) {

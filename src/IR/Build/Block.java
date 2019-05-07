@@ -63,11 +63,17 @@ public class Block {
                     Operand dst = ((CondSetInstruction) v).getDst();
                     instr.set(id, new MoveInstruction(dst, res ? 1 : 0));
                     instr.remove(id + 1);
-                } else if (v instanceof CondJumpInstruction && res) {
-                    Block dst = ((CondJumpInstruction) v).getDst();
-                    instr.set(id, new JumpInstruction(dst));
-                    while (instr.size() > id + 1)
-                        instr.remove(instr.size() - 1);
+                } else if (v instanceof CondJumpInstruction) {
+                    if (res) {
+                        Block dst = ((CondJumpInstruction) v).getDst();
+                        jump = new JumpInstruction(dst);
+                        instr.set(id, jump);
+                        while (instr.size() > id + 1)
+                            instr.remove(instr.size() - 1);
+                    } else {
+                        instr.remove(id);
+                        instr.remove(id);
+                    }
                 }
             }
         }

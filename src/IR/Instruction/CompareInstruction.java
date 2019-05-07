@@ -39,9 +39,15 @@ public class CompareInstruction extends Instruction {
     }
 
     @Override
-    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
+    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
         lhs = convertCopyOperand(lhs, cpy, reg);
         rhs = convertCopyOperand(rhs, cpy, reg);
+        clearUse();
+        putUse();
+        if (lhs == reg || rhs == reg) {
+            if (from != null)
+                from.singleDefReach.add(this);
+        }
         return false;
     }
 

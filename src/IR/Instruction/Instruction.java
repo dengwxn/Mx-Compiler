@@ -17,6 +17,7 @@ abstract public class Instruction {
     LinkedHashSet<VirtualRegister> live = new LinkedHashSet<>();
     LinkedHashSet<VirtualRegister> def = new LinkedHashSet<>();
     HashSet<Instruction> singleDefReach = new HashSet<>();
+    HashSet<Instruction> singleDefFrom = new HashSet<>();
     HashSet<Instruction> defReach = new HashSet<>();
     HashSet<Instruction> reach = new HashSet<>();
     private HashMap<VirtualRegister, Integer> reachCnt = new HashMap<>();
@@ -28,7 +29,7 @@ abstract public class Instruction {
     private HashSet<VirtualRegister> nec = new HashSet<>();
     private HashSet<VirtualRegister> needed = new HashSet<>();
 
-    boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
+    boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
         return false;
     }
 
@@ -65,8 +66,10 @@ abstract public class Instruction {
                 u.defReach.add(this);
                 reachCnt.put(reg, reachCnt.get(reg) + 1);
             }
-            if (reach.size() == 1)
+            if (reach.size() == 1) {
                 reach.iterator().next().singleDefReach.add(this);
+                singleDefFrom.add(reach.iterator().next());
+            }
         }
     }
 
@@ -205,6 +208,7 @@ abstract public class Instruction {
         use.clear();
 
         singleDefReach.clear();
+        singleDefFrom.clear();
         defReach.clear();
         reachCnt.clear();
         receiveCnt.clear();
