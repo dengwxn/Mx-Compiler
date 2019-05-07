@@ -20,7 +20,7 @@ public class UnaryInstruction extends Instruction implements ConstantFolding, De
 
     @Override
     public Instruction makeCopy() {
-        return new UnaryInstruction(op, dst);
+        return new UnaryInstruction(op, makeCopy(dst));
     }
 
     @Override

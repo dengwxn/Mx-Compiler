@@ -32,6 +32,10 @@ public class Address extends Operand {
         offsetTable.put(name, offset);
     }
 
+    public Address makeCopy(VirtualRegister base) {
+        return new Address(base, offset.getVal());
+    }
+
     @Override
     public void assignPhysicalOperand() {
         String var = getPhysicalRegister(base);

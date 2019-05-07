@@ -1,9 +1,6 @@
 package IR.Instruction;
 
-import IR.Operand.Address;
-import IR.Operand.Immediate;
-import IR.Operand.Operand;
-import IR.Operand.VirtualRegister;
+import IR.Operand.*;
 import Optimizer.RegisterAllocation;
 
 import java.util.ArrayList;
@@ -11,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
+import static IR.Build.FunctionIR.copyOperandTable;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 abstract public class Instruction {
@@ -28,6 +26,23 @@ abstract public class Instruction {
     private HashSet<VirtualRegister> use = new HashSet<>();
     private HashSet<VirtualRegister> nec = new HashSet<>();
     private HashSet<VirtualRegister> needed = new HashSet<>();
+
+    public Operand makeCopy(Operand op) {
+        if (op instanceof Immediate || op instanceof StringConstant)
+            return op;
+        if (op instanceof VirtualRegister) {
+            VirtualRegister reg = (VirtualRegister) op;
+            if (!copyOperandTable.containsKey(reg))
+                copyOperandTable.put(reg, reg.makeCopy());
+            return copyOperandTable.get(reg);
+        }
+        if (op instanceof Address) {
+            VirtualRegister reg = ((Address) op).getBase();
+            if (!copyOperandTable.containsKey(reg)) return op;
+            else return new Address(copyOperandTable.get(reg), ((Address) op).getOffset());
+        }
+        throw new Error("fail to make operand copy.");
+    }
 
     boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
         return false;

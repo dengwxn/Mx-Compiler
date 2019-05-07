@@ -18,7 +18,7 @@ public class CondSetInstruction extends CondInstruction {
 
     @Override
     public Instruction makeCopy() {
-        return new CondSetInstruction(op, dst);
+        return new CondSetInstruction(op, makeCopy(dst));
     }
 
     @Override

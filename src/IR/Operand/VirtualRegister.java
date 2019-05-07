@@ -2,9 +2,10 @@ package IR.Operand;
 
 import AST.Table.Symbol;
 
-import static IR.Build.FunctionIR.addLee;
-import static IR.Build.FunctionIR.addSpill;
+import static IR.Build.FunctionIR.*;
+import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
+import static Optimizer.RegisterAllocation.regList;
 
 public class VirtualRegister extends Operand {
     private Symbol symbol;
@@ -15,6 +16,16 @@ public class VirtualRegister extends Operand {
 
     public Symbol getSymbol() {
         return symbol;
+    }
+
+    public VirtualRegister makeCopy() {
+        for (String reg : regList) {
+            if (this == getVirtualRegister(reg))
+                return this;
+        }
+        VirtualRegister reg = new VirtualRegister(symbol);
+        allVirtualRegister.add(reg);
+        return reg;
     }
 
     @Override

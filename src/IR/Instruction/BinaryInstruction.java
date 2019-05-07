@@ -43,7 +43,7 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, D
 
     @Override
     public Instruction makeCopy() {
-        return new BinaryInstruction(op, dst, src);
+        return new BinaryInstruction(op, makeCopy(dst), makeCopy(src));
     }
 
     @Override

@@ -8,8 +8,8 @@ import static Optimizer.RegisterAllocation.addVertex;
 import static Optimizer.RegisterAllocation.regList;
 
 public class VirtualRegisterTable {
-    static private int tmpCnt;
     static public HashMap<Symbol, VirtualRegister> virtualRegisterTable = new HashMap<>();
+    static private int tmpCnt;
     static private HashMap<String, Symbol> register = new HashMap<>();
 
     static public VirtualRegister getVirtualRegister(Symbol symbol) {

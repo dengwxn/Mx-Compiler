@@ -45,7 +45,7 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Dea
 
     @Override
     public Instruction makeCopy() {
-        return new MoveInstruction(dst, src);
+        return new MoveInstruction(makeCopy(dst), makeCopy(src));
     }
 
     @Override

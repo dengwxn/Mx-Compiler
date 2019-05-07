@@ -1,11 +1,10 @@
-void foo(int d, int x, int y) {
-    println(toString(d*1000 + x*10 + y));
-    if (d == 1) return;
-    int t = x; x = y; y = t;
-    foo(1, x, y);
-    println(toString(d*1000 + x*10 + y));
+
+int fib(int n) {
+    return n * 2 + 1;
+    if (n <= 1) return 1;
+    return fib(n - 1) + fib(n - 2);
 }
+
 int main() {
-    foo(7, 5, 3);
-    return 0;
+    print(toString(fib(2)));
 }

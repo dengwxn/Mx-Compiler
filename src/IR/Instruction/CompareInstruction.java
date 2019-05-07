@@ -29,7 +29,7 @@ public class CompareInstruction extends Instruction {
 
     @Override
     public Instruction makeCopy() {
-        return new CompareInstruction(lhs, rhs);
+        return new CompareInstruction(makeCopy(lhs), makeCopy(rhs));
     }
 
     @Override

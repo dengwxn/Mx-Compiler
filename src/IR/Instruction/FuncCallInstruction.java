@@ -37,7 +37,9 @@ public class FuncCallInstruction extends Instruction {
 
     @Override
     public Instruction makeCopy() {
-        return new FuncCallInstruction(name, param, argCnt);
+        ArrayList<Operand> newParam = new ArrayList<>();
+        param.forEach(p -> newParam.add(makeCopy(p)));
+        return new FuncCallInstruction(name, newParam, argCnt);
     }
 
     public ArrayList<Operand> getParam() {

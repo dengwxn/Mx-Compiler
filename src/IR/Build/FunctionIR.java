@@ -9,13 +9,13 @@ import IR.Operand.VirtualRegister;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 import static IR.Build.IR.formatInstr;
 import static IR.Build.IR.functionIRMap;
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SUB;
-import static IR.Operand.VirtualRegisterTable.virtualRegisterTable;
 import static java.lang.Math.max;
 
 public class FunctionIR {
@@ -24,6 +24,7 @@ public class FunctionIR {
     static private LinkedHashSet<String> leePool = new LinkedHashSet<>();
     static private HashMap<VirtualRegister, Integer> spillPos = new HashMap<>();
     static private int maxParamSize;
+    static public HashSet<VirtualRegister> allVirtualRegister = new HashSet<>();
     private FuncDeclNode funcDecl;
     private BlockList blockList;
 
@@ -62,6 +63,8 @@ public class FunctionIR {
         FunctionIR.maxParamSize = max(FunctionIR.maxParamSize, maxParamSize);
     }
 
+    static public HashMap<VirtualRegister, VirtualRegister> copyOperandTable = new HashMap<>();
+
     public void inline() {
         for (int i = 0; i < blockList.size(); ++i) {
             Block block = blockList.get(i);
@@ -82,6 +85,17 @@ public class FunctionIR {
                         }
                         operand.addAll(call.getParam());
 
+                        // make copy
+                        copyOperandTable.clear();
+                        ArrayList<Symbol> param = func.funcDecl.getParamSymbol();
+                        ArrayList<VirtualRegister> paramCopy = new ArrayList<>();
+                        for (Symbol u : param) {
+                            VirtualRegister v = (VirtualRegister) u.getOperand();
+                            VirtualRegister w = v.makeCopy();
+                            paramCopy.add(w);
+                            copyOperandTable.put(v, w);
+                        }
+
                         // get inline function
                         ArrayList<Block> inlineBlockList = copyBlockList(func.blockList.getBlockList());
                         for (Block inlineBlock : inlineBlockList)
@@ -95,12 +109,11 @@ public class FunctionIR {
                             inlineRest.add(instr.get(k));
                             instr.remove(k);
                         }
+                        block.clearJump();
 
                         // pass param
-                        block.clearJump();
-                        ArrayList<Symbol> param = func.funcDecl.getParamSymbol();
-                        for (int k = 0; k < operand.size(); ++k)
-                            block.add(new MoveInstruction(param.get(k).getOperand(), operand.get(k)));
+                        for (int k = 0; k < paramCopy.size(); ++k)
+                            block.add(new MoveInstruction(paramCopy.get(k), operand.get(k)));
                         block.add(new JumpInstruction(inlineBlockList.get(0)));
                     }
                 }
@@ -141,7 +154,7 @@ public class FunctionIR {
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
         instrList.forEach(instr -> instr.putUse());
-        for (VirtualRegister reg : virtualRegisterTable.values()) {
+        for (VirtualRegister reg : allVirtualRegister) {
             instrList.forEach(instr -> instr.clearReach());
             instrList.forEach(instr -> instr.putReach(reg));
             instrList.forEach(instr -> instr.buildDefReach(reg));
@@ -156,16 +169,18 @@ public class FunctionIR {
     public void propagateCopy() {
         ArrayList<Instruction> instrList = this.blockList.getInstrList();
         ArrayList<Block> blockList = this.blockList.getBlockList();
+        // fail to run in time in OJ
+        if (instrList.size() > 3500) return;
         instrList.forEach(instr -> instr.clearAnalysis());
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
         instrList.forEach(instr -> instr.putUse());
-        for (VirtualRegister reg : virtualRegisterTable.values()) {
+        for (VirtualRegister reg : allVirtualRegister) {
             instrList.forEach(instr -> instr.clearReach());
             instrList.forEach(instr -> instr.putReach(reg));
             instrList.forEach(instr -> instr.buildDefReach(reg));
         }
-        for (VirtualRegister reg : virtualRegisterTable.values()) {
+        for (VirtualRegister reg : allVirtualRegister) {
             // should not propagate precoloring registers!
             if (reg.getSymbol().isPrecolor()) continue;
             // propagate reg one by one
