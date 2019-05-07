@@ -11,20 +11,31 @@ import java.io.PrintStream;
 import static IR.Build.IR.functionIRMap;
 
 public class NeedednessAnalysis {
+    static private int _DEBUG_NEEDEDNESS_ANALYSIS_CNT_;
+
     static public void optimize() throws Exception {
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.analyzeNeededness();
         dumpNeedednessAnalysis();
+
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.eliminateDeadCode();
-        IR.dump();
+        IR.dump("deadCode");
+
+        for (FunctionIR functionIR : functionIRMap.values())
+            functionIR.eliminateJump();
+        IR.dump("jump");
+
+        for (FunctionIR functionIR : functionIRMap.values())
+            functionIR.eliminateBlock();
+        IR.dump("block");
     }
 
     static private void dumpNeedednessAnalysis() throws Exception {
         StringBuilder str = new StringBuilder();
         for (FunctionIR functionIR : functionIRMap.values())
             str.append(functionIR.dumpNeedednessAnalysis());
-        File file = new File("neededNessAnalysis.txt");
+        File file = new File("neededNessAnalysis" + _DEBUG_NEEDEDNESS_ANALYSIS_CNT_++ + ".txt");
         OutputStream fout = new FileOutputStream(file);
         PrintStream fprint = new PrintStream(fout);
         fprint.print(str.toString());

@@ -211,7 +211,7 @@ abstract public class Instruction {
         reach.clear();
     }
 
-    public void clearUse() {
+    void clearUse() {
         use.clear();
     }
 
@@ -227,6 +227,7 @@ abstract public class Instruction {
         defReach.clear();
         reachCnt.clear();
         receiveCnt.clear();
+        receiveVal.clear();
 
         nec.clear();
         needed.clear();

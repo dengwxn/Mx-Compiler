@@ -9,10 +9,10 @@ public class Propagation {
     static public void optimize() throws Exception {
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.propagateConstant();
-        IR.dump();
+        IR.dump("constant");
 
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.propagateCopy();
-        IR.dump();
+        IR.dump("copy");
     }
 }

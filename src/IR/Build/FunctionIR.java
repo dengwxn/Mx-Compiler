@@ -45,6 +45,7 @@ public class FunctionIR {
         funcDecl.generateIR(blockList);
         blockList.add(new JumpInstruction(funcExit));
         blockList.add(funcExit);
+        blockList.add(new ReturnInstruction());
     }
 
     static public int getSpillPos(VirtualRegister reg) {
@@ -204,6 +205,49 @@ public class FunctionIR {
         instrList.forEach(instr -> instr.putNeeded());
     }
 
+    public void eliminateBlock() {
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        Block start = blockList.get(0);
+        ArrayList<Block> queue = new ArrayList<>();
+        queue.add(start);
+        HashSet<Block> visit = new HashSet<>();
+        visit.add(start);
+        for (int i = 0; i < queue.size(); ++i) {
+            Block u = queue.get(i);
+            ArrayList<Instruction> instrList = u.getInstr();
+            for (Instruction instr : instrList) {
+                if (instr instanceof Jump) {
+                    Block dst = ((Jump) instr).getDst();
+                    if (visit.add(dst))
+                        queue.add(dst);
+                }
+            }
+        }
+        for (int i = 0; i < blockList.size(); ++i) {
+            if (!visit.contains(blockList.get(i)))
+                blockList.remove(i--);
+        }
+    }
+
+    public void eliminateJump() {
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        for (Block block : blockList) {
+            ArrayList<Instruction> instrList = block.getInstr();
+            for (Instruction instr : instrList) {
+                if (instr instanceof Jump) {
+                    Block x = ((Jump) instr).getDst();
+                    while (x.size() == 1) {
+                        Instruction u = x.getInstr().get(0);
+                        if (u instanceof JumpInstruction) x = ((JumpInstruction) u).getDst();
+                        else if (u instanceof ReturnInstruction) break;
+                        else throw new Error("invalid block.");
+                    }
+                    ((Jump) instr).setDst(x);
+                }
+            }
+        }
+    }
+
     public void eliminateDeadCode() {
         ArrayList<Block> blockList = this.blockList.getBlockList();
         blockList.forEach(block -> block.eliminateDeadCode());
@@ -279,13 +323,13 @@ public class FunctionIR {
 
         Block tail = blockList.getTail();
         ptr = leePool.size();
+        tail.add(0, new BinaryInstruction(ADD, "rsp", cnt * 8));
         for (int i = 14; i > 8; --i) {
             if (leePool.contains("lee" + i)) {
                 Address pos = new Address("rsp", (cnt - ptr--) * 8);
                 tail.add(0, new MoveInstruction("lee" + i, pos));
             }
         }
-        tail.add(new BinaryInstruction(ADD, "rsp", cnt * 8));
     }
 
     public String toNASM() {
@@ -311,7 +355,6 @@ public class FunctionIR {
             Block nextBlock = i < blockList.size() - 1 ? blockList.get(i + 1) : null;
             str.append(block.toNASM(nextBlock));
         }
-        str.append(formatInstr("ret"));
         return str.toString();
     }
 

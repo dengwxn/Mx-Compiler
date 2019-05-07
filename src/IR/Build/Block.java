@@ -22,7 +22,10 @@ public class Block {
     public Block(Block cpy) {
         this.label = cpy.label;
         this.instr = new ArrayList<>();
-        cpy.instr.forEach(instr -> this.instr.add(instr.makeCopy()));
+        for (Instruction instr : cpy.instr) {
+            if (!(instr instanceof ReturnInstruction))
+                this.instr.add(instr.makeCopy());
+        }
         id = -cpy.id;
         jump = null;
     }

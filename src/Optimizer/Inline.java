@@ -10,11 +10,10 @@ import static IR.Operand.VirtualRegisterTable.virtualRegisterTable;
 public class Inline {
     static public void optimize() throws Exception {
         allVirtualRegister.addAll(virtualRegisterTable.values());
-        // only support one-layer inline
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < 3; ++i) {
             for (FunctionIR functionIR : functionIRMap.values())
                 functionIR.inline();
-            IR.dump();
+            IR.dump("inline" + i);
         }
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.setCalling();

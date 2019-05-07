@@ -66,11 +66,11 @@ public class IR {
         return str.toString();
     }
 
-    static public void dump() throws Exception {
+    static public void dump(String name) throws Exception {
         StringBuilder str = new StringBuilder();
         for (FunctionIR functionIR : functionIRMap.values())
             str.append(functionIR.toString());
-        File file = new File("IR" + _DEBUG_IR_CNT_++ + ".txt");
+        File file = new File("IR" + _DEBUG_IR_CNT_++ + "_" + name + ".txt");
         OutputStream fout = new FileOutputStream(file);
         PrintStream fprint = new PrintStream(fout);
         fprint.print(str.toString());

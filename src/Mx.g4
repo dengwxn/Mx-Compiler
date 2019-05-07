@@ -61,8 +61,8 @@ expression
     | expression op='&' expression                            # And
     | expression op='^' expression                            # Xor
     | expression op='|' expression                            # Or
-    | expression op='&&' expression                           # LogicAnd
-    | expression op='||' expression                           # LogicOr
+    | <assoc=right> expression op='&&' expression             # LogicAnd
+    | <assoc=right> expression op='||' expression             # LogicOr
     | expression op='=' expression                            # Assign
     | THIS                                                    # This
     ;

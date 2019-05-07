@@ -50,8 +50,6 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Dea
 
     @Override
     public boolean isDeadCode() {
-        if (dst == getVirtualRegister("res0"))
-            return false;
         if (dst instanceof VirtualRegister)
             return isDeadCode((VirtualRegister) dst);
         return false;

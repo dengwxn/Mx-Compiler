@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
@@ -31,13 +32,15 @@ public class Main {
 
     static private void generateIR() throws Exception {
         IR.generate();
-        IR.dump();
+        IR.dump("plain");
     }
 
     static private void optimize() throws Exception {
         Inline.optimize();
-        Propagation.optimize();
-        NeedednessAnalysis.optimize();
+        for (int i = 0; i < 3; ++i) {
+            Propagation.optimize();
+            NeedednessAnalysis.optimize();
+        }
         RegisterAllocation.optimize();
     }
 
