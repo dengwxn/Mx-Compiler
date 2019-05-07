@@ -170,7 +170,7 @@ public class FunctionIR {
     public void propagateCopy() {
         ArrayList<Instruction> instrList = this.blockList.getInstrList();
         ArrayList<Block> blockList = this.blockList.getBlockList();
-        // fail to run in time in OJ
+        // due to time limit in OJ
         if (instrList.size() > 3500) return;
         instrList.forEach(instr -> instr.clearAnalysis());
         blockList.forEach(block -> block.linkPreSuc());
@@ -331,6 +331,8 @@ public class FunctionIR {
             }
         }
     }
+
+    public int instrListSize() { return blockList.getInstrList().size(); }
 
     public String toNASM() {
         leePool.clear();

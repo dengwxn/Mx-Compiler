@@ -36,8 +36,8 @@ public class Main {
     }
 
     static private void optimize() throws Exception {
-        Inline.optimize();
-        for (int i = 0; i < 3; ++i) {
+        int cnt = Inline.optimize();
+        for (int i = 0; i < cnt; ++i) {
             Propagation.optimize();
             NeedednessAnalysis.optimize();
         }
