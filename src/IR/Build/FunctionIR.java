@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import static IR.Build.IR.formatInstr;
 import static IR.Build.IR.functionIRMap;
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SUB;
@@ -171,7 +170,7 @@ public class FunctionIR {
         ArrayList<Instruction> instrList = this.blockList.getInstrList();
         ArrayList<Block> blockList = this.blockList.getBlockList();
         // due to time limit in OJ
-        if (instrList.size() > 3500) return;
+        if (instrList.size() > 5000) return;
         instrList.forEach(instr -> instr.clearAnalysis());
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
@@ -332,7 +331,9 @@ public class FunctionIR {
         }
     }
 
-    public int instrListSize() { return blockList.getInstrList().size(); }
+    public int instrListSize() {
+        return blockList.getInstrList().size();
+    }
 
     public String toNASM() {
         leePool.clear();

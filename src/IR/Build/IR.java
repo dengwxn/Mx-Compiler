@@ -94,68 +94,100 @@ public class IR {
         switch (op) {
             case "res0":
                 return "rax";
+            case "res0_l32":
+                return "eax";
             case "res0_l8":
                 return "al";
 
             case "arg1":
                 return "rdi";
+            case "arg1_l32":
+                return "edi";
             case "arg1_l8":
                 return "dil";
             case "arg2":
                 return "rsi";
+            case "arg2_l32":
+                return "esi";
             case "arg2_l8":
                 return "sil";
             case "arg3":
                 return "rdx";
+            case "arg3_l32":
+                return "edx";
             case "arg3_l8":
                 return "dl";
             case "arg4":
                 return "rcx";
+            case "arg4_l32":
+                return "ecx";
             case "arg4_l8":
                 return "cl";
             case "arg5":
                 return "r8";
+            case "arg5_l32":
+                return "r8d";
             case "arg5_l8":
                 return "r8b";
             case "arg6":
                 return "r9";
+            case "arg6_l32":
+                return "r9d";
             case "arg6_l8":
                 return "r9b";
             case "ler7":
                 return "r10";
+            case "ler7_l32":
+                return "r10d";
             case "ler7_l8":
                 return "r10b";
             case "ler8":
                 return "r11";
+            case "ler8_l32":
+                return "r11d";
             case "ler8_l8":
                 return "r11b";
 
             case "lee9":
                 return "rbx";
+            case "lee9_l32":
+                return "ebx";
             case "lee9_l8":
                 return "bl";
             case "lee10":
                 return "rbp";
+            case "lee10_l32":
+                return "ebp";
             case "lee10_l8":
                 return "bpl";
             case "lee11":
                 return "r12";
+            case "lee11_l32":
+                return "r12d";
             case "lee11_l8":
                 return "r12b";
             case "lee12":
                 return "r13";
+            case "lee12_l32":
+                return "r13d";
             case "lee12_l8":
                 return "r13b";
             case "lee13":
                 return "r14";
+            case "lee13_l32":
+                return "r14d";
             case "lee13_l8":
                 return "r14b";
             case "lee14":
                 return "r15";
+            case "lee14_l32":
+                return "r15d";
             case "lee14_l8":
                 return "r15b";
             case "rsp":
                 return "rsp";
+            case "rsp_l32":
+                return "esp";
             case "rsp_l8":
                 return "spl";
 

@@ -205,9 +205,9 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, D
                 str.append(formatInstr("cqo"));
                 if (src instanceof PhysicalImmediate) {
                     str.append(formatInstr("mov", "ler8", src.toNASM()));
-                    str.append(formatInstr("idiv", "ler8"));
+                    str.append(formatInstr("idiv", "ler8_l32"));
                 } else {
-                    str.append(formatInstr("idiv", src.toNASM()));
+                    str.append(formatInstr("idiv", src.toNASM() + (src instanceof PhysicalRegister ? "_l32" : "")));
                 }
                 str.append(formatInstr("mov", dst.toNASM(), op == DIV ? "res0" : "arg3"));
                 break;
