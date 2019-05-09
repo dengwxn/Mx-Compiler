@@ -26,6 +26,20 @@ abstract public class Instruction {
     private HashSet<VirtualRegister> nec = new HashSet<>();
     private HashSet<VirtualRegister> needed = new HashSet<>();
 
+    public void setGlobalVar(HashMap<Address, VirtualRegister> globalToReg) {
+    }
+
+    public void collectGlobalVar(HashSet<Address> globalVar) {
+    }
+
+    void collectGlobalVar(Operand op, HashSet<Address> globalVar) {
+        if (op instanceof Address) {
+            VirtualRegister base = ((Address) op).getBase();
+            if (base.getSymbol().isGlobal())
+                globalVar.add((Address) op);
+        }
+    }
+
     public Operand makeCopy(Operand op) {
         if (op instanceof Immediate || op instanceof StringConstant)
             return op;
@@ -57,6 +71,8 @@ abstract public class Instruction {
             return ((Immediate) operand).getVal();
         } else if (operand instanceof VirtualRegister) {
             VirtualRegister reg = (VirtualRegister) operand;
+            if (reachCnt.get(reg) == null)
+                throw new Error("fuck");
             if (reachCnt.get(reg).equals(receiveCnt.get(reg)))
                 return receiveCst.get(reg);
         }

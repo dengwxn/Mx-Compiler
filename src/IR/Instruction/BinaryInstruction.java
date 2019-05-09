@@ -9,6 +9,9 @@ import IR.Operand.Immediate;
 import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 import static IR.Instruction.Operator.BinaryOp.DIV;
@@ -38,6 +41,20 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, C
         this.op = op;
         this.dst = getVirtualRegister(dst);
         this.src = new Immediate(src);
+    }
+
+    @Override
+    public void setGlobalVar(HashMap<Address, VirtualRegister> globalToReg) {
+        if (dst instanceof Address && globalToReg.containsKey(dst))
+            dst = globalToReg.get(dst);
+        if (src instanceof Address && globalToReg.containsKey(src))
+            src = globalToReg.get(src);
+    }
+
+    @Override
+    public void collectGlobalVar(HashSet<Address> globalVar) {
+        collectGlobalVar(dst, globalVar);
+        collectGlobalVar(src, globalVar);
     }
 
     @Override

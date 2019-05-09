@@ -5,6 +5,9 @@ import IR.Operand.Address;
 import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 
@@ -16,6 +19,17 @@ public class UnaryInstruction extends Instruction implements ConstantFolding, De
     public UnaryInstruction(Operator.UnaryOp op, Operand dst) {
         this.op = op;
         this.dst = dst;
+    }
+
+    @Override
+    public void setGlobalVar(HashMap<Address, VirtualRegister> globalToReg) {
+        if (dst instanceof Address && globalToReg.containsKey(dst))
+            dst = globalToReg.get(dst);
+    }
+
+    @Override
+    public void collectGlobalVar(HashSet<Address> globalVar) {
+        collectGlobalVar(dst, globalVar);
     }
 
     @Override

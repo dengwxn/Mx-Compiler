@@ -9,6 +9,7 @@ import IR.Operand.VirtualRegister;
 import Optimizer.RegisterAllocation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
@@ -40,6 +41,20 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Cop
     public MoveInstruction(String dst, Operand src) {
         this.dst = getVirtualRegister(dst);
         this.src = src;
+    }
+
+    @Override
+    public void setGlobalVar(HashMap<Address, VirtualRegister> globalToReg) {
+        if (dst instanceof Address && globalToReg.containsKey(dst))
+            dst = globalToReg.get(dst);
+        if (src instanceof Address && globalToReg.containsKey(src))
+            src = globalToReg.get(src);
+    }
+
+    @Override
+    public void collectGlobalVar(HashSet<Address> globalVar) {
+        collectGlobalVar(dst, globalVar);
+        collectGlobalVar(src, globalVar);
     }
 
     @Override

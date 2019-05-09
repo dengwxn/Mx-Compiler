@@ -4,10 +4,7 @@ import AST.Build.ParseListener;
 import AST.Build.TypeCheckListener;
 import Generator.Build.Generator;
 import IR.Build.IR;
-import Optimizer.Inline;
-import Optimizer.NeedednessAnalysis;
-import Optimizer.Propagation;
-import Optimizer.RegisterAllocation;
+import Optimizer.*;
 import Parser.MxLexer;
 import Parser.MxParser;
 import org.antlr.v4.runtime.CharStream;
@@ -38,6 +35,11 @@ public class Main {
     static private void optimize() throws Exception {
         int cnt = Inline.optimize();
         for (int i = 0; i < cnt; ++i) {
+            Propagation.optimize();
+            NeedednessAnalysis.optimize();
+        }
+        GlobalVarLoading.optimize();
+        for (int i = 0; i < cnt - 1; ++i) {
             Propagation.optimize();
             NeedednessAnalysis.optimize();
         }

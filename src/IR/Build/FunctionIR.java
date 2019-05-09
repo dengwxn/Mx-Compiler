@@ -15,11 +15,12 @@ import java.util.LinkedHashSet;
 import static IR.Build.IR.functionIRMap;
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SUB;
+import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
 import static java.lang.Math.max;
 
 public class FunctionIR {
     static public Instruction jumpFuncEpilogue;
-    static public HashSet<VirtualRegister> allVirtualRegister = new HashSet<>();
+    static public HashSet<VirtualRegister> VirtualRegisterPool = new HashSet<>();
     static public HashMap<VirtualRegister, VirtualRegister> copyOperandTable = new HashMap<>();
     static private LinkedHashSet<VirtualRegister> spillPool = new LinkedHashSet<>();
     static private LinkedHashSet<String> leePool = new LinkedHashSet<>();
@@ -27,6 +28,10 @@ public class FunctionIR {
     static private int maxParamSize;
     private FuncDeclNode funcDecl;
     private BlockList blockList;
+    private LinkedHashSet<Address> globalVar = new LinkedHashSet<>();
+    private LinkedHashSet<Address> globalVarRecur = new LinkedHashSet<>();
+    private HashSet<FunctionIR> callPre = new HashSet<>();
+    private HashMap<Address, VirtualRegister> globalToReg = new HashMap<>();
 
     FunctionIR(FuncDeclNode funcDecl) {
         blockList = new BlockList();
@@ -62,6 +67,71 @@ public class FunctionIR {
 
     static public void setMaxParamSize(int maxParamSize) {
         FunctionIR.maxParamSize = max(FunctionIR.maxParamSize, maxParamSize);
+    }
+
+    public void loadGlobalVar() {
+        for (Address addr : globalVar) {
+            VirtualRegister reg = getTemporaryRegister();
+            VirtualRegisterPool.add(reg);
+            globalToReg.put(addr, reg);
+        }
+
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        for (Block block : blockList) {
+            ArrayList<Instruction> instr = block.getInstr();
+            instr.forEach(i -> i.setGlobalVar(globalToReg));
+            for (int i = 0; i < instr.size(); ++i) {
+                if (instr.get(i) instanceof FuncCallInstruction) {
+                    FuncCallInstruction call = (FuncCallInstruction) instr.get(i);
+                    FunctionIR func = functionIRMap.get(call.getName());
+                    if (func != null) {
+                        LinkedHashSet<Address> update = new LinkedHashSet<>(globalVar);
+                        update.retainAll(func.globalVarRecur);
+                        for (Address addr : update) {
+                            VirtualRegister reg = globalToReg.get(addr);
+                            instr.add(i, new MoveInstruction(addr, reg));
+                            instr.add(i + 2, new MoveInstruction(reg, addr));
+                            ++i;
+                        }
+                    }
+                }
+            }
+        }
+
+        Block head = this.blockList.getHead();
+        Block tail = this.blockList.getTail();
+        for (Address addr : globalVar) {
+            VirtualRegister reg = globalToReg.get(addr);
+            head.add(0, new MoveInstruction(reg, addr));
+            tail.add(0, new MoveInstruction(addr, reg));
+        }
+    }
+
+    public void passGlobalVar() {
+        HashSet<FunctionIR> flag = new HashSet<>(callPre);
+        ArrayList<FunctionIR> queue = new ArrayList<>(callPre);
+        globalVarRecur.addAll(globalVar);
+        for (int i = 0; i < queue.size(); ++i) {
+            FunctionIR u = queue.get(i);
+            u.globalVarRecur.addAll(globalVar);
+            for (FunctionIR v : u.callPre) {
+                if (flag.add(v))
+                    queue.add(v);
+            }
+        }
+    }
+
+    public void collectGlobalVar() {
+        ArrayList<Instruction> instrList = blockList.getInstrList();
+        for (Instruction instr : instrList) {
+            instr.collectGlobalVar(globalVar);
+            if (instr instanceof FuncCallInstruction) {
+                FuncCallInstruction call = (FuncCallInstruction) instr;
+                FunctionIR func = functionIRMap.get(call.getName());
+                if (func != null && func != this)
+                    func.callPre.add(this);
+            }
+        }
     }
 
     public void inline() {
@@ -153,7 +223,7 @@ public class FunctionIR {
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
         instrList.forEach(instr -> instr.putUse());
-        for (VirtualRegister reg : allVirtualRegister) {
+        for (VirtualRegister reg : VirtualRegisterPool) {
             instrList.forEach(instr -> instr.clearReach());
             instrList.forEach(instr -> instr.putReach(reg));
             instrList.forEach(instr -> instr.buildDefReach(reg));
@@ -174,12 +244,12 @@ public class FunctionIR {
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
         instrList.forEach(instr -> instr.putUse());
-        for (VirtualRegister reg : allVirtualRegister) {
+        for (VirtualRegister reg : VirtualRegisterPool) {
             instrList.forEach(instr -> instr.clearReach());
             instrList.forEach(instr -> instr.putReach(reg));
             instrList.forEach(instr -> instr.buildDefReach(reg));
         }
-        for (VirtualRegister reg : allVirtualRegister) {
+        for (VirtualRegister reg : VirtualRegisterPool) {
             // should not propagate precoloring registers!
             if (reg.getSymbol().isPrecolor()) continue;
             instrList.forEach(instr -> instr.clearReach());
@@ -338,11 +408,12 @@ public class FunctionIR {
 
         Block tail = blockList.getTail();
         ptr = leePool.size();
-        tail.add(0, new BinaryInstruction(ADD, "rsp", cnt * 8));
+        int place = tail.size() - 1;
+        tail.add(place, new BinaryInstruction(ADD, "rsp", cnt * 8));
         for (int i = 14; i > 8; --i) {
             if (leePool.contains("lee" + i)) {
                 Address pos = new Address("rsp", (cnt - ptr--) * 8);
-                tail.add(0, new MoveInstruction("lee" + i, pos));
+                tail.add(place, new MoveInstruction("lee" + i, pos));
             }
         }
     }

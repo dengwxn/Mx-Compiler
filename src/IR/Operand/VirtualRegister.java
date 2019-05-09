@@ -24,7 +24,7 @@ public class VirtualRegister extends Operand {
                 return this;
         }
         VirtualRegister reg = new VirtualRegister(symbol);
-        allVirtualRegister.add(reg);
+        VirtualRegisterPool.add(reg);
         return reg;
     }
 

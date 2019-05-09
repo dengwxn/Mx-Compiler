@@ -8,6 +8,9 @@ import IR.Operand.Immediate;
 import IR.Operand.Operand;
 import IR.Operand.VirtualRegister;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 
@@ -24,6 +27,21 @@ public class CompareInstruction extends Instruction implements CopyRemove {
     public CompareInstruction(Operand lhs, int rhs) {
         this.lhs = lhs;
         this.rhs = new Immediate(rhs);
+    }
+
+    @Override
+    public void setGlobalVar(HashMap<Address, VirtualRegister> globalToReg) {
+        if (lhs instanceof Address && globalToReg.containsKey(lhs))
+            lhs = globalToReg.get(lhs);
+        if (rhs instanceof Address && globalToReg.containsKey(rhs))
+            rhs = globalToReg.get(rhs);
+    }
+
+
+    @Override
+    public void collectGlobalVar(HashSet<Address> globalVar) {
+        collectGlobalVar(lhs, globalVar);
+        collectGlobalVar(rhs, globalVar);
     }
 
     @Override
