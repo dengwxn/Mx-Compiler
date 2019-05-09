@@ -1,50 +1,60 @@
+//Target: use loops to calculate calculator of 6!
+//@author yixi
 
-class TA{
-	string state;
-	int anger;
-}
-int init_anger = 100;
-int work_anger = 10;
-void work(string st, TA ta)
-{
-	if (ta.anger <= 100) println(st + ", " + ta.state + " enjoys this work. XD");
-	else println(st + ", " + ta.state + " wants to give up!!!!!");
-	ta.anger = ta.anger + work_anger;
-}
-int main()
-{
-	TA mr;
-	TA mars;
-	mr = new TA;
-	mr.state = "the leading TA";
-	mr.anger = 0;
-	mars = new TA;
-	mars.state = "the striking TA";
-	mars.anger = init_anger;
-	work("MR", mr);
-	work("Mars", mars);
-	work("Mars", mars);
+int N;
+int h = 99;
+int i = 100;
+int j = 101;
+int k = 102;
+int total = 0;
+
+int main() {
+  	int a;
+    int b;
+	int c;
+	int d;
+	int e;
+	int f;
+	N=17;
+	for ( a=1; a<=N; a++ )
+	for ( b=1; b<=N; b++ )
+	for ( c=1; c<=N; c++ )
+	for ( d=1; d<=N; d++ )
+	for ( e=1; e<=N; e++ )
+	for ( f=1; f<=N; f++ )
+		if (a!=b && a!=c && a!=d && a!=e && a!=f && a!=h && a!=i && a!=j && a!=k
+              && b!=c && b!=d && b!=e && b!=f && b!=h && b!=i && b!=j && b!=k
+              && c!=d && c!=e && c!=f && c!=h && c!=i && c!=j && c!=k
+              && d!=e && d!=f && d!=h && d!=i && d!=j && d!=k
+              && e!=f && e!=h && e!=i && e!=j && e!=k
+              && f!=h && f!=i && f!=j && f!=k && i!=j && h!=k)
+		{
+			total++;
+		}
+
+	println(toString(total));
 	return 0;
 }
 
 
+
+
 /*!! metadata:
 === comment ===
-class_test-mahaojun.mx
-=== input ===
-
+superloop-5090379042-jiaxiao.mx
+=== is_public ===
+True
 === assert ===
 output
 === timeout ===
-0.1
-=== output ===
-MR, the leading TA enjoys this work. XD
-Mars, the striking TA enjoys this work. XD
-Mars, the striking TA wants to give up!!!!!
+3.0
+=== input ===
+17
 === phase ===
-codegen pretest
-=== is_public ===
-True
+optim pretest
+=== output ===
+8910720
+=== exitcode ===
+
 
 !!*/
-

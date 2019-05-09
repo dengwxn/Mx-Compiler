@@ -39,7 +39,7 @@ public class Main {
             NeedednessAnalysis.optimize();
         }
         GlobalVarLoading.optimize();
-        for (int i = 0; i < cnt - 1; ++i) {
+        if (cnt > 1) {
             Propagation.optimize();
             NeedednessAnalysis.optimize();
         }
