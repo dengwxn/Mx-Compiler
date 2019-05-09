@@ -19,11 +19,12 @@ import static java.lang.Math.max;
 
 public class FunctionIR {
     static public Instruction jumpFuncEpilogue;
+    static public HashSet<VirtualRegister> allVirtualRegister = new HashSet<>();
+    static public HashMap<VirtualRegister, VirtualRegister> copyOperandTable = new HashMap<>();
     static private LinkedHashSet<VirtualRegister> spillPool = new LinkedHashSet<>();
     static private LinkedHashSet<String> leePool = new LinkedHashSet<>();
     static private HashMap<VirtualRegister, Integer> spillPos = new HashMap<>();
     static private int maxParamSize;
-    static public HashSet<VirtualRegister> allVirtualRegister = new HashSet<>();
     private FuncDeclNode funcDecl;
     private BlockList blockList;
 
@@ -62,8 +63,6 @@ public class FunctionIR {
     static public void setMaxParamSize(int maxParamSize) {
         FunctionIR.maxParamSize = max(FunctionIR.maxParamSize, maxParamSize);
     }
-
-    static public HashMap<VirtualRegister, VirtualRegister> copyOperandTable = new HashMap<>();
 
     public void inline() {
         for (int i = 0; i < blockList.size(); ++i) {
@@ -183,13 +182,18 @@ public class FunctionIR {
         for (VirtualRegister reg : allVirtualRegister) {
             // should not propagate precoloring registers!
             if (reg.getSymbol().isPrecolor()) continue;
-            // propagate reg one by one
             instrList.forEach(instr -> instr.clearReach());
             instrList.forEach(instr -> instr.putReach(reg));
+            HashSet<Instruction> flag = new HashSet<>();
+            HashSet<Instruction> clear = new HashSet<>();
             for (Instruction instr : instrList) {
-                if (instr instanceof MoveInstruction)
-                    ((MoveInstruction) instr).propagateCopy(reg);
+                if (instr instanceof MoveInstruction) {
+                    if (!flag.contains(instr))
+                        ((MoveInstruction) instr).propagateCopy(reg, flag, clear);
+                }
             }
+            for (Instruction instr : clear)
+                instr.clearReceive(reg);
         }
     }
 
@@ -242,6 +246,18 @@ public class FunctionIR {
                         else throw new Error("invalid block.");
                     }
                     ((Jump) instr).setDst(x);
+                }
+            }
+            for (int i = 0; i < instrList.size(); ++i) {
+                if (instrList.get(i) instanceof CondJumpInstruction
+                        && instrList.get(i + 1) instanceof JumpInstruction) {
+                    Block x = ((CondJumpInstruction) instrList.get(i)).getDst();
+                    Block y = ((JumpInstruction) instrList.get(i + 1)).getDst();
+                    if (x == y) {
+                        instrList.remove(i - 1);
+                        instrList.remove(i - 1);
+                        i -= 2;
+                    }
                 }
             }
         }

@@ -10,9 +10,8 @@ import IR.Operand.VirtualRegister;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
-import static IR.Operand.Operand.convertCopyOperand;
 
-public class CompareInstruction extends Instruction {
+public class CompareInstruction extends Instruction implements CopyRemove {
     private Operand lhs, rhs;
 
     public CompareInstruction(Operand lhs, Operand rhs) {
@@ -39,16 +38,18 @@ public class CompareInstruction extends Instruction {
     }
 
     @Override
-    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
-        lhs = convertCopyOperand(lhs, cpy, reg);
-        rhs = convertCopyOperand(rhs, cpy, reg);
-        clearUse();
-        putUse();
-        if (lhs == reg || rhs == reg) {
-            if (from != null)
-                from.singleDefReach.add(this);
+    public boolean removeCopy(VirtualRegister reg) {
+        if (!isCopy(lhs) && !isCopy(rhs))
+            return false;
+        if (isCopy(lhs)) {
+            removeCopy((VirtualRegister) lhs, reg);
+            lhs = reg;
         }
-        return false;
+        if (isCopy(rhs)) {
+            removeCopy((VirtualRegister) rhs, reg);
+            rhs = reg;
+        }
+        return true;
     }
 
     public Integer getCstLhs() {

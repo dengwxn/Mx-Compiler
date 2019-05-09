@@ -13,11 +13,10 @@ import java.util.HashSet;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
-import static IR.Operand.Operand.convertCopyOperand;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
-public class MoveInstruction extends Instruction implements ConstantFolding, DeadCodeElimination {
+public class MoveInstruction extends Instruction implements ConstantFolding, CopyRemove, DeadCodeElimination {
     private Operand dst, src;
     private Integer cstVal;
 
@@ -66,50 +65,47 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Dea
     }
 
     @Override
-    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
-        src = convertCopyOperand(src, cpy, reg);
-        clearUse();
-        putUse();
-        if (src == reg) {
-            singleDefFrom.clear();
-            if (from != null) {
-                from.singleDefReach.add(this);
-                singleDefFrom.add(from);
-            }
+    public boolean removeCopy(VirtualRegister reg) {
+        if (isCopy(src)) {
+            removeCopy((VirtualRegister) src, reg);
+            src = reg;
             return true;
         }
         return false;
     }
 
-    public void propagateCopy(VirtualRegister reg) {
+    public void propagateCopy(VirtualRegister reg, HashSet<Instruction> flag, HashSet<Instruction> clear) {
         ArrayList<VirtualRegister> cpyQueue = new ArrayList<>();
-        ArrayList<Instruction> instrQueue = new ArrayList<>();
+        ArrayList<MoveInstruction> instrQueue = new ArrayList<>();
         if (dst instanceof VirtualRegister && src == reg) {
             cpyQueue.add((VirtualRegister) dst);
             instrQueue.add(this);
+            flag.add(this);
+            clear.add(this);
 
             for (int i = 0; i < cpyQueue.size(); ++i) {
                 VirtualRegister cpy = cpyQueue.get(i);
-                Instruction u = instrQueue.get(i);
-                HashSet<Instruction> del = new HashSet<>();
-                Instruction from = null;
-                if (u.singleDefFrom.size() == 1)
-                    from = u.singleDefFrom.iterator().next();
-                for (Instruction v : u.singleDefReach) {
-                    if (this.reach.equals(v.reach)) {
-                        del.add(v);
-                        if (v.receiveCopy(cpy, reg, from)) {
-                            if (v instanceof MoveInstruction) {
-                                MoveInstruction w = (MoveInstruction) v;
-                                if (w.getDst() instanceof VirtualRegister) {
-                                    cpyQueue.add((VirtualRegister) w.getDst());
-                                    instrQueue.add(v);
+                MoveInstruction u = instrQueue.get(i);
+                HashSet<Instruction> from = u.reach;
+
+                for (Instruction v : u.defReach) {
+                    if (from.equals(v.reach)) {
+                        clear.add(v);
+                        if (v.receiveCopy(cpy, reg)) {
+                            if (v instanceof CopyRemove) {
+                                if (((CopyRemove) v).removeCopy(reg)) {
+                                    if (v instanceof MoveInstruction) {
+                                        MoveInstruction w = (MoveInstruction) v;
+                                        if (w.getDst() instanceof VirtualRegister && flag.add(w)) {
+                                            cpyQueue.add((VirtualRegister) w.getDst());
+                                            instrQueue.add(w);
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                u.singleDefReach.removeAll(del);
             }
         }
     }

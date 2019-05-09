@@ -9,10 +9,14 @@ public class ReturnInstruction extends Instruction {
     }
 
     @Override
-    public void putNec() { putNec("res0"); }
+    public void putNec() {
+        putNec("res0");
+    }
 
     @Override
-    public void putUse() { putUse("res0"); }
+    public void putUse() {
+        putUse("res0");
+    }
 
     @Override
     public String toNASM() {

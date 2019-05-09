@@ -15,15 +15,15 @@ public class Inline {
                 functionIR.inline();
             IR.dump("inline" + i);
         }
+        for (FunctionIR functionIR : functionIRMap.values())
+            functionIR.setCalling();
         return getOptimizeRound();
     }
 
     static private int getOptimizeRound() {
         int line = 0;
-        for (FunctionIR functionIR : functionIRMap.values()) {
-            functionIR.setCalling();
+        for (FunctionIR functionIR : functionIRMap.values())
             line = Math.max(line, functionIR.instrListSize());
-        }
         // due to time limit in OJ
         if (line > 5000) return 1;
         return 3;

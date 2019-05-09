@@ -14,16 +14,15 @@ import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 abstract public class Instruction {
     LinkedHashSet<VirtualRegister> live = new LinkedHashSet<>();
     LinkedHashSet<VirtualRegister> def = new LinkedHashSet<>();
-    HashSet<Instruction> singleDefReach = new HashSet<>();
-    HashSet<Instruction> singleDefFrom = new HashSet<>();
     HashSet<Instruction> defReach = new HashSet<>();
     HashSet<Instruction> reach = new HashSet<>();
+    private HashSet<VirtualRegister> use = new HashSet<>();
     private HashMap<VirtualRegister, Integer> reachCnt = new HashMap<>();
     private HashMap<VirtualRegister, Integer> receiveCnt = new HashMap<>();
-    private HashMap<VirtualRegister, Integer> receiveVal = new HashMap<>();
+    private HashMap<VirtualRegister, Integer> receiveCst = new HashMap<>();
+    private HashMap<VirtualRegister, VirtualRegister> receiveCpy = new HashMap<>();
     private ArrayList<Instruction> pre = new ArrayList<>();
     private ArrayList<Instruction> suc = new ArrayList<>();
-    private HashSet<VirtualRegister> use = new HashSet<>();
     private HashSet<VirtualRegister> nec = new HashSet<>();
     private HashSet<VirtualRegister> needed = new HashSet<>();
 
@@ -44,7 +43,12 @@ abstract public class Instruction {
         throw new Error("fail to make operand copy.");
     }
 
-    boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
+    boolean isCopy(Operand operand) {
+        if (operand instanceof VirtualRegister) {
+            VirtualRegister reg = (VirtualRegister) operand;
+            if (reachCnt.get(reg) != null)
+                return reachCnt.get(reg).equals(receiveCnt.get(reg));
+        }
         return false;
     }
 
@@ -54,37 +58,69 @@ abstract public class Instruction {
         } else if (operand instanceof VirtualRegister) {
             VirtualRegister reg = (VirtualRegister) operand;
             if (reachCnt.get(reg).equals(receiveCnt.get(reg)))
-                return receiveVal.get(reg);
+                return receiveCst.get(reg);
         }
         return null;
+    }
+
+    void removeCopy(VirtualRegister cpy, VirtualRegister reg) {
+        use.remove(cpy);
+        receiveCpy.put(cpy, null);
+        receiveCnt.put(cpy, null);
+        reachCnt.put(cpy, null);
+        use.add(reg);
+        receiveCnt.put(reg, 0);
+        receiveCpy.put(reg, null);
+        reachCnt.put(reg, reach.size());
+        for (Instruction u : reach)
+            u.defReach.add(this);
+    }
+
+    boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg) {
+        if (use.contains(cpy)) {
+            if (receiveCnt.get(cpy) != -1) {
+                if (receiveCpy.get(cpy) == null) {
+                    receiveCpy.put(cpy, reg);
+                    receiveCnt.put(cpy, 1);
+                    return true;
+                } else {
+                    if (receiveCpy.get(cpy) != reg)
+                        receiveCnt.put(cpy, -1);
+                    else {
+                        receiveCnt.put(cpy, receiveCnt.get(cpy) + 1);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     void receiveConstant(VirtualRegister reg, int val) {
         if (use.contains(reg)) {
             if (receiveCnt.get(reg) != -1) {
-                if (receiveVal.get(reg) == null) {
-                    receiveVal.put(reg, val);
+                if (receiveCst.get(reg) == null) {
+                    receiveCst.put(reg, val);
                     receiveCnt.put(reg, 1);
                 } else {
-                    if (receiveVal.get(reg) != val) receiveCnt.put(reg, -1);
+                    if (receiveCst.get(reg) != val) receiveCnt.put(reg, -1);
                     else receiveCnt.put(reg, receiveCnt.get(reg) + 1);
                 }
             }
         }
     }
 
+    public void clearReceive(VirtualRegister reg) {
+        receiveCnt.put(reg, 0);
+        receiveCpy.clear();
+    }
+
     public void buildDefReach(VirtualRegister reg) {
         if (use.contains(reg)) {
-            reachCnt.put(reg, 0);
             receiveCnt.put(reg, 0);
-            for (Instruction u : reach) {
+            reachCnt.put(reg, reach.size());
+            for (Instruction u : reach)
                 u.defReach.add(this);
-                reachCnt.put(reg, reachCnt.get(reg) + 1);
-            }
-            if (reach.size() == 1) {
-                reach.iterator().next().singleDefReach.add(this);
-                singleDefFrom.add(reach.iterator().next());
-            }
         }
     }
 
@@ -211,10 +247,6 @@ abstract public class Instruction {
         reach.clear();
     }
 
-    void clearUse() {
-        use.clear();
-    }
-
     public void clearAnalysis() {
         pre.clear();
         suc.clear();
@@ -222,12 +254,11 @@ abstract public class Instruction {
         def.clear();
         use.clear();
 
-        singleDefReach.clear();
-        singleDefFrom.clear();
         defReach.clear();
         reachCnt.clear();
         receiveCnt.clear();
-        receiveVal.clear();
+        receiveCst.clear();
+        receiveCpy.clear();
 
         nec.clear();
         needed.clear();

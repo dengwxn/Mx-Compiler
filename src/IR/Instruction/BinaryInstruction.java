@@ -13,10 +13,9 @@ import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
 import static IR.Build.IR.formatInstr;
 import static IR.Instruction.Operator.BinaryOp.DIV;
 import static IR.Instruction.Operator.BinaryOp.SHL;
-import static IR.Operand.Operand.convertCopyOperand;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
-public class BinaryInstruction extends Instruction implements ConstantFolding, DeadCodeElimination {
+public class BinaryInstruction extends Instruction implements ConstantFolding, CopyRemove, DeadCodeElimination {
     private Operator.BinaryOp op;
     private Operand dst, src;
     private Integer cstVal;
@@ -62,13 +61,11 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, D
     }
 
     @Override
-    public boolean receiveCopy(VirtualRegister cpy, VirtualRegister reg, Instruction from) {
-        src = convertCopyOperand(src, cpy, reg);
-        clearUse();
-        putUse();
-        if (src == reg) {
-            if (from != null)
-                from.singleDefReach.add(this);
+    public boolean removeCopy(VirtualRegister reg) {
+        if (isCopy(src)) {
+            removeCopy((VirtualRegister) src, reg);
+            src = reg;
+            return true;
         }
         return false;
     }
