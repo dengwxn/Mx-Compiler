@@ -1,9 +1,13 @@
 package IR.Build;
 
+import IR.Instruction.CondJumpInstruction;
 import IR.Instruction.Instruction;
+import IR.Instruction.Jump;
+import IR.Instruction.JumpInstruction;
 import IR.Operand.Operand;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BlockList {
     private ArrayList<Block> blockList;
@@ -12,6 +16,35 @@ public class BlockList {
 
     BlockList() {
         blockList = new ArrayList<>();
+    }
+
+    BlockList(BlockList blockList) {
+        this.blockList = new ArrayList<>();
+        this.funcName = blockList.funcName;
+        this.classThis = blockList.classThis;
+
+        HashMap<Block, Block> map = new HashMap<>();
+        for (Block block : blockList.blockList) {
+            Block newBlock = new Block(block.getLabel());
+            newBlock.setId(block.getId());
+            map.put(block, newBlock);
+            this.blockList.add(newBlock);
+        }
+
+        for (Block block : blockList.blockList) {
+            ArrayList<Instruction> instr = block.getInstr();
+            Block newBlock = map.get(block);
+            for (Instruction u : instr) {
+                if (u instanceof Jump) {
+                    Block dst = map.get(((Jump) u).getDst());
+                    if (u instanceof JumpInstruction)
+                        newBlock.add(new JumpInstruction(dst));
+                    else if (u instanceof CondJumpInstruction)
+                        newBlock.add(new CondJumpInstruction(((CondJumpInstruction) u).getOp(), dst));
+                } else
+                    newBlock.add(u);
+            }
+        }
     }
 
     void add(int id, Block block) {

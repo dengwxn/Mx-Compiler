@@ -16,6 +16,7 @@ import static IR.Build.IR.functionIRMap;
 import static IR.Instruction.Operator.BinaryOp.ADD;
 import static IR.Instruction.Operator.BinaryOp.SUB;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
+import static Optimizer.Inline.getAllLine;
 import static java.lang.Math.max;
 
 public class FunctionIR {
@@ -28,6 +29,7 @@ public class FunctionIR {
     private static int maxParamSize;
     private FuncDeclNode funcDecl;
     private BlockList blockList;
+    private BlockList newBlockList;
     private LinkedHashSet<Address> globalVar = new LinkedHashSet<>();
     private LinkedHashSet<Address> globalVarRecur = new LinkedHashSet<>();
     private HashSet<FunctionIR> callPre = new HashSet<>();
@@ -134,15 +136,22 @@ public class FunctionIR {
         }
     }
 
+    public void getNewBlockList() {
+        blockList = newBlockList;
+    }
+
     public void inline() {
-        for (int i = 0; i < blockList.size(); ++i) {
-            Block block = blockList.get(i);
+        newBlockList = new BlockList(blockList);
+        for (int i = 0; i < newBlockList.size(); ++i) {
+            Block block = newBlockList.get(i);
             ArrayList<Instruction> instr = block.getInstr();
             for (int j = 0; j < instr.size(); ++j) {
+                if (getAllLine() > 4000)
+                    return;
                 if (instr.get(j) instanceof FuncCallInstruction) {
                     FuncCallInstruction call = (FuncCallInstruction) instr.get(j);
                     FunctionIR func = functionIRMap.get(call.getName());
-                    if (func != null && func != this && func.blockList.getInstrList().size() < 100) {
+                    if (func != null && func.blockList.getInstrList().size() < 80) {
                         // remove previous move arg <- operand
                         int argCnt = call.getArgCnt();
                         ArrayList<Operand> operand = new ArrayList<>();
@@ -168,7 +177,7 @@ public class FunctionIR {
                         // get inline function
                         ArrayList<Block> inlineBlockList = copyBlockList(func.blockList.getBlockList());
                         for (Block inlineBlock : inlineBlockList)
-                            blockList.add(++i, inlineBlock);
+                            newBlockList.add(++i, inlineBlock);
                         --i;
 
                         // inlineRest
@@ -195,7 +204,7 @@ public class FunctionIR {
         HashMap<Block, Block> label = new HashMap<>();
         for (int i = 1; i < blockList.size(); ++i) {
             Block block = blockList.get(i);
-            Block newBlock = new Block(block);
+            Block newBlock = block.makeCopy();
             newBlockList.add(newBlock);
             label.put(block, newBlock);
         }
@@ -238,8 +247,6 @@ public class FunctionIR {
     public void propagateCopy() {
         ArrayList<Instruction> instrList = this.blockList.getInstrList();
         ArrayList<Block> blockList = this.blockList.getBlockList();
-        // due to time limit in OJ
-        if (instrList.size() > 5000) return;
         instrList.forEach(instr -> instr.clearAnalysis());
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
@@ -419,7 +426,8 @@ public class FunctionIR {
     }
 
     public int instrListSize() {
-        return blockList.getInstrList().size();
+        if (newBlockList == null) return blockList.getInstrList().size();
+        else return newBlockList.getInstrList().size();
     }
 
     public String toNASM() {

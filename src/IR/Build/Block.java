@@ -19,15 +19,16 @@ public class Block {
     private int id;
     private JumpInstruction jump;
 
-    public Block(Block cpy) {
-        this.label = cpy.label;
-        this.instr = new ArrayList<>();
-        for (Instruction instr : cpy.instr) {
-            if (!(instr instanceof ReturnInstruction))
-                this.instr.add(instr.makeCopy());
+    public Block makeCopy() {
+        Block cpy = new Block(label);
+        cpy.instr = new ArrayList<>();
+        for (Instruction u : instr) {
+            if (!(u instanceof ReturnInstruction))
+                cpy.instr.add(u.makeCopy());
         }
-        id = -cpy.id;
-        jump = null;
+        cpy.id = -id;
+        cpy.jump = null;
+        return cpy;
     }
 
     public Block(String label) {
@@ -165,7 +166,7 @@ public class Block {
 
     String dumpNeedednessAnalysis() {
         StringBuilder str = new StringBuilder();
-        str.append(getLabel() + ":\n");
+        str.append(getProgLabel() + ":\n");
         for (Instruction i : instr) {
             str.append(i.toString());
             str.append(i.dumpNeeded());
@@ -175,7 +176,7 @@ public class Block {
 
     String dumpLivenessAnalysis() {
         StringBuilder str = new StringBuilder();
-        str.append(getLabel() + ":\n");
+        str.append(getProgLabel() + ":\n");
         for (Instruction i : instr) {
             str.append(i.toString());
             str.append(i.dumpLive());
@@ -249,7 +250,15 @@ public class Block {
         }
     }
 
-    public String getLabel() {
+    int getId() {
+        return id;
+    }
+
+    String getLabel() {
+        return label;
+    }
+
+    public String getProgLabel() {
         if (id == 0) return label;
         else return label + "." + id;
     }
@@ -261,7 +270,7 @@ public class Block {
     public String toNASM(Block nextBlock) {
         detectRedundantJump(nextBlock);
         StringBuilder str = new StringBuilder();
-        str.append(getLabel() + ":\n");
+        str.append(getProgLabel() + ":\n");
         for (int i = 0; i < instr.size(); ++i) {
             if (detectRedundantAdjacentMove(i)) continue;
             if (detectRedundantSelfMove(i)) continue;
@@ -315,7 +324,7 @@ public class Block {
 
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append(getLabel() + ":\n");
+        str.append(getProgLabel() + ":\n");
         instr.forEach(i -> str.append(i.toString()));
         return str.toString();
     }

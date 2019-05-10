@@ -34,7 +34,7 @@ public class JumpInstruction extends Instruction implements Jump {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append(formatInstr("jmp", dst.getLabel()));
+        str.append(formatInstr("jmp", dst.getProgLabel()));
         return str.toString();
     }
 }

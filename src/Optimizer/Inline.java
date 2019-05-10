@@ -13,19 +13,29 @@ public class Inline {
         for (int i = 0; i < 3; ++i) {
             for (FunctionIR functionIR : functionIRMap.values())
                 functionIR.inline();
+            for (FunctionIR functionIR : functionIRMap.values())
+                functionIR.getNewBlockList();
             IR.dump("inline" + i);
         }
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.setCalling();
-        return getOptimizeRound();
+
+        // due to time limit in OJ
+        if (getMaxLine() > 4000) return 1;
+        return 2;
     }
 
-    private static int getOptimizeRound() {
+    private static int getMaxLine() {
         int line = 0;
         for (FunctionIR functionIR : functionIRMap.values())
             line = Math.max(line, functionIR.instrListSize());
-        // due to time limit in OJ
-        if (line > 5000) return 1;
-        return 3;
+        return line;
+    }
+
+    public static int getAllLine() {
+        int line = 0;
+        for (FunctionIR functionIR : functionIRMap.values())
+            line += functionIR.instrListSize();
+        return line;
     }
 }

@@ -33,7 +33,7 @@ public class CondJumpInstruction extends CondInstruction implements Jump {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append(formatInstr("j" + op.toString().toLowerCase(), dst.getLabel()));
+        str.append(formatInstr("j" + op.toString().toLowerCase(), dst.getProgLabel()));
         return str.toString();
     }
 }
