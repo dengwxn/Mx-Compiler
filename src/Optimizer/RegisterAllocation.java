@@ -14,14 +14,14 @@ import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static java.lang.Math.max;
 
 public class RegisterAllocation {
-    static final public ArrayList<String> regList = new ArrayList<>(Arrays.asList(
+    public static final ArrayList<String> regList = new ArrayList<>(Arrays.asList(
             "res0", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "ler7", "ler8",
             "lee9", "lee10", "lee11", "lee12", "lee13", "lee14", "rsp"));
-    static private HashMap<VirtualRegister, String> physicalRegister = new HashMap<>();
-    static private HashMap<VirtualRegister, HashSet<VirtualRegister>> intrf = new HashMap<>();
-    static private LinkedHashSet<VirtualRegister> vertex = new LinkedHashSet<>();
+    private static HashMap<VirtualRegister, String> physicalRegister = new HashMap<>();
+    private static HashMap<VirtualRegister, HashSet<VirtualRegister>> intrf = new HashMap<>();
+    private static LinkedHashSet<VirtualRegister> vertex = new LinkedHashSet<>();
 
-    static public void optimize() throws Exception {
+    public static void optimize() throws Exception {
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.analyzeLiveness();
         dumpLivenessAnalysis();
@@ -29,7 +29,7 @@ public class RegisterAllocation {
         greedyColor(getOrder());
     }
 
-    static private void greedyColor(ArrayList<VirtualRegister> order) throws Exception {
+    private static void greedyColor(ArrayList<VirtualRegister> order) throws Exception {
         HashMap<VirtualRegister, Integer> color = new HashMap<>();
         LinkedHashSet<Integer> num = new LinkedHashSet<>();
         for (int i = 0; i < 15; ++i) {
@@ -59,7 +59,7 @@ public class RegisterAllocation {
         dumpColor(order, color);
     }
 
-    static private ArrayList<VirtualRegister> getOrder() {
+    private static ArrayList<VirtualRegister> getOrder() {
         ArrayList<VirtualRegister> order = new ArrayList<>();
         HashMap<VirtualRegister, Integer> wt = new HashMap<>();
         ArrayList<LinkedHashSet<VirtualRegister>> pool = new ArrayList<>();
@@ -96,12 +96,12 @@ public class RegisterAllocation {
         return order;
     }
 
-    static public void buildIntrfGraph(VirtualRegister u, VirtualRegister v) {
+    public static void buildIntrfGraph(VirtualRegister u, VirtualRegister v) {
         addEdge(u, v);
         addEdge(v, u);
     }
 
-    static private void addEdge(VirtualRegister u, VirtualRegister v) {
+    private static void addEdge(VirtualRegister u, VirtualRegister v) {
         HashSet<VirtualRegister> s = intrf.get(u);
         if (s == null) {
             s = new HashSet<>();
@@ -111,19 +111,19 @@ public class RegisterAllocation {
             s.add(v);
     }
 
-    static public String getPhysicalRegister(VirtualRegister reg) {
+    public static String getPhysicalRegister(VirtualRegister reg) {
         return physicalRegister.get(reg);
     }
 
-    static public void putPhysicalRegister(VirtualRegister reg, String str) {
+    public static void putPhysicalRegister(VirtualRegister reg, String str) {
         physicalRegister.put(reg, str);
     }
 
-    static public void addVertex(VirtualRegister reg) {
+    public static void addVertex(VirtualRegister reg) {
         vertex.add(reg);
     }
 
-    static private void dumpColor(ArrayList<VirtualRegister> order, HashMap<VirtualRegister, Integer> color) throws Exception {
+    private static void dumpColor(ArrayList<VirtualRegister> order, HashMap<VirtualRegister, Integer> color) throws Exception {
         StringBuilder str = new StringBuilder();
         for (VirtualRegister u : order)
             str.append(u.toString() + ": " + color.get(u) + "\n");
@@ -133,7 +133,7 @@ public class RegisterAllocation {
         fprint.print(str.toString());
     }
 
-    static private void dumpIntrf() throws Exception {
+    private static void dumpIntrf() throws Exception {
         StringBuilder str = new StringBuilder();
         for (VirtualRegister u : vertex) {
             str.append(u.toString() + ": ");
@@ -150,7 +150,7 @@ public class RegisterAllocation {
         fprint.print(str.toString());
     }
 
-    static private void dumpLivenessAnalysis() throws Exception {
+    private static void dumpLivenessAnalysis() throws Exception {
         StringBuilder str = new StringBuilder();
         for (FunctionIR functionIR : functionIRMap.values())
             str.append(functionIR.dumpLivenessAnalysis());

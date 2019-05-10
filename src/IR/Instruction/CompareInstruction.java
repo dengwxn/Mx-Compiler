@@ -25,6 +25,9 @@ public class CompareInstruction extends Instruction implements CopyRemove {
     }
 
     public CompareInstruction(Operand lhs, int rhs) {
+        if (lhs == null) {
+            int s = 0;
+        }
         this.lhs = lhs;
         this.rhs = new Immediate(rhs);
     }

@@ -3,12 +3,13 @@ package AST.Statement;
 import AST.Expression.ExprNode;
 import AST.Table.Symbol;
 import AST.Type.Type;
+import IR.Build.Block;
 import IR.Build.BlockList;
-import IR.Instruction.Instruction;
+import IR.Instruction.JumpInstruction;
 import IR.Instruction.MoveInstruction;
 import IR.Operand.Operand;
 
-import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
+import static AST.Expression.BoolCstExprNode.*;
 
 public class VarDeclStmtNode extends StmtNode {
     private String type, name;
@@ -35,10 +36,24 @@ public class VarDeclStmtNode extends StmtNode {
         if (expr != null) {
             expr.generateIR(blockList);
             Operand dst = symbol.getOperand();
-            Operand tmp = getTemporaryRegister();
-            Instruction cpy = new MoveInstruction(tmp, expr.getOperand());
-            Instruction mov = new MoveInstruction(dst, tmp);
-            blockList.add(cpy, mov);
+            if (haveLogicRecur()) {
+                Block trueRecur = getTrueRecur();
+                Block falseRecur = getFalseRecur();
+                clearLogicRecur();
+                Block logicExit = new Block("logicExit");
+
+                blockList.add(trueRecur);
+                blockList.add(new MoveInstruction(dst, 1));
+                blockList.add(new JumpInstruction(logicExit));
+
+                blockList.add(falseRecur);
+                blockList.add(new MoveInstruction(dst, 0));
+                blockList.add(new JumpInstruction(logicExit));
+
+                blockList.add(logicExit);
+            } else {
+                blockList.add(new MoveInstruction(dst, expr.getOperand()));
+            }
         }
     }
 

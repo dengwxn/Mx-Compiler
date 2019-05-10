@@ -3,12 +3,12 @@ package AST.Branch;
 import AST.Expression.ExprNode;
 import AST.Statement.StmtNode;
 import AST.Type.Type;
+import IR.Build.Block;
 import IR.Build.BlockList;
-import IR.Instruction.Instruction;
 import IR.Instruction.MoveInstruction;
 
+import static AST.Expression.BoolCstExprNode.*;
 import static IR.Build.FunctionIR.jumpFuncEpilogue;
-import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
 public class ReturnStmtNode extends StmtNode {
     private ExprNode expr;
@@ -21,8 +21,22 @@ public class ReturnStmtNode extends StmtNode {
     public void generateIR(BlockList blockList) {
         if (expr != null) {
             expr.generateIR(blockList);
-            Instruction mov = new MoveInstruction("res0", expr.getOperand());
-            blockList.add(mov, jumpFuncEpilogue);
+            if (haveLogicRecur()) {
+                Block trueRecur = getTrueRecur();
+                Block falseRecur = getFalseRecur();
+                clearLogicRecur();
+
+                blockList.add(trueRecur);
+                blockList.add(new MoveInstruction("res0", 1));
+                blockList.add(jumpFuncEpilogue);
+
+                blockList.add(falseRecur);
+                blockList.add(new MoveInstruction("res0", 0));
+                blockList.add(jumpFuncEpilogue);
+            } else {
+                blockList.add(new MoveInstruction("res0", expr.getOperand()));
+                blockList.add(jumpFuncEpilogue);
+            }
         } else {
             blockList.add(jumpFuncEpilogue);
         }

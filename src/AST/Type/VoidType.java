@@ -6,7 +6,7 @@ public class VoidType extends Type {
     private VoidType() {
     }
 
-    static public Type getInstance() {
+    public static Type getInstance() {
         return instance;
     }
 

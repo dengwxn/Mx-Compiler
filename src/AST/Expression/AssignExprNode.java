@@ -1,10 +1,12 @@
 package AST.Expression;
 
 import AST.Type.Type;
+import IR.Build.Block;
 import IR.Build.BlockList;
-import IR.Instruction.Instruction;
+import IR.Instruction.JumpInstruction;
 import IR.Instruction.MoveInstruction;
 
+import static AST.Expression.BoolCstExprNode.*;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
 
 public class AssignExprNode extends ExprNode {
@@ -20,9 +22,25 @@ public class AssignExprNode extends ExprNode {
         lhs.generateIR(blockList);
         rhs.generateIR(blockList);
         operand = getTemporaryRegister();
-        Instruction cpy = new MoveInstruction(operand, rhs.getOperand());
-        Instruction mov = new MoveInstruction(lhs.getOperand(), operand);
-        blockList.add(cpy, mov);
+        if (haveLogicRecur()) {
+            Block trueRecur = getTrueRecur();
+            Block falseRecur = getFalseRecur();
+            clearLogicRecur();
+            Block logicExit = new Block("logicExit");
+
+            blockList.add(trueRecur);
+            blockList.add(new MoveInstruction(operand, 1));
+            blockList.add(new JumpInstruction(logicExit));
+
+            blockList.add(falseRecur);
+            blockList.add(new MoveInstruction(operand, 0));
+            blockList.add(new JumpInstruction(logicExit));
+
+            blockList.add(logicExit);
+        } else {
+            blockList.add(new MoveInstruction(operand, rhs.getOperand()));
+        }
+        blockList.add(new MoveInstruction(lhs.getOperand(), operand));
     }
 
     public Type getLhsType() {

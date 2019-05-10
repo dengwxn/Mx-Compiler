@@ -19,13 +19,13 @@ import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
 import static java.lang.Math.max;
 
 public class FunctionIR {
-    static public Instruction jumpFuncEpilogue;
-    static public HashSet<VirtualRegister> VirtualRegisterPool = new HashSet<>();
-    static public HashMap<VirtualRegister, VirtualRegister> copyOperandTable = new HashMap<>();
-    static private LinkedHashSet<VirtualRegister> spillPool = new LinkedHashSet<>();
-    static private LinkedHashSet<String> leePool = new LinkedHashSet<>();
-    static private HashMap<VirtualRegister, Integer> spillPos = new HashMap<>();
-    static private int maxParamSize;
+    public static Instruction jumpFuncEpilogue;
+    public static HashSet<VirtualRegister> VirtualRegisterPool = new HashSet<>();
+    public static HashMap<VirtualRegister, VirtualRegister> copyOperandTable = new HashMap<>();
+    private static LinkedHashSet<VirtualRegister> spillPool = new LinkedHashSet<>();
+    private static LinkedHashSet<String> leePool = new LinkedHashSet<>();
+    private static HashMap<VirtualRegister, Integer> spillPos = new HashMap<>();
+    private static int maxParamSize;
     private FuncDeclNode funcDecl;
     private BlockList blockList;
     private LinkedHashSet<Address> globalVar = new LinkedHashSet<>();
@@ -53,19 +53,19 @@ public class FunctionIR {
         blockList.add(new ReturnInstruction());
     }
 
-    static public int getSpillPos(VirtualRegister reg) {
+    public static int getSpillPos(VirtualRegister reg) {
         return spillPos.get(reg);
     }
 
-    static public void addSpill(VirtualRegister reg) {
+    public static void addSpill(VirtualRegister reg) {
         spillPool.add(reg);
     }
 
-    static public void addLee(String reg) {
+    public static void addLee(String reg) {
         leePool.add(reg);
     }
 
-    static public void setMaxParamSize(int maxParamSize) {
+    public static void setMaxParamSize(int maxParamSize) {
         FunctionIR.maxParamSize = max(FunctionIR.maxParamSize, maxParamSize);
     }
 

@@ -7,7 +7,7 @@ import static IR.Build.IR.formatInstr;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
 abstract public class PhysicalOperand {
-    static public PhysicalOperand convertVirtualOperand(StringBuilder str, Operand operand, boolean flag) {
+    public static PhysicalOperand convertVirtualOperand(StringBuilder str, Operand operand, boolean flag) {
         if (operand instanceof Immediate) {
             return new PhysicalImmediate(((Immediate) operand).getVal());
         } else if (operand instanceof StringConstant) {

@@ -6,7 +6,7 @@ public class NullType extends Type {
     private NullType() {
     }
 
-    static public Type getInstance() {
+    public static Type getInstance() {
         return instance;
     }
 

@@ -8,7 +8,7 @@ import static AST.Build.Tree.errorListener;
 public class Listener extends MxBaseListener {
     static int row, col;
 
-    static public void addCompileError(String msg) {
+    public static void addCompileError(String msg) {
         errorListener.addCompilerError(String.format("line %d:%d %s", Listener.row, Listener.col, msg));
     }
 

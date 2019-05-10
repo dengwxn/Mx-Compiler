@@ -11,6 +11,7 @@ import IR.Operand.VirtualRegister;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static AST.Expression.BoolCstExprNode.*;
 import static IR.Instruction.Operator.BinaryOp.*;
 import static IR.Instruction.Operator.CompareOp.*;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
@@ -34,44 +35,43 @@ public class BinaryExprNode extends ExprNode {
     public void generateIR(BlockList blockList) {
         operand = getTemporaryRegister();
         if (op.equals("&&") || op.equals("||")) {
-            Block lhsTrue = new Block("lhsTrue");
-            Block lhsFalse = new Block("lhsFalse");
-            Block logicExit = new Block("logicExit");
-            Instruction jumpLogicExit = new JumpInstruction(logicExit);
-
-            // currentBlock
             lhs.generateIR(blockList);
-            Instruction cmpLhs = new CompareInstruction(lhs.getOperand(), 1);
-            Instruction cjumpLhsTrue = new CondJumpInstruction(E, lhsTrue);
-            Instruction jumpLhsFalse = new JumpInstruction(lhsFalse);
-            blockList.add(cmpLhs, cjumpLhsTrue, jumpLhsFalse);
+            generateLogicRecur(blockList, lhs.getOperand());
+            Block lhsTrue = getTrueRecur();
+            Block lhsFalse = getFalseRecur();
+            clearLogicRecur();
 
             if (op.equals("&&")) {
-                // lhsTrue
+                lhsTrue.setLabel("lhsTrue");
                 blockList.add(lhsTrue);
                 rhs.generateIR(blockList);
-                Instruction cmpRhs = new CompareInstruction(rhs.getOperand(), 1);
-                Instruction csetRhs = new CondSetInstruction(E, operand);
-                blockList.add(cmpRhs, csetRhs, jumpLogicExit);
+                generateLogicRecur(blockList, rhs.getOperand());
+                Block rhsTrue = getTrueRecur();
+                Block rhsFalse = getFalseRecur();
 
-                // lhsFalse
-                blockList.add(lhsFalse);
-                Instruction movFalse = new MoveInstruction(operand, 0);
-                blockList.add(movFalse, jumpLogicExit);
+                rhsFalse.setLabel("rhsFalse");
+                blockList.add(rhsFalse);
+                blockList.add(new JumpInstruction(lhsFalse));
+                rhsTrue.setLabel("logicTrue");
+                lhsFalse.setLabel("logicFalse");
+                setTrueRecur(rhsTrue);
+                setFalseRecur(lhsFalse);
             } else {
-                // lhsTrue
-                blockList.add(lhsTrue);
-                Instruction movTrue = new MoveInstruction(operand, 1);
-                blockList.add(movTrue, jumpLogicExit);
-
-                // lhsFalse
+                lhsFalse.setLabel("lhsFalse");
                 blockList.add(lhsFalse);
                 rhs.generateIR(blockList);
-                Instruction cmpRhs = new CompareInstruction(rhs.getOperand(), 1);
-                Instruction csetRhs = new CondSetInstruction(E, operand);
-                blockList.add(cmpRhs, csetRhs, jumpLogicExit);
+                generateLogicRecur(blockList, rhs.getOperand());
+                Block rhsTrue = getTrueRecur();
+                Block rhsFalse = getFalseRecur();
+
+                rhsTrue.setLabel("rhsTrue");
+                blockList.add(rhsTrue);
+                blockList.add(new JumpInstruction(lhsTrue));
+                lhsTrue.setLabel("logicTrue");
+                rhsFalse.setLabel("logicFalse");
+                setTrueRecur(lhsTrue);
+                setFalseRecur(rhsFalse);
             }
-            blockList.add(logicExit);
         } else {
             lhs.generateIR(blockList);
             rhs.generateIR(blockList);

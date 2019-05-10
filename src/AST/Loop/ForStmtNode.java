@@ -4,12 +4,9 @@ import AST.Expression.ExprNode;
 import AST.Statement.StmtNode;
 import IR.Build.Block;
 import IR.Build.BlockList;
-import IR.Instruction.CompareInstruction;
-import IR.Instruction.CondJumpInstruction;
-import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
 
-import static IR.Instruction.Operator.CompareOp.E;
+import static AST.Expression.BoolCstExprNode.*;
 
 public class ForStmtNode extends LoopStmtNode {
     private ExprNode initExpr, condExpr, incrExpr;
@@ -28,37 +25,39 @@ public class ForStmtNode extends LoopStmtNode {
         Block forBlock = new Block("forBlock");
         Block forIncr = new Block("forIncr");
         Block forExit = new Block("forExit");
-        Instruction jumpForIncr = new JumpInstruction(forIncr);
-        Instruction jumpForExit = new JumpInstruction(forExit);
         loopContinueBlock = forIncr;
         loopBreakBlock = forExit;
 
         // current blockList
         if (initExpr != null) initExpr.generateIR(blockList);
-        Instruction jumpForHeader = new JumpInstruction(forHeader);
-        blockList.add(jumpForHeader);
+        blockList.add(new JumpInstruction(forHeader));
 
         // forHeader
         blockList.add(forHeader);
         if (condExpr != null) {
             condExpr.generateIR(blockList);
-            Instruction cmp = new CompareInstruction(condExpr.getOperand(), 1);
-            Instruction cjumpForBlock = new CondJumpInstruction(E, forBlock);
-            blockList.add(cmp, cjumpForBlock, jumpForExit);
+            generateLogicRecur(blockList, condExpr.getOperand());
+            Block trueRecur = getTrueRecur();
+            Block falseRecur = getFalseRecur();
+            clearLogicRecur();
+
+            blockList.add(trueRecur);
+            blockList.add(new JumpInstruction(forBlock));
+            blockList.add(falseRecur);
+            blockList.add(new JumpInstruction(forExit));
         } else {
-            Instruction jumpForBlock = new JumpInstruction(forBlock);
-            blockList.add(jumpForBlock);
+            blockList.add(new JumpInstruction(forBlock));
         }
 
         // forBlock
         blockList.add(forBlock);
         if (thenStmt != null) thenStmt.generateIR(blockList);
-        blockList.add(jumpForIncr);
+        blockList.add(new JumpInstruction(forIncr));
 
         // forIncr
         blockList.add(forIncr);
         if (incrExpr != null) incrExpr.generateIR(blockList);
-        blockList.add(jumpForHeader);
+        blockList.add(new JumpInstruction(forHeader));
 
         // forExit
         blockList.add(forExit);

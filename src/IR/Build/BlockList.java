@@ -58,13 +58,15 @@ public class BlockList {
         this.funcName = funcName;
     }
 
-    public void add(Block block) {
-        block.setId(blockList.size());
-        block.setFuncName(funcName);
-        blockList.add(block);
+    public void add(Block... blockList) {
+        for (Block block : blockList) {
+            block.setId(this.blockList.size());
+            block.setFuncName(funcName);
+            this.blockList.add(block);
+        }
     }
 
-    public void add(Instruction... il) {
-        blockList.get(blockList.size() - 1).add(il);
+    public void add(Instruction... instructionList) {
+        blockList.get(blockList.size() - 1).add(instructionList);
     }
 }

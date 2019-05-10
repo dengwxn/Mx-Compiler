@@ -43,6 +43,11 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Cop
         this.src = src;
     }
 
+    public MoveInstruction(String dst, int src) {
+        this.dst = getVirtualRegister(dst);
+        this.src = new Immediate(src);
+    }
+
     @Override
     public void setGlobalVar(HashMap<Address, VirtualRegister> globalToReg) {
         if (dst instanceof Address && globalToReg.containsKey(dst))

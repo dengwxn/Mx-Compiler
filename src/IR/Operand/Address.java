@@ -8,7 +8,7 @@ import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
 
 public class Address extends Operand {
-    static private HashMap<String, Integer> offsetTable = new HashMap<>();
+    private static HashMap<String, Integer> offsetTable = new HashMap<>();
     private VirtualRegister base;
     private Immediate offset;
 
@@ -22,13 +22,13 @@ public class Address extends Operand {
         this.offset = new Immediate(offset);
     }
 
-    static public int getOffset(String name) {
+    public static int getOffset(String name) {
         if (offsetTable.containsKey(name))
             return offsetTable.get(name);
         return -1;
     }
 
-    static public void putOffset(String name, Integer offset) {
+    public static void putOffset(String name, Integer offset) {
         offsetTable.put(name, offset);
     }
 

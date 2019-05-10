@@ -8,21 +8,21 @@ import static Optimizer.RegisterAllocation.addVertex;
 import static Optimizer.RegisterAllocation.regList;
 
 public class VirtualRegisterTable {
-    static public HashMap<Symbol, VirtualRegister> virtualRegisterTable = new HashMap<>();
-    static private int tmpCnt;
-    static private HashMap<String, Symbol> register = new HashMap<>();
+    public static HashMap<Symbol, VirtualRegister> virtualRegisterTable = new HashMap<>();
+    private static int tmpCnt;
+    private static HashMap<String, Symbol> register = new HashMap<>();
 
-    static public VirtualRegister getVirtualRegister(Symbol symbol) {
+    public static VirtualRegister getVirtualRegister(Symbol symbol) {
         if (!virtualRegisterTable.containsKey(symbol))
             virtualRegisterTable.put(symbol, new VirtualRegister(symbol));
         return virtualRegisterTable.get(symbol);
     }
 
-    static public VirtualRegister getVirtualRegister(String symbol) {
+    public static VirtualRegister getVirtualRegister(String symbol) {
         return getVirtualRegister(register.get(symbol));
     }
 
-    static public VirtualRegister getTemporaryRegister() {
+    public static VirtualRegister getTemporaryRegister() {
         ++tmpCnt;
         Symbol symbol = new Symbol("t" + tmpCnt);
         VirtualRegister reg = new VirtualRegister(symbol);
@@ -30,12 +30,12 @@ public class VirtualRegisterTable {
         return reg;
     }
 
-    static private void precolor(String reg) {
+    private static void precolor(String reg) {
         Symbol symbol = new Symbol(reg, true);
         register.put(reg, symbol);
     }
 
-    static public void precolor() {
+    public static void precolor() {
         regList.forEach(reg -> precolor(reg));
         regList.forEach(reg -> addVertex(getVirtualRegister(reg)));
     }

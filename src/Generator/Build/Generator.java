@@ -15,7 +15,7 @@ import java.util.Map;
 import static IR.Build.IR.*;
 
 public class Generator {
-    static public void generate() throws Exception {
+    public static void generate() throws Exception {
         String header = readFileAsString("./lib/header.asm");
         String builtin = readFileAsString("./lib/builtin.asm");
 
@@ -33,7 +33,7 @@ public class Generator {
         System.out.println(str.toString());
     }
 
-    static private String generateData() {
+    private static String generateData() {
         StringBuilder str = new StringBuilder();
         str.append("section .data\n");
         for (Map.Entry<String, Integer> entry : stringConst.entrySet()) {
@@ -46,7 +46,7 @@ public class Generator {
         return str.toString();
     }
 
-    static private String convertEscapeToNumber(String s) {
+    private static String convertEscapeToNumber(String s) {
         String t = s;
         t = t.replace("\\b", "\", 8, \"");
         t = t.replace("\\t", "\", 9, \"");
@@ -61,7 +61,7 @@ public class Generator {
         return t;
     }
 
-    static private String convertLiteralEscape(String s) {
+    private static String convertLiteralEscape(String s) {
         String t = s;
         t = t.replace("\\b", "\b");
         t = t.replace("\\t", "\t");
@@ -72,7 +72,7 @@ public class Generator {
         return t;
     }
 
-    static private String generateBss() {
+    private static String generateBss() {
         StringBuilder str = new StringBuilder();
         str.append("section .bss\n");
         for (Node decl : Tree.prog.getDecl()) {
@@ -84,7 +84,7 @@ public class Generator {
         return str.toString();
     }
 
-    static private String readFileAsString(String fileName) throws Exception {
+    private static String readFileAsString(String fileName) throws Exception {
         return new String(Files.readAllBytes(Paths.get(fileName)));
     }
 }

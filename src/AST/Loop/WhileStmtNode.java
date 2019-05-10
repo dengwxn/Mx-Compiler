@@ -4,12 +4,9 @@ import AST.Expression.ExprNode;
 import AST.Statement.StmtNode;
 import IR.Build.Block;
 import IR.Build.BlockList;
-import IR.Instruction.CompareInstruction;
-import IR.Instruction.CondJumpInstruction;
-import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
 
-import static IR.Instruction.Operator.CompareOp.E;
+import static AST.Expression.BoolCstExprNode.*;
 
 public class WhileStmtNode extends LoopStmtNode {
     private ExprNode condExpr;
@@ -25,30 +22,33 @@ public class WhileStmtNode extends LoopStmtNode {
         Block whileHeader = new Block("whileHeader");
         Block whileBlock = new Block("whileBlock");
         Block whileExit = new Block("whileExit");
-        Instruction jumpWhileExit = new JumpInstruction(whileExit);
         loopContinueBlock = whileHeader;
         loopBreakBlock = whileExit;
 
         // current blockList
-        Instruction jumpWhileHeader = new JumpInstruction(whileHeader);
-        blockList.add(jumpWhileHeader);
+        blockList.add(new JumpInstruction(whileHeader));
 
         // whileHeader
         blockList.add(whileHeader);
         if (condExpr != null) {
             condExpr.generateIR(blockList);
-            Instruction cmp = new CompareInstruction(condExpr.getOperand(), 1);
-            Instruction cjumpWhileBlock = new CondJumpInstruction(E, whileBlock);
-            blockList.add(cmp, cjumpWhileBlock, jumpWhileExit);
+            generateLogicRecur(blockList, condExpr.getOperand());
+            Block trueRecur = getTrueRecur();
+            Block falseRecur = getFalseRecur();
+            clearLogicRecur();
+
+            blockList.add(trueRecur);
+            blockList.add(new JumpInstruction(whileBlock));
+            blockList.add(falseRecur);
+            blockList.add(new JumpInstruction(whileExit));
         } else {
-            Instruction jumpWhileBlock = new JumpInstruction(whileBlock);
-            blockList.add(jumpWhileBlock);
+            blockList.add(new JumpInstruction(whileBlock));
         }
 
         // whileBlock
         blockList.add(whileBlock);
         thenStmt.generateIR(blockList);
-        blockList.add(jumpWhileHeader);
+        blockList.add(new JumpInstruction(whileHeader));
 
         // whileExit
         blockList.add(whileExit);

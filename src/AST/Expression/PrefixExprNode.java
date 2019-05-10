@@ -2,9 +2,11 @@ package AST.Expression;
 
 import AST.Type.Type;
 import IR.Build.BlockList;
-import IR.Instruction.*;
+import IR.Instruction.MoveInstruction;
+import IR.Instruction.Operator;
+import IR.Instruction.UnaryInstruction;
 
-import static IR.Instruction.Operator.BinaryOp.XOR;
+import static AST.Expression.BoolCstExprNode.*;
 import static IR.Instruction.Operator.UnaryOp.*;
 import static IR.Operand.VirtualRegisterTable.getTemporaryRegister;
 
@@ -35,22 +37,25 @@ public class PrefixExprNode extends ExprNode {
     @Override
     public void generateIR(BlockList blockList) {
         expr.generateIR(blockList);
-        if (op.equals("+")) {
-            operand = expr.getOperand();
-        } else if (op.equals("!")) {
-            operand = getTemporaryRegister();
-            Instruction mov = new MoveInstruction(operand, expr.getOperand());
-            Instruction not = new BinaryInstruction(XOR, operand, 1);
-            blockList.add(mov, not);
-        } else if (op.equals("++") || op.equals("--")) {
-            operand = expr.getOperand();
-            Instruction unary = new UnaryInstruction(convertUnaryOp(), operand);
-            blockList.add(unary);
-        } else {
-            operand = getTemporaryRegister();
-            Instruction mov = new MoveInstruction(operand, expr.getOperand());
-            Instruction unary = new UnaryInstruction(convertUnaryOp(), operand);
-            blockList.add(mov, unary);
+        switch (op) {
+            case "+":
+                operand = expr.getOperand();
+                break;
+            case "!":
+                if (!haveLogicRecur())
+                    generateLogicRecur(blockList, expr.getOperand());
+                swapLogicRecur();
+                break;
+            case "++":
+            case "--":
+                operand = expr.getOperand();
+                blockList.add(new UnaryInstruction(convertUnaryOp(), operand));
+                break;
+            default:
+                operand = getTemporaryRegister();
+                blockList.add(new MoveInstruction(operand, expr.getOperand()));
+                blockList.add(new UnaryInstruction(convertUnaryOp(), operand));
+                break;
         }
     }
 

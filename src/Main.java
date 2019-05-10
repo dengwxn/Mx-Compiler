@@ -20,37 +20,37 @@ import java.io.InputStream;
 import static AST.Build.Tree.errorListener;
 
 public class Main {
-    static public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         buildAST();
         generateIR();
         optimize();
         generate();
     }
 
-    static private void generateIR() throws Exception {
+    private static void generateIR() throws Exception {
         IR.generate();
         IR.dump("plain");
     }
 
-    static private void optimize() throws Exception {
+    private static void optimize() throws Exception {
         int cnt = Inline.optimize();
         for (int i = 0; i < cnt; ++i) {
             Propagation.optimize();
             NeedednessAnalysis.optimize();
         }
         GlobalVarLoading.optimize();
-        if (cnt > 1) {
+        for (int i = 0; i < cnt - 1; ++i) {
             Propagation.optimize();
             NeedednessAnalysis.optimize();
         }
         RegisterAllocation.optimize();
     }
 
-    static private void generate() throws Exception {
+    private static void generate() throws Exception {
         Generator.generate();
     }
 
-    static private void buildAST() throws Exception {
+    private static void buildAST() throws Exception {
         // InputStream is = new FileInputStream("./testcase/naive.c");
         InputStream is = System.in;
         CharStream input = CharStreams.fromStream(is);

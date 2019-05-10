@@ -3,12 +3,9 @@ package AST.Statement;
 import AST.Expression.ExprNode;
 import IR.Build.Block;
 import IR.Build.BlockList;
-import IR.Instruction.CompareInstruction;
-import IR.Instruction.CondJumpInstruction;
-import IR.Instruction.Instruction;
 import IR.Instruction.JumpInstruction;
 
-import static IR.Instruction.Operator.CompareOp.E;
+import static AST.Expression.BoolCstExprNode.*;
 
 public class IfStmtNode extends StmtNode {
     private ExprNode condExpr;
@@ -22,27 +19,24 @@ public class IfStmtNode extends StmtNode {
 
     @Override
     public void generateIR(BlockList blockList) {
-        Block ifTrue = new Block("ifTrue");
-        Block ifFalse = new Block("ifFalse");
         Block ifExit = new Block("ifExit");
-        Instruction jumpIfExit = new JumpInstruction(ifExit);
-
         // current blockList
         condExpr.generateIR(blockList);
-        Instruction cmp = new CompareInstruction(condExpr.getOperand(), 1);
-        Instruction cjumpIfTrue = new CondJumpInstruction(E, ifTrue);
-        Instruction jumpIfFalse = new JumpInstruction(ifFalse);
-        blockList.add(cmp, cjumpIfTrue, jumpIfFalse);
+        if (!haveLogicRecur())
+            generateLogicRecur(blockList, condExpr.getOperand());
+        Block trueRecur = getTrueRecur();
+        Block falseRecur = getFalseRecur();
+        clearLogicRecur();
 
         // ifTrue
-        blockList.add(ifTrue);
+        blockList.add(trueRecur);
         if (thenStmt != null) thenStmt.generateIR(blockList);
-        blockList.add(jumpIfExit);
+        blockList.add(new JumpInstruction(ifExit));
 
         // ifFalse
-        blockList.add(ifFalse);
+        blockList.add(falseRecur);
         if (elseStmt != null) elseStmt.generateIR(blockList);
-        blockList.add(jumpIfExit);
+        blockList.add(new JumpInstruction(ifExit));
 
         // ifExit
         blockList.add(ifExit);

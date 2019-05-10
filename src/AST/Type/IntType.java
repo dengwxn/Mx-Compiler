@@ -6,7 +6,7 @@ public class IntType extends Type {
     private IntType() {
     }
 
-    static public Type getInstance() {
+    public static Type getInstance() {
         return instance;
     }
 

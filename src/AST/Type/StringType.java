@@ -6,7 +6,7 @@ public class StringType extends Type {
     private StringType() {
     }
 
-    static public Type getInstance() {
+    public static Type getInstance() {
         return instance;
     }
 

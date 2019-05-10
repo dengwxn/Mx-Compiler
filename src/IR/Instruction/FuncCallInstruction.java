@@ -13,7 +13,7 @@ import static IR.Build.FunctionIR.setMaxParamSize;
 import static IR.Build.IR.formatInstr;
 
 public class FuncCallInstruction extends Instruction {
-    static final private ArrayList<String> def = new ArrayList<>(Arrays.asList(
+    private static final ArrayList<String> def = new ArrayList<>(Arrays.asList(
             "res0", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "ler7"));
     private String name;
     private ArrayList<Operand> param;
@@ -25,7 +25,7 @@ public class FuncCallInstruction extends Instruction {
         this.argCnt = argCnt;
     }
 
-    static public int moveArg(BlockList blockList, ArrayList<Operand> operand) {
+    public static int moveArg(BlockList blockList, ArrayList<Operand> operand) {
         int argCnt = 0;
         for (int i = 0; i < 6 && operand.size() > 0; ++i) {
             blockList.add(new MoveInstruction("arg" + (i + 1), operand.get(0)));

@@ -18,19 +18,19 @@ import java.util.HashMap;
 import static IR.Operand.VirtualRegisterTable.precolor;
 
 public class IR {
-    static final private boolean _DEBUG_TRANSLATE_ = false;
-    static public HashMap<String, FunctionIR> functionIRMap = new HashMap<>();
-    static public HashMap<String, Integer> stringConst = new HashMap<>();
-    static private int _DEBUG_IR_CNT_;
-    static private FuncDeclNode globalVarDecl;
+    private static final boolean _DEBUG_TRANSLATE_ = false;
+    public static HashMap<String, FunctionIR> functionIRMap = new HashMap<>();
+    public static HashMap<String, Integer> stringConst = new HashMap<>();
+    private static int _DEBUG_IR_CNT_;
+    private static FuncDeclNode globalVarDecl;
 
-    static public int putStringConst(String str) {
+    public static int putStringConst(String str) {
         if (!stringConst.containsKey(str))
             stringConst.put(str, stringConst.size());
         return stringConst.get(str);
     }
 
-    static private void setGlobalVarDecl() {
+    private static void setGlobalVarDecl() {
         BlockStmtNode block = new BlockStmtNode();
         for (Node decl : Tree.prog.getDecl()) {
             if (decl instanceof VarDeclStmtNode) {
@@ -44,7 +44,7 @@ public class IR {
         globalVarDecl.setParamSymbol(new ArrayList<>());
     }
 
-    static public void generate() {
+    public static void generate() {
         setGlobalVarDecl();
         precolor();
         functionIRMap.put(globalVarDecl.getFuncName(), new FunctionIR(globalVarDecl));
@@ -58,7 +58,7 @@ public class IR {
         }
     }
 
-    static public String toNASM() {
+    public static String toNASM() {
         StringBuilder str = new StringBuilder();
         str.append("section .text\n");
         for (FunctionIR functionIR : functionIRMap.values())
@@ -66,7 +66,7 @@ public class IR {
         return str.toString();
     }
 
-    static public void dump(String name) throws Exception {
+    public static void dump(String name) throws Exception {
         StringBuilder str = new StringBuilder();
         for (FunctionIR functionIR : functionIRMap.values())
             str.append(functionIR.toString());
@@ -76,19 +76,19 @@ public class IR {
         fprint.print(str.toString());
     }
 
-    static public String formatInstr(String instr) {
+    public static String formatInstr(String instr) {
         return String.format("\t%s\n", instr);
     }
 
-    static public String formatInstr(String instr, String op) {
+    public static String formatInstr(String instr, String op) {
         return String.format("\t%s  \t%s\n", instr, translateRegister(op));
     }
 
-    static public String formatInstr(String instr, String lhs, String rhs) {
+    public static String formatInstr(String instr, String lhs, String rhs) {
         return String.format("\t%s  \t%s, %s\n", instr, translateRegister(lhs), translateRegister(rhs));
     }
 
-    static public String translateRegister(String op) {
+    public static String translateRegister(String op) {
         if (_DEBUG_TRANSLATE_)
             return op;
         switch (op) {

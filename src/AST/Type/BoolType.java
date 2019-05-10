@@ -6,7 +6,7 @@ public class BoolType extends Type {
     private BoolType() {
     }
 
-    static public Type getInstance() {
+    public static Type getInstance() {
         return instance;
     }
 

@@ -1,7 +1,7 @@
 package IR.Instruction;
 
 public class Operator {
-    static public boolean getCompare(CompareOp op, int lhs, int rhs) {
+    public static boolean getCompare(CompareOp op, int lhs, int rhs) {
         switch (op) {
             case E:
                 return lhs == rhs;

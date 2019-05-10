@@ -11,8 +11,8 @@ import static IR.Instruction.Operator.CompareOp.*;
 import static IR.Instruction.Operator.getCompare;
 
 public class Block {
-    static final private boolean _DEBUG_REDUNDANT_ADJACENT_MOVE = false;
-    static final private boolean _DEBUG_REDUNDANT_SELF_MOVE_ = false;
+    private static final boolean _DEBUG_REDUNDANT_ADJACENT_MOVE = false;
+    private static final boolean _DEBUG_REDUNDANT_SELF_MOVE_ = false;
 
     private String label;
     private ArrayList<Instruction> instr;
@@ -35,7 +35,7 @@ public class Block {
         this.instr = new ArrayList<>();
     }
 
-    static private Operator.CompareOp getNot(Operator.CompareOp op) {
+    private static Operator.CompareOp getNot(Operator.CompareOp op) {
         switch (op) {
             case L:
                 return NL;
@@ -252,6 +252,10 @@ public class Block {
     public String getLabel() {
         if (id == 0) return label;
         else return label + "." + id;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String toNASM(Block nextBlock) {

@@ -11,9 +11,9 @@ import java.io.PrintStream;
 import static IR.Build.IR.functionIRMap;
 
 public class NeedednessAnalysis {
-    static private int _DEBUG_NEEDEDNESS_ANALYSIS_CNT_;
+    private static int _DEBUG_NEEDEDNESS_ANALYSIS_CNT_;
 
-    static public void optimize() throws Exception {
+    public static void optimize() throws Exception {
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.analyzeNeededness();
         dumpNeedednessAnalysis();
@@ -31,7 +31,7 @@ public class NeedednessAnalysis {
         IR.dump("block");
     }
 
-    static private void dumpNeedednessAnalysis() throws Exception {
+    private static void dumpNeedednessAnalysis() throws Exception {
         StringBuilder str = new StringBuilder();
         for (FunctionIR functionIR : functionIRMap.values())
             str.append(functionIR.dumpNeedednessAnalysis());

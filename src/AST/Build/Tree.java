@@ -9,12 +9,12 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import java.util.Stack;
 
 public class Tree {
-    static public ErrorListener errorListener = new ErrorListener();
-    static public ProgNode prog;
+    public static ErrorListener errorListener = new ErrorListener();
+    public static ProgNode prog;
+    public static SymbolTable symbolTable = new SymbolTable(null);
     static ParseTreeProperty<Object> map = new ParseTreeProperty<>();
-    static public SymbolTable symbolTable = new SymbolTable(null);
     static TypeTable typeTable = new TypeTable();
-    static private Stack<LoopStmtNode> loopStmtStack = new Stack<>();
+    private static Stack<LoopStmtNode> loopStmtStack = new Stack<>();
 
     static void enterLoop(LoopStmtNode loopStmt) {
         loopStmtStack.push(loopStmt);
@@ -47,7 +47,7 @@ public class Tree {
         }
     }
 
-    static public void dump() {
+    public static void dump() {
         prog.dump(0);
     }
 }
