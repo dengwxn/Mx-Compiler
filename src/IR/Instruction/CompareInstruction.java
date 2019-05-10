@@ -25,9 +25,6 @@ public class CompareInstruction extends Instruction implements CopyRemove {
     }
 
     public CompareInstruction(Operand lhs, int rhs) {
-        if (lhs == null) {
-            int s = 0;
-        }
         this.lhs = lhs;
         this.rhs = new Immediate(rhs);
     }
@@ -50,6 +47,11 @@ public class CompareInstruction extends Instruction implements CopyRemove {
     @Override
     public Instruction makeCopy() {
         return new CompareInstruction(makeCopy(lhs), makeCopy(rhs));
+    }
+
+    @Override
+    public boolean hasNecAddress() {
+        return lhs instanceof Address || rhs instanceof Address;
     }
 
     @Override

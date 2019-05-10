@@ -285,6 +285,87 @@ public class FunctionIR {
         instrList.forEach(instr -> instr.putNeeded());
     }
 
+    public void eliminateLoop() {
+        ArrayList<Block> blockList = this.blockList.getBlockList();
+        while (true) {
+            boolean found = false;
+            HashMap<VirtualRegister, Integer> allUse = new HashMap<>();
+            for (Block u : blockList) {
+                ArrayList<Instruction> instr = u.getInstr();
+                for (Instruction v : instr)
+                    v.collectUse(allUse);
+            }
+            for (int i = 1; i < blockList.size(); ++i) {
+                boolean flag = true;
+                for (int k = 0; k < 2; ++k) {
+                    HashSet<Block> redundantBlock = new HashSet<>();
+                    for (int j = i; j < i + 2 + k && j < blockList.size() - 1; ++j) {
+                        Block u = blockList.get(j);
+                        String label = u.getLabel();
+                        if (label.substring(label.indexOf(".") + 1).contains("Exit")) {
+                            flag = false;
+                            break;
+                        }
+                        redundantBlock.add(u);
+                        ArrayList<Instruction> instr = u.getInstr();
+                        for (Instruction v : instr) {
+                            if (v instanceof FuncCallInstruction || v.hasNecAddress()) {
+                                flag = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (flag) {
+                        HashMap<VirtualRegister, Integer> insideUse = new HashMap<>();
+                        HashSet<VirtualRegister> insideDef = new HashSet<>();
+                        HashSet<Block> outsideBlock = new HashSet<>();
+                        for (Block u : redundantBlock) {
+                            ArrayList<Instruction> instr = u.getInstr();
+                            for (Instruction x : instr) {
+                                if (x instanceof Jump) {
+                                    if (!redundantBlock.contains(((Jump) x).getDst())) {
+                                        Block v = ((Jump) x).getDst();
+                                        outsideBlock.add(v);
+                                    }
+                                } else {
+                                    x.collectDef(insideDef);
+                                    x.collectUse(insideUse);
+                                }
+                            }
+                        }
+                        boolean outsideUse = false;
+                        for (VirtualRegister u : insideDef) {
+                            if (allUse.get(u) != null) {
+                                if (!allUse.get(u).equals(insideUse.get(u))) {
+                                    outsideUse = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!outsideUse && outsideBlock.size() == 1) {
+                            Block out = outsideBlock.iterator().next();
+                            blockList.removeAll(redundantBlock);
+                            for (Block u : blockList) {
+                                ArrayList<Instruction> instr = u.getInstr();
+                                for (Instruction x : instr) {
+                                    if (x instanceof Jump) {
+                                        Block dst = ((Jump) x).getDst();
+                                        if (redundantBlock.contains(dst))
+                                            ((Jump) x).setDst(out);
+                                    }
+                                }
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (found) break;
+            }
+            if (!found) break;
+        }
+    }
+
     public void eliminateBlock() {
         ArrayList<Block> blockList = this.blockList.getBlockList();
         Block start = blockList.get(0);
@@ -316,7 +397,9 @@ public class FunctionIR {
             for (Instruction instr : instrList) {
                 if (instr instanceof Jump) {
                     Block x = ((Jump) instr).getDst();
+                    HashSet<Block> flag = new HashSet<>();
                     while (x.size() == 1) {
+                        if (!flag.add(x)) break;
                         Instruction u = x.getInstr().get(0);
                         if (u instanceof JumpInstruction) x = ((JumpInstruction) u).getDst();
                         else if (u instanceof ReturnInstruction) break;

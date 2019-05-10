@@ -1,7 +1,6 @@
 package IR.Build;
 
 import IR.Instruction.*;
-import IR.Operand.Immediate;
 import IR.Operand.Operand;
 
 import java.util.ArrayList;
@@ -18,18 +17,6 @@ public class Block {
     private ArrayList<Instruction> instr;
     private int id;
     private JumpInstruction jump;
-
-    public Block makeCopy() {
-        Block cpy = new Block(label);
-        cpy.instr = new ArrayList<>();
-        for (Instruction u : instr) {
-            if (!(u instanceof ReturnInstruction))
-                cpy.instr.add(u.makeCopy());
-        }
-        cpy.id = -id;
-        cpy.jump = null;
-        return cpy;
-    }
 
     public Block(String label) {
         this.label = label;
@@ -55,29 +42,35 @@ public class Block {
         }
     }
 
+    public Block makeCopy() {
+        Block cpy = new Block(label.substring(label.indexOf(".") + 1));
+        cpy.instr = new ArrayList<>();
+        for (Instruction u : instr) {
+            if (!(u instanceof ReturnInstruction))
+                cpy.instr.add(u.makeCopy());
+        }
+        cpy.id = -id;
+        cpy.jump = null;
+        return cpy;
+    }
+
     private void foldCmp(CompareInstruction cmp, int id) {
         Integer cstLhs = cmp.getCstLhs();
         Integer cstRhs = cmp.getCstRhs();
         if (cstLhs != null && cstRhs != null) {
-            if (instr.get(id + 1) instanceof CondInstruction) {
-                CondInstruction v = (CondInstruction) instr.get(id + 1);
+            if (instr.get(id + 1) instanceof CondJumpInstruction) {
+                CondJumpInstruction v = (CondJumpInstruction) instr.get(id + 1);
                 Operator.CompareOp op = v.getOp();
                 boolean res = getCompare(op, cstLhs, cstRhs);
-                if (v instanceof CondSetInstruction) {
-                    Operand dst = ((CondSetInstruction) v).getDst();
-                    instr.set(id, new MoveInstruction(dst, res ? 1 : 0));
-                    instr.remove(id + 1);
-                } else if (v instanceof CondJumpInstruction) {
-                    if (res) {
-                        Block dst = ((CondJumpInstruction) v).getDst();
-                        jump = new JumpInstruction(dst);
-                        instr.set(id, jump);
-                        while (instr.size() > id + 1)
-                            instr.remove(instr.size() - 1);
-                    } else {
-                        instr.remove(id);
-                        instr.remove(id);
-                    }
+                if (res) {
+                    Block dst = v.getDst();
+                    jump = new JumpInstruction(dst);
+                    instr.set(id, jump);
+                    while (instr.size() > id + 1)
+                        instr.remove(instr.size() - 1);
+                } else {
+                    instr.remove(id);
+                    instr.remove(id);
                 }
             }
         }
@@ -209,10 +202,6 @@ public class Block {
         return instr.get(id);
     }
 
-    void setId(int id) {
-        this.id = id;
-    }
-
     void set(int id, Instruction instr) {
         this.instr.set(id, instr);
     }
@@ -227,26 +216,6 @@ public class Block {
             instr.add(i);
             if (i instanceof JumpInstruction)
                 jump = (JumpInstruction) i;
-
-            if (instr.size() >= 3) {
-                if (instr.get(instr.size() - 3) instanceof CondSetInstruction
-                        && instr.get(instr.size() - 2) instanceof CompareInstruction
-                        && instr.get(instr.size() - 1) instanceof CondInstruction) {
-
-                    CondSetInstruction condSet = (CondSetInstruction) instr.get(instr.size() - 3);
-                    CompareInstruction cmp = (CompareInstruction) instr.get(instr.size() - 2);
-
-                    if (condSet.getDst() == cmp.getLhs()
-                            && cmp.getRhs() instanceof Immediate
-                            && ((Immediate) cmp.getRhs()).getVal() == 1) {
-
-                        CondInstruction cond = (CondInstruction) instr.get(instr.size() - 1);
-                        cond.setOp(condSet.getOp());
-                        instr.remove(instr.size() - 2);
-                        instr.remove(instr.size() - 2);
-                    }
-                }
-            }
         }
     }
 
@@ -254,17 +223,21 @@ public class Block {
         return id;
     }
 
+    void setId(int id) {
+        this.id = id;
+    }
+
     String getLabel() {
         return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getProgLabel() {
         if (id == 0) return label;
         else return label + "." + id;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 
     public String toNASM(Block nextBlock) {

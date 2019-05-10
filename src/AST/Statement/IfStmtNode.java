@@ -22,7 +22,7 @@ public class IfStmtNode extends StmtNode {
         Block ifExit = new Block("ifExit");
         // current blockList
         condExpr.generateIR(blockList);
-        if (!haveLogicRecur())
+        if (!hasLogicRecur())
             generateLogicRecur(blockList, condExpr.getOperand());
         Block trueRecur = getTrueRecur();
         Block falseRecur = getFalseRecur();

@@ -45,6 +45,11 @@ public class UnaryInstruction extends Instruction implements ConstantFolding, De
     }
 
     @Override
+    public boolean hasNecAddress() {
+        return dst instanceof Address;
+    }
+
+    @Override
     public void putNec() {
         if (dst instanceof Address)
             putNec(dst);

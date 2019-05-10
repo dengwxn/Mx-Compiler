@@ -89,10 +89,14 @@ public class BinaryExprNode extends ExprNode {
             } else {
                 // relation
                 VirtualRegister tmp = getTemporaryRegister();
-                Instruction mov = new MoveInstruction(tmp, lhs.getOperand());
-                Instruction cmp = new CompareInstruction(tmp, rhs.getOperand());
-                Instruction cset = new CondSetInstruction(convertCompareOp(), operand);
-                blockList.add(mov, cmp, cset);
+                blockList.add(new MoveInstruction(tmp, lhs.getOperand()));
+                blockList.add(new CompareInstruction(tmp, rhs.getOperand()));
+                Block cmpTrue = new Block("logicTrue");
+                Block cmpFalse = new Block("logicFalse");
+                blockList.add(new CondJumpInstruction(convertCompareOp(), cmpTrue));
+                blockList.add(new JumpInstruction(cmpFalse));
+                setTrueRecur(cmpTrue);
+                setFalseRecur(cmpFalse);
             }
         }
     }

@@ -35,6 +35,8 @@ public class WhileStmtNode extends LoopStmtNode {
             generateLogicRecur(blockList, condExpr.getOperand());
             Block trueRecur = getTrueRecur();
             Block falseRecur = getFalseRecur();
+            trueRecur.setLabel("whileCondTrue");
+            falseRecur.setLabel("whileCondFalse");
             clearLogicRecur();
 
             blockList.add(trueRecur);

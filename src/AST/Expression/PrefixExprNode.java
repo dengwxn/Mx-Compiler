@@ -42,7 +42,7 @@ public class PrefixExprNode extends ExprNode {
                 operand = expr.getOperand();
                 break;
             case "!":
-                if (!haveLogicRecur())
+                if (!hasLogicRecur())
                     generateLogicRecur(blockList, expr.getOperand());
                 swapLogicRecur();
                 break;

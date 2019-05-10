@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 
+import static IR.Build.IR._DEBUG_COMPILER_;
 import static IR.Build.IR.functionIRMap;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static java.lang.Math.max;
@@ -124,39 +125,45 @@ public class RegisterAllocation {
     }
 
     private static void dumpColor(ArrayList<VirtualRegister> order, HashMap<VirtualRegister, Integer> color) throws Exception {
-        StringBuilder str = new StringBuilder();
-        for (VirtualRegister u : order)
-            str.append(u.toString() + ": " + color.get(u) + "\n");
-        File file = new File("color.txt");
-        OutputStream fout = new FileOutputStream(file);
-        PrintStream fprint = new PrintStream(fout);
-        fprint.print(str.toString());
+        if (_DEBUG_COMPILER_) {
+            StringBuilder str = new StringBuilder();
+            for (VirtualRegister u : order)
+                str.append(u.toString() + ": " + color.get(u) + "\n");
+            File file = new File("color.txt");
+            OutputStream fout = new FileOutputStream(file);
+            PrintStream fprint = new PrintStream(fout);
+            fprint.print(str.toString());
+        }
     }
 
     private static void dumpIntrf() throws Exception {
-        StringBuilder str = new StringBuilder();
-        for (VirtualRegister u : vertex) {
-            str.append(u.toString() + ": ");
-            if (intrf.get(u) != null) {
-                for (VirtualRegister v : intrf.get(u)) {
-                    str.append(v.toString() + ", ");
+        if (_DEBUG_COMPILER_) {
+            StringBuilder str = new StringBuilder();
+            for (VirtualRegister u : vertex) {
+                str.append(u.toString() + ": ");
+                if (intrf.get(u) != null) {
+                    for (VirtualRegister v : intrf.get(u)) {
+                        str.append(v.toString() + ", ");
+                    }
                 }
+                str.append("\n");
             }
-            str.append("\n");
+            File file = new File("Intrf.txt");
+            OutputStream fout = new FileOutputStream(file);
+            PrintStream fprint = new PrintStream(fout);
+            fprint.print(str.toString());
         }
-        File file = new File("Intrf.txt");
-        OutputStream fout = new FileOutputStream(file);
-        PrintStream fprint = new PrintStream(fout);
-        fprint.print(str.toString());
     }
 
     private static void dumpLivenessAnalysis() throws Exception {
-        StringBuilder str = new StringBuilder();
-        for (FunctionIR functionIR : functionIRMap.values())
-            str.append(functionIR.dumpLivenessAnalysis());
-        File file = new File("livenessAnalysis.txt");
-        OutputStream fout = new FileOutputStream(file);
-        PrintStream fprint = new PrintStream(fout);
-        fprint.print(str.toString());
+        if (_DEBUG_COMPILER_) {
+            StringBuilder str = new StringBuilder();
+            for (FunctionIR functionIR : functionIRMap.values())
+                str.append(functionIR.dumpLivenessAnalysis());
+            File file = new File("livenessAnalysis.txt");
+            OutputStream fout = new FileOutputStream(file);
+            PrintStream fprint = new PrintStream(fout);
+            fprint.print(str.toString());
+        }
     }
 }

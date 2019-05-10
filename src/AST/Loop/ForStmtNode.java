@@ -39,6 +39,8 @@ public class ForStmtNode extends LoopStmtNode {
             generateLogicRecur(blockList, condExpr.getOperand());
             Block trueRecur = getTrueRecur();
             Block falseRecur = getFalseRecur();
+            trueRecur.setLabel("forCondTrue");
+            falseRecur.setLabel("forCondFalse");
             clearLogicRecur();
 
             blockList.add(trueRecur);

@@ -19,6 +19,7 @@ import static IR.Operand.VirtualRegisterTable.precolor;
 
 public class IR {
     private static final boolean _DEBUG_TRANSLATE_ = false;
+    public static final boolean _DEBUG_COMPILER_ = false;
     public static HashMap<String, FunctionIR> functionIRMap = new HashMap<>();
     public static HashMap<String, Integer> stringConst = new HashMap<>();
     private static int _DEBUG_IR_CNT_;
@@ -67,13 +68,15 @@ public class IR {
     }
 
     public static void dump(String name) throws Exception {
-        StringBuilder str = new StringBuilder();
-        for (FunctionIR functionIR : functionIRMap.values())
-            str.append(functionIR.toString());
-        File file = new File("IR" + _DEBUG_IR_CNT_++ + "_" + name + ".txt");
-        OutputStream fout = new FileOutputStream(file);
-        PrintStream fprint = new PrintStream(fout);
-        fprint.print(str.toString());
+        if (_DEBUG_COMPILER_) {
+            StringBuilder str = new StringBuilder();
+            for (FunctionIR functionIR : functionIRMap.values())
+                str.append(functionIR.toString());
+            File file = new File("IR" + _DEBUG_IR_CNT_++ + "_" + name + ".txt");
+            OutputStream fout = new FileOutputStream(file);
+            PrintStream fprint = new PrintStream(fout);
+            fprint.print(str.toString());
+        }
     }
 
     public static String formatInstr(String instr) {

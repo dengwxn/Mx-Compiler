@@ -36,7 +36,7 @@ public class VarDeclStmtNode extends StmtNode {
         if (expr != null) {
             expr.generateIR(blockList);
             Operand dst = symbol.getOperand();
-            if (haveLogicRecur()) {
+            if (hasLogicRecur()) {
                 Block trueRecur = getTrueRecur();
                 Block falseRecur = getFalseRecur();
                 clearLogicRecur();

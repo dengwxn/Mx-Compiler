@@ -70,6 +70,11 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, C
     }
 
     @Override
+    public boolean hasNecAddress() {
+        return dst instanceof Address;
+    }
+
+    @Override
     public void putNec() {
         if (dst instanceof Address) {
             putNec(dst);

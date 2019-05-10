@@ -21,7 +21,7 @@ public class ReturnStmtNode extends StmtNode {
     public void generateIR(BlockList blockList) {
         if (expr != null) {
             expr.generateIR(blockList);
-            if (haveLogicRecur()) {
+            if (hasLogicRecur()) {
                 Block trueRecur = getTrueRecur();
                 Block falseRecur = getFalseRecur();
                 clearLogicRecur();

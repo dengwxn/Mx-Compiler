@@ -18,7 +18,7 @@ public class BoolCstExprNode extends ExprNode {
         this.val = val;
     }
 
-    public static boolean haveLogicRecur() {
+    public static boolean hasLogicRecur() {
         return trueRecur != null;
     }
 
@@ -49,7 +49,7 @@ public class BoolCstExprNode extends ExprNode {
     }
 
     public static void generateLogicRecur(BlockList blockList, Operand op) {
-        if (!haveLogicRecur()) {
+        if (!hasLogicRecur()) {
             trueRecur = new Block("logicTrue");
             falseRecur = new Block("logicFalse");
             blockList.add(new CompareInstruction(op, 1));

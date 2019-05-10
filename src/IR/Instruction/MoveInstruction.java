@@ -75,6 +75,12 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Cop
     }
 
     @Override
+    public boolean hasNecAddress() {
+        if (dst == getVirtualRegister("res0")) return src instanceof Address;
+        else return dst instanceof Address;
+    }
+
+    @Override
     public void putNec() {
         if (dst == getVirtualRegister("res0")) {
             putNec(src);

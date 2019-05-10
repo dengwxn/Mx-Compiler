@@ -22,7 +22,7 @@ public class AssignExprNode extends ExprNode {
         lhs.generateIR(blockList);
         rhs.generateIR(blockList);
         operand = getTemporaryRegister();
-        if (haveLogicRecur()) {
+        if (hasLogicRecur()) {
             Block trueRecur = getTrueRecur();
             Block falseRecur = getFalseRecur();
             clearLogicRecur();

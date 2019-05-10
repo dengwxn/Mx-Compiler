@@ -26,6 +26,19 @@ abstract public class Instruction {
     private HashSet<VirtualRegister> nec = new HashSet<>();
     private HashSet<VirtualRegister> needed = new HashSet<>();
 
+    public void collectDef(HashSet<VirtualRegister> collect) {
+        collect.addAll(def);
+    }
+
+    public void collectUse(HashMap<VirtualRegister, Integer> collect) {
+        for (VirtualRegister u : use)
+            collect.merge(u, 1, (x, y) -> x + 1);
+    }
+
+    public boolean hasNecAddress() {
+        return false;
+    }
+
     public void setGlobalVar(HashMap<Address, VirtualRegister> globalToReg) {
     }
 
