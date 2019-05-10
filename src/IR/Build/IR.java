@@ -18,8 +18,8 @@ import java.util.HashMap;
 import static IR.Operand.VirtualRegisterTable.precolor;
 
 public class IR {
-    private static final boolean _DEBUG_TRANSLATE_ = false;
     public static final boolean _DEBUG_COMPILER_ = false;
+    private static final boolean _DEBUG_TRANSLATE_ = false;
     public static HashMap<String, FunctionIR> functionIRMap = new HashMap<>();
     public static HashMap<String, Integer> stringConst = new HashMap<>();
     private static int _DEBUG_IR_CNT_;

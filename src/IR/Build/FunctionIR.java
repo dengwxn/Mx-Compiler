@@ -247,6 +247,7 @@ public class FunctionIR {
     public void propagateCopy() {
         ArrayList<Instruction> instrList = this.blockList.getInstrList();
         ArrayList<Block> blockList = this.blockList.getBlockList();
+        if (instrList.size() > 4000) return;
         instrList.forEach(instr -> instr.clearAnalysis());
         blockList.forEach(block -> block.linkPreSuc());
         instrList.forEach(instr -> instr.putDef());
