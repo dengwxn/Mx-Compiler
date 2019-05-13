@@ -13,15 +13,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
+import static IR.Build.FunctionIR.*;
 import static IR.Build.IR.formatInstr;
 import static IR.Instruction.Operator.BinaryOp.DIV;
 import static IR.Instruction.Operator.BinaryOp.SHL;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 
-public class BinaryInstruction extends Instruction implements ConstantFolding, CopyRemove, DeadCodeElimination {
+public class BinaryInstruction extends Instruction implements ConstantFolding, CopyRemove, DeadCodeElimination, ValueNumbering {
     private Operator.BinaryOp op;
     private Operand dst, src;
     private Integer cstVal;
+    private Operand prop;
 
     public BinaryInstruction(Operator.BinaryOp op, Operand dst, Operand src) {
         if (dst instanceof Address && src instanceof Address)
@@ -41,6 +43,43 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, C
         this.op = op;
         this.dst = getVirtualRegister(dst);
         this.src = new Immediate(src);
+    }
+
+    @Override
+    public Operand getProp() {
+        return prop;
+    }
+
+    @Override
+    public void numberValue() {
+        if (dst instanceof VirtualRegister) {
+            Integer x = getMapReg(dst);
+            if (x != null) {
+                Integer y = null;
+                if (src instanceof VirtualRegister)
+                    y = getMapReg(src);
+                else if (src instanceof Immediate)
+                    y = -((Immediate) src).getVal();
+
+                if (y != null) {
+                    String instr = op + " " + x + " " + y;
+                    Integer z = getMapInstr(instr);
+                    if (z != null) {
+                        putMapReg(dst, z);
+                        prop = getMapVal(z);
+                        if (prop != null) return;
+                    }
+                    incValueNumberingCount();
+                    putMapInstr(instr, getValueNumberingCount());
+                    putMapReg(dst, getValueNumberingCount());
+                    putMapVal(getValueNumberingCount(), dst);
+                    return;
+                }
+            }
+            incValueNumberingCount();
+            putMapReg(dst, getValueNumberingCount());
+            putMapVal(getValueNumberingCount(), dst);
+        }
     }
 
     @Override
@@ -228,7 +267,9 @@ public class BinaryInstruction extends Instruction implements ConstantFolding, C
                 } else {
                     str.append(formatInstr("idiv", src.toNASM() + (src instanceof PhysicalRegister ? "_l32" : "")));
                 }
-                str.append(formatInstr("mov", dst.toNASM(), op == DIV ? "res0" : "arg3"));
+                String reg = op == DIV ? "res0" : "arg3";
+                str.append(formatInstr("movsx", reg, reg + "_l32"));
+                str.append(formatInstr("mov", dst.toNASM(), reg));
                 break;
             default:
                 if (dst instanceof PhysicalAddress && src instanceof PhysicalAddress) {

@@ -76,11 +76,15 @@ public class CompareInstruction extends Instruction implements CopyRemove {
     }
 
     public Integer getCstLhs() {
-        return getConstant(lhs);
+        Integer cst = getConstant(lhs);
+        if (cst != null) lhs = new Immediate(cst);
+        return cst;
     }
 
     public Integer getCstRhs() {
-        return getConstant(rhs);
+        Integer cst = getConstant(rhs);
+        if (cst != null) rhs = new Immediate(cst);
+        return cst;
     }
 
     @Override
@@ -99,14 +103,6 @@ public class CompareInstruction extends Instruction implements CopyRemove {
     public void putDef() {
         if (lhs instanceof Address || rhs instanceof Address)
             putDef("ler7");
-    }
-
-    public Operand getLhs() {
-        return lhs;
-    }
-
-    public Operand getRhs() {
-        return rhs;
     }
 
     @Override

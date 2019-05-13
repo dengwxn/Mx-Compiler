@@ -14,5 +14,9 @@ public class Propagation {
         for (FunctionIR functionIR : functionIRMap.values())
             functionIR.propagateCopy();
         IR.dump("copy");
+
+        for (FunctionIR functionIR : functionIRMap.values())
+            functionIR.numberValue();
+        IR.dump("value");
     }
 }

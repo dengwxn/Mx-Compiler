@@ -9,16 +9,47 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
+import static IR.Build.FunctionIR.*;
 import static IR.Build.IR.formatInstr;
 
-public class UnaryInstruction extends Instruction implements ConstantFolding, DeadCodeElimination {
+public class UnaryInstruction extends Instruction implements ConstantFolding, DeadCodeElimination, ValueNumbering {
     private Operator.UnaryOp op;
     private Operand dst;
     private Integer cstVal;
+    private Operand prop;
 
     public UnaryInstruction(Operator.UnaryOp op, Operand dst) {
         this.op = op;
         this.dst = dst;
+    }
+
+    @Override
+    public Operand getProp() {
+        return prop;
+    }
+
+    @Override
+    public void numberValue() {
+        if (dst instanceof VirtualRegister) {
+            Integer x = getMapReg(dst);
+            if (x != null) {
+                String instr = op + " " + x;
+                Integer y = getMapInstr(instr);
+                if (y != null) {
+                    putMapReg(dst, y);
+                    prop = getMapVal(y);
+                    if (prop != null) return;
+                }
+                incValueNumberingCount();
+                putMapInstr(instr, getValueNumberingCount());
+                putMapReg(dst, getValueNumberingCount());
+                putMapVal(getValueNumberingCount(), dst);
+                return;
+            }
+            incValueNumberingCount();
+            putMapReg(dst, getValueNumberingCount());
+            putMapVal(getValueNumberingCount(), dst);
+        }
     }
 
     @Override

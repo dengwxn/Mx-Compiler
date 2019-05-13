@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static Generator.Operand.PhysicalOperand.convertVirtualOperand;
+import static IR.Build.FunctionIR.*;
 import static IR.Build.IR.formatInstr;
 import static IR.Operand.VirtualRegisterTable.getVirtualRegister;
 import static Optimizer.RegisterAllocation.getPhysicalRegister;
@@ -98,6 +99,25 @@ public class MoveInstruction extends Instruction implements ConstantFolding, Cop
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void numberValue() {
+        if (dst instanceof VirtualRegister) {
+            Integer x = null;
+            if (src instanceof VirtualRegister)
+                x = getMapReg(src);
+            else if (src instanceof Immediate)
+                x = -((Immediate) src).getVal();
+
+            if (x != null) {
+                putMapReg(dst, x);
+                return;
+            }
+            incValueNumberingCount();
+            putMapReg(dst, getValueNumberingCount());
+            putMapVal(getValueNumberingCount(), dst);
+        }
     }
 
     public void propagateCopy(VirtualRegister reg, HashSet<Instruction> flag, HashSet<Instruction> clear) {

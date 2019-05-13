@@ -42,6 +42,17 @@ public class Block {
         }
     }
 
+    void propagateValueNumbering() {
+        for (int i = 0; i < instr.size(); ++i) {
+            Instruction u = instr.get(i);
+            if (u instanceof ValueNumbering) {
+                Operand prop = ((ValueNumbering) u).getProp();
+                if (prop != null)
+                    instr.set(i, new MoveInstruction(((ValueNumbering) u).getDst(), prop));
+            }
+        }
+    }
+
     public Block makeCopy() {
         Block cpy = new Block(label.substring(label.indexOf(".") + 1));
         cpy.instr = new ArrayList<>();

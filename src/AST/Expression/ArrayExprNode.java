@@ -43,6 +43,7 @@ public class ArrayExprNode extends ExprNode {
             Address addr = new Address((VirtualRegister) operand, 0);
             blockList.add(movOffset, shl, add);
             if (i < dim - 1) {
+                operand = getTemporaryRegister();
                 Instruction movOperand = new MoveInstruction(operand, addr);
                 blockList.add(movOperand);
             } else {

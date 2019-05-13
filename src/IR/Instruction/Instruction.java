@@ -26,6 +26,17 @@ abstract public class Instruction {
     private HashSet<VirtualRegister> nec = new HashSet<>();
     private HashSet<VirtualRegister> needed = new HashSet<>();
 
+    public void numberValue() {
+    }
+
+    public ArrayList<Instruction> getPre() {
+        return pre;
+    }
+
+    public ArrayList<Instruction> getSuc() {
+        return suc;
+    }
+
     public void collectDef(HashSet<VirtualRegister> collect) {
         collect.addAll(def);
     }

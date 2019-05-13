@@ -27,6 +27,10 @@ public class FunctionIR {
     private static LinkedHashSet<String> leePool = new LinkedHashSet<>();
     private static HashMap<VirtualRegister, Integer> spillPos = new HashMap<>();
     private static int maxParamSize;
+    private static HashMap<Operand, Integer> mapReg = new HashMap<>();
+    private static HashMap<Integer, Operand> mapVal = new HashMap<>();
+    private static HashMap<String, Integer> mapInstr = new HashMap<>();
+    private static int valueNumberingCount;
     private FuncDeclNode funcDecl;
     private BlockList blockList;
     private BlockList newBlockList;
@@ -53,6 +57,42 @@ public class FunctionIR {
         blockList.add(new JumpInstruction(funcExit));
         blockList.add(funcExit);
         blockList.add(new ReturnInstruction());
+    }
+
+    public static void putMapReg(Operand reg, Integer val) {
+        if (mapReg.get(reg) != null) {
+            if (mapVal.get(mapReg.get(reg)) == reg)
+                mapVal.put(mapReg.get(reg), null);
+        }
+        mapReg.put(reg, val);
+    }
+
+    public static Integer getMapReg(Operand reg) {
+        return mapReg.get(reg);
+    }
+
+    public static void putMapVal(Integer val, Operand reg) {
+        mapVal.put(val, reg);
+    }
+
+    public static Operand getMapVal(Integer val) {
+        return mapVal.get(val);
+    }
+
+    public static void putMapInstr(String str, Integer val) {
+        mapInstr.put(str, val);
+    }
+
+    public static Integer getMapInstr(String str) {
+        return mapInstr.get(str);
+    }
+
+    public static void incValueNumberingCount() {
+        ++valueNumberingCount;
+    }
+
+    public static int getValueNumberingCount() {
+        return valueNumberingCount;
     }
 
     public static int getSpillPos(VirtualRegister reg) {
@@ -272,6 +312,62 @@ public class FunctionIR {
             }
             for (Instruction instr : clear)
                 instr.clearReceive(reg);
+        }
+    }
+
+    public void numberValue() {
+        HashSet<Instruction> flag = new HashSet<>();
+        ArrayList<Instruction> instrList = this.blockList.getInstrList();
+        for (Instruction start : instrList) {
+            if (flag.add(start)) {
+                valueNumberingCount = 0;
+                mapReg.clear();
+                mapVal.clear();
+                mapInstr.clear();
+
+                ArrayList<Instruction> stack = new ArrayList<>();
+                ArrayList<HashMap<Operand, Integer>> backupMapReg = new ArrayList<>();
+                ArrayList<HashMap<Integer, Operand>> backupMapVal = new ArrayList<>();
+                ArrayList<HashMap<String, Integer>> backupMapInstr = new ArrayList<>();
+                stack.add(start);
+                backupMapReg.add(mapReg);
+                backupMapVal.add(mapVal);
+                backupMapInstr.add(mapInstr);
+                while (stack.size() > 0) {
+                    ArrayList<Instruction> queue = new ArrayList<>();
+                    int id = stack.size() - 1;
+                    queue.add(stack.get(id));
+                    mapReg = backupMapReg.get(id);
+                    mapVal = backupMapVal.get(id);
+                    mapInstr = backupMapInstr.get(id);
+                    stack.remove(id);
+                    backupMapReg.remove(id);
+                    backupMapVal.remove(id);
+                    backupMapInstr.remove(id);
+                    for (int i = 0; i < queue.size(); ++i) {
+                        Instruction u = queue.get(i);
+                        u.numberValue();
+                        ArrayList<Instruction> suc = u.getSuc();
+                        if (suc.size() == 1) {
+                            for (Instruction v : suc) {
+                                if (v.getPre().size() == 1) {
+                                    queue.add(v);
+                                    flag.add(v);
+                                }
+                            }
+                        } else {
+                            for (Instruction v : suc) {
+                                stack.add(v);
+                                backupMapReg.add(new HashMap<>(mapReg));
+                                backupMapVal.add(new HashMap<>(mapVal));
+                                backupMapInstr.add(new HashMap<>(mapInstr));
+                            }
+                        }
+                    }
+                }
+                ArrayList<Block> blockList = this.blockList.getBlockList();
+                blockList.forEach(block -> block.propagateValueNumbering());
+            }
         }
     }
 
