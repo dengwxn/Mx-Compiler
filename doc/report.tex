@@ -1,0 +1,136 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[margin = 1in]{geometry}
+\usepackage{enumerate}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{ifthen}
+\usepackage{syntonly}
+\usepackage{color}
+\usepackage{makecell}
+\usepackage{eufrak}
+\usepackage{comment}
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[T1]{fontenc}
+\usepackage[colorlinks, CJKbookmarks=true, linkcolor=black, anchorcolor=blue, citecolor=blue]{hyperref}
+\pagestyle{fancy}
+
+%\fancyhf{} % sets both header and footer to nothing
+\lhead{}
+\chead{}
+\rhead{}
+\renewcommand{\headrulewidth}{0pt}
+
+\renewcommand\contentsname{Contents}
+\renewcommand\refname{References}
+\renewcommand\figurename{Fig.}
+\newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}}
+
+\newcounter{footnotesintable}
+
+\begin{document}
+
+\title{Project Report of MxStar Compiler\\\begin{large}(Course Project of Compiler)\end{large}}
+\author{Weixin Deng {\kaishu{(邓伟信})}\\ACM Class, Shanghai Jiao Tong University}
+\date{}
+
+\maketitle
+
+\section{Introduction}
+
+This project is a compiler of MxStar\upcite{MxStar} language(a combination of C and Java), implemented in Java. The GitHub repository of my project is: \url{https://github.com/dengwxn/Mx-Compiler}.
+
+\section{Implementation}
+
+\begin{table}[!hbp]
+	\centering
+	\begin{tabular}{|l|l|}
+	\hline
+	Source Language        & MxStar      \\ \hline
+	Target Language        & x86-64 NASM \\ \hline
+	Lexer/Parser Generator & antlr4      \\ \hline
+	\end{tabular}
+\end{table}
+
+\subsection{IR Generation}
+
+\paragraph{Logical Expressions}
+I do not use {\ttfamily set} instruction when dealing with logical expressions. Instead, I maintain two blocks {\ttfamily logicTrue} and {\ttfamily logicFalse} as the logic exit blocks. In {\ttfamily assign} statements, I add {\ttfamily mov 0/1} accordingly. Otherwise in {\ttfamily if} statements, {\ttfamily thenStmt} generate IR in {\ttfamily logicTrue} and    {\ttfamily elseStmt} in {\ttfamily logicFalse}.
+
+\subsection{Optimization}
+
+\begin{itemize}
+	\item 
+	Global constant propagation.
+	\item 
+	Global copy propagation.
+	\item
+	Dead code elimination using neededness analysis.
+	\begin{itemize}
+		\item Remove unneeded instructions.
+		\item Remove empty blocks.
+		\item Remove unreachable blocks.
+		\item Remove some useless loops using a conservative strategy.
+		\item
+		Compress {\ttfamily jump} when jumping to a block consisting of a {\ttfamily jump} instruction.
+	\end{itemize}
+	\item
+	Function inlining.
+	\item 
+	Global variable loading. 
+	\begin{itemize}
+		\item 
+		Load them in the beginning of a function and store back in the end.
+		\item
+		Extra storing and loading might be needed when having {\ttfamily call}.
+	\end{itemize}
+	\item 
+	Value numbering on extended basic blocks.
+	\item 
+	Strength reduction.
+	\item
+	Chordal graph coloring. 
+	\begin{itemize}
+		\item 
+		Although I do not convert my program to SSA, the result of register allocation is not bad.
+	\end{itemize}
+\end{itemize}
+
+\section{Discussions}
+
+\paragraph{Debug}
+I use gdb to debug the assembly code. The complete script to support gdb is {\ttfamily nasm -felf64 prog.asm -gdwarf \&\& gcc prog.o -o prog -g -no-pie}.
+
+\paragraph{Object Oriented Programming}
+My implementation is far away from OOP style. I think using OOP will make the whole project clearer but also make it harder to code.
+
+\section{Appendix}
+
+\begin{thebibliography}{9}
+  \bibitem{MxStar}
+	MxStar Language Manual.
+	\\\url{https://acm.sjtu.edu.cn/w/images/3/30/M_language_manual.pdf}.
+  \bibitem{CMU}
+  	CMU 15-411 Compiler Design.
+	\\\url{http://www.cs.cmu.edu/~janh/courses/411/18/schedule.html}.
+  \bibitem{Stanford} 
+	Stanford CS143 Compilers.
+	\\\url{http://web.stanford.edu/class/cs143/index2018.html}.
+  \bibitem{LianminZheng}
+	Lianmin Zheng's Compiler project.
+	\\\url{https://github.com/merrymercy/compiler2017/blob/master/doc/report.pdf}.
+  \bibitem{ZhekaiZhang}
+	Zhekai Zhang's Compiler project.
+	\\\url{https://github.com/sxtyzhangzk/MxCompiler/blob/master/slide.pdf}.
+  \bibitem{HowTo}
+  	青木峰郎. 
+  	\emph{自制编译器},
+  	人民邮电出版社, 2016.
+  \end{thebibliography}
+
+\end{document}
